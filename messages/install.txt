@@ -1,0 +1,22 @@
+  KodiDevKit (former SublimeKodi) - https://github.com/phil65/KodiDevKit
+  =================
+  
+  KodiDevKit finally made it to packagecontrol. :) This script contains lot of little helper
+  functions to assist with skin and script development as well as custom syntax highlighting,
+  remote uploading add-ons via ADB, syntax highlighting for Kodi log files and Skin XMLs,
+  and much more.
+
+  To get started, have a look at the settings file first.
+  In order to use all features, you also need to install the Kodi plugin "Toolbox script"
+  (script.toolbox) from the official Kodi repositories.
+  That way this script can interact with Kodi via JSON-RPC.
+
+  A quite up-to-date feature list can be found here:
+  https://github.com/phil65/SublimeKodi/blob/master/README.md
+
+  Some calls are not documented yet, I hope to fix that in the next weeks.
+
+
+  For further questions, visit the Kodi forums. ( http://forum.kodi.tv/showthread.php?tid=221682 )
+
+  Happy coding!

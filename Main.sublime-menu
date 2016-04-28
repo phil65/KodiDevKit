@@ -19,14 +19,14 @@
                                 "caption": "Settings – Default",
                                 "command": "open_file", "args":
                                 {
-                                    "file": "${packages}/KodiDevKit/sublimekodi.sublime-settings"
+                                    "file": "${packages}/KodiDevKit/kodidevkit.sublime-settings"
                                 }
                             },
                             {
                                 "caption": "Settings – User",
                                 "command": "open_file", "args":
                                 {
-                                    "file": "${packages}/User/sublimekodi.sublime-settings"
+                                    "file": "${packages}/User/kodidevkit.sublime-settings"
                                 }
                             },
                             // {
