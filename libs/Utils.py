@@ -237,7 +237,8 @@ def log(string):
     """
     prefixes "KodiDevKit:" and prints
     """
-    print("KodiDevKit: " + str(string))
+    pass
+    # print("KodiDevKit: " + str(string))
 
 
 def prettyprint(string):
