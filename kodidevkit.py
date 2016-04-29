@@ -37,7 +37,7 @@ elif platform.system() == "Darwin":
     KODI_PRESET_PATH = os.path.join(os.path.expanduser("~"), "Applications", "%s.app" % APP_NAME, "Contents", "Resources", APP_NAME)
 else:
     KODI_PRESET_PATH = ""
-SETTINGS_FILE = 'sublimekodi.sublime-settings'
+SETTINGS_FILE = 'kodidevkit.sublime-settings'
 SUBLIME_PATH = get_sublime_path()
 
 
