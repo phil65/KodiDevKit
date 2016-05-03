@@ -9,11 +9,9 @@ KodiDevKit is a plugin to assist with Kodi skinning / scripting using Sublime Te
 
 
 import os
-import base64
 import json
 import colorsys
 import codecs
-from urllib.request import Request, urlopen
 import zipfile
 import subprocess
 import re
@@ -326,43 +324,6 @@ def get_xml_file_paths(xml_path):
             if filename.lower() not in ["script-skinshortcuts-includes.xml", "font.xml"]:
                 xml_files.append(xml_file)
     return xml_files
-
-
-@run_async
-def send_json_request_async(method, params, settings):
-    """
-    send JSON command *data to Kodi in separate thread,
-    also needs *settings for remote ip etc.
-    """
-    return send_json_request(method, params, settings)
-
-
-def send_json_request(method, settings, params=None):
-    """
-    send JSON command *data to Kodi,
-    also needs *settings for remote ip etc.
-    """
-    address = settings.get("kodi_address", "http://localhost:8080")
-    if not address:
-        return None
-    data = {"jsonrpc": "2.0",
-            "method": method,
-            "id": 1}
-    if params:
-        data["params"] = params
-    credentials = '%s:%s' % (settings.get("kodi_username", "kodi"), settings.get("kodi_password", ""))
-    headers = {'Content-Type': 'application/json',
-               'Authorization': b'Basic ' + base64.b64encode(credentials.encode('UTF-8'))}
-    request = Request(url=address + "/jsonrpc",
-                      data=json.dumps(data).encode('utf-8'),
-                      headers=headers)
-    try:
-        result = urlopen(request).read()
-        result = json.loads(result.decode("utf-8"))
-        prettyprint(result)
-        return result
-    except:
-        return None
 
 
 def get_refs_from_file(path, xpath):

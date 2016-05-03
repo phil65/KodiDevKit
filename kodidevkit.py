@@ -22,11 +22,13 @@ from xml.sax.saxutils import escape
 
 from lxml import etree as ET
 from .libs.Utils import *
-from .libs.InfoProvider import *
+from .libs import InfoProvider
+from .libs.kodijson import KodiJson
 from .libs.RemoteDevice import RemoteDevice
 
-INFOS = InfoProvider()
+INFOS = InfoProvider.InfoProvider()
 REMOTE = RemoteDevice()
+kodijson = KodiJson()
 # sublime.log_commands(True)
 APP_NAME = "Kodi"
 APP_NAME_LOWER = APP_NAME.lower()
@@ -125,9 +127,8 @@ class KodiDevKit(sublime_plugin.EventListener):
                     else:
                         popup_label = "include too big for preview"
                 elif "<visible" in line_contents or "<enable" in line_contents:
-                    result = send_json_request(method="XBMC.GetInfoBooleans",
-                                               params={"booleans": [selected_content]},
-                                               settings=self.settings)
+                    result = kodijson.request(method="XBMC.GetInfoBooleans",
+                                              params={"booleans": [selected_content]})
                     if result:
                         key, value = result["result"].popitem()
                         if value is not None:
@@ -307,10 +308,8 @@ class ExecuteBuiltinPromptCommand(sublime_plugin.WindowCommand):
 class ExecuteBuiltinCommand(sublime_plugin.WindowCommand):
 
     def run(self, builtin):
-        settings = sublime.load_settings(SETTINGS_FILE)
-        send_json_request_async(method="Addons.ExecuteAddon",
-                                params={"addonid": "script.toolbox", "params": {"info": "builtin", "id": builtin}},
-                                settings=settings)
+        kodijson.request_async(method="Addons.ExecuteAddon",
+                               params={"addonid": "script.toolbox", "params": {"info": "builtin", "id": builtin}})
 
 
 class ReloadKodiLanguageFilesCommand(sublime_plugin.WindowCommand):
@@ -517,9 +516,8 @@ class GetInfoLabelsPromptCommand(sublime_plugin.WindowCommand):
         self.settings.set("prev_infolabel", label_string)
         words = label_string.split(",")
         self.window.run_command("log", {"label": "send request..."})
-        result = send_json_request(method="XBMC.GetInfoLabels",
-                                   params={"labels": words},
-                                   settings=self.settings)
+        result = kodijson.request(method="XBMC.GetInfoLabels",
+                                  params={"labels": words})
         if result:
             self.window.run_command("log", {"label": "Got result:"})
             key, value = result["result"].popitem()
@@ -541,9 +539,8 @@ class GetInfoBooleansPromptCommand(sublime_plugin.WindowCommand):
         self.settings.set("prev_boolean", label_string)
         words = label_string.split(",")
         self.window.run_command("log", {"label": "send request..."})
-        result = send_json_request(method="XBMC.GetInfoBooleans",
-                                   params={"booleans": words},
-                                   settings=self.settings)
+        result = kodijson.request(method="XBMC.GetInfoBooleans",
+                                  params={"booleans": words})
         if result:
             self.window.run_command("log", {"label": "Got result:"})
             key, value = result["result"].popitem()
@@ -556,9 +553,8 @@ class OpenActiveWindowXmlFromRemoteCommand(sublime_plugin.WindowCommand):
     def run(self):
         self.settings = sublime.load_settings(SETTINGS_FILE)
         folder = self.window.active_view().file_name().split(os.sep)[-2]
-        result = send_json_request(method="XBMC.GetInfoLabels",
-                                   params={"labels": ["Window.Property(xmlfile)"]},
-                                   settings=self.settings)
+        result = kodijson.request(method="XBMC.GetInfoLabels",
+                                  params={"labels": ["Window.Property(xmlfile)"]})
         if not result:
             return None
         key, value = result["result"].popitem()
@@ -631,9 +627,7 @@ class SearchForJsonCommand(sublime_plugin.WindowCommand):
 
     @run_async
     def run(self):
-        settings = sublime.load_settings(SETTINGS_FILE)
-        result = send_json_request(method="JSONRPC.Introspect",
-                                   settings=settings)
+        result = kodijson.request(method="JSONRPC.Introspect")
         self.listitems = [[key, str(value)] for item in result["result"]["types"].items()]
         self.listitems += [[key, str(value)] for item in result["result"]["methods"].items()]
         self.listitems += [[key, str(value)] for item in result["result"]["notifications"].items()]
@@ -967,6 +961,8 @@ class SwitchXmlFolderCommand(QuickPanelCommand):
 
 def plugin_loaded():
     REMOTE.setup(sublime.load_settings(SETTINGS_FILE))
+    InfoProvider.kodijson.setup(sublime.load_settings(SETTINGS_FILE))
+    kodijson.setup(sublime.load_settings(SETTINGS_FILE))
 
 
 class ColorPickerCommand(sublime_plugin.WindowCommand):

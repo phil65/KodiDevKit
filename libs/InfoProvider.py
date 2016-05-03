@@ -15,9 +15,12 @@ import platform
 import webbrowser
 from time import gmtime, strftime
 
+from .kodijson import KodiJson
 from .Utils import *
 from .polib import polib
 from .ImageParser import get_image_size
+
+kodijson = KodiJson()
 
 APP_NAME = "kodi"
 # c&p from wiki
@@ -782,9 +785,8 @@ class InfoProvider(object):
                 label += "<b>%s:</b><br>%s<br>" % (e.attrib.get("condition", "fallback"), e.text)
             return label
         elif info_type in ["INFO", "ESCINFO"]:
-            result = send_json_request(method="XBMC.GetInfoLabels",
-                                       params={"labels": [info_id]},
-                                       settings=self.settings)
+            result = kodijson.request(method="XBMC.GetInfoLabels",
+                                      params={"labels": [info_id]})
             if result:
                 key, value = result["result"].popitem()
                 if value:
