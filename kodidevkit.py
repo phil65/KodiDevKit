@@ -128,7 +128,7 @@ class KodiDevKit(sublime_plugin.EventListener):
                             popup_label = str(value)
                 elif "<font" in line_contents and "</font" in line_contents:
                     popup_label = INFOS.get_font_info(selected_content, folder)
-                elif "label" in line_contents or "<property" in line_contents or "<altlabel" in line_contents or "localize" in line_contents:
+                elif "label" in line_contents or "<property" in line_contents or "localize" in line_contents:
                     popup_label = INFOS.return_label(selected_content)
                 elif "<fadetime" in line_contents:
                     popup_label = str(INFOS.return_node_content(get_node_content(view, flags), folder=folder))[2:-3]
@@ -844,7 +844,11 @@ class ReplaceXmlElementsCommand(sublime_plugin.TextCommand):
 class EvaluateMathExpressionPromptCommand(sublime_plugin.WindowCommand):
 
     def run(self):
-        self.window.show_input_panel("Write Equation (x = selected int)", "x", self.evaluate, None, None)
+        self.window.show_input_panel("Write Equation (x = selected int)",
+                                     "x",
+                                     self.evaluate,
+                                     None,
+                                     None)
 
     def evaluate(self, equation):
         self.window.run_command("evaluate_math_expression", {'equation': equation})
@@ -875,7 +879,10 @@ class SwitchXmlFolderCommand(QuickPanelCommand):
             node = {"file": path,
                     "line": line + 1}
             self.nodes.append(node)
-        self.window.show_quick_panel(INFOS.xml_folders, lambda s: self.on_done(s), selected_index=0, on_highlight=lambda s: self.show_preview(s))
+        self.window.show_quick_panel(INFOS.xml_folders,
+                                     lambda s: self.on_done(s),
+                                     selected_index=0,
+                                     on_highlight=lambda s: self.show_preview(s))
 
     def on_done(self, index):
         if index == -1:

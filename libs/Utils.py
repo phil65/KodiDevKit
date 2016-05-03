@@ -133,16 +133,16 @@ def to_hex(r, g, b, a=None):
     """
     return rgba hex values for ST tooltip
     """
-    if a is None:
-        a = 255
-    return "#%02X%02X%02X%02X" % (r, g, b, a)
+    return "#%02X%02X%02X%02X" % (r, g, b, a if a else 255)
 
 
 def get_cont_col(col):
     """
     gets contrast color for *col (used to ensure readability)
     """
-    (h, l, s) = colorsys.rgb_to_hls(int(col[1:3], 16)/255.0, int(col[3:5], 16)/255.0, int(col[5:7], 16)/255.0)
+    (h, l, s) = colorsys.rgb_to_hls(int(col[1:3], 16) / 255.0,
+                                    int(col[3:5], 16) / 255.0,
+                                    int(col[5:7], 16) / 255.0)
     l1 = 1 - l
     if abs(l1 - l) < .15:
         l1 = .15
@@ -181,7 +181,10 @@ def texturepacker_generator(media_path, settings, xbt_filename="Textures.xbt"):
     if platform.system() == "Linux":
         args = ['%s -dupecheck -input "%s" -output "%s"' % (tp_path, media_path, os.path.join(media_path, xbt_filename))]
     else:
-        args = [tp_path, '-dupecheck', '-input "%s"' % media_path, '-output "%s"' % os.path.join(media_path, xbt_filename)]
+        args = [tp_path,
+                '-dupecheck',
+                '-input "%s"' % media_path,
+                '-output "%s"' % os.path.join(media_path, xbt_filename)]
     with subprocess.Popen(args, stdout=subprocess.PIPE, bufsize=1, universal_newlines=True, shell=True) as p:
         for line in p.stdout:
             yield line
@@ -192,17 +195,17 @@ def check_brackets(label):
     check if all brackets in *label match, return True / False
     """
     stack = []
-    pushChars, popChars = "<({[", ">)}]"
+    push_chars, pop_chars = "<({[", ">)}]"
     for c in label:
-        if c in pushChars:
+        if c in push_chars:
             stack.append(c)
-        elif c in popChars:
+        elif c in pop_chars:
             if not stack:
                 return False
             else:
                 stackTop = stack.pop()
-                balancingBracket = pushChars[popChars.index(c)]
-                if stackTop != balancingBracket:
+                balancing_bracket = push_chars[pop_chars.index(c)]
+                if stackTop != balancing_bracket:
                     return False
     return not stack
 
