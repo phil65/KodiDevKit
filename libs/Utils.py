@@ -212,14 +212,8 @@ def check_brackets(label):
 
 def find_word(view):
     for region in view.sel():
-        if region.begin() == region.end():
-            word = view.word(region)
-        else:
-            word = region
-        if not word.empty():
-            return view.substr(word)
-        else:
-            return ""
+        word = view.word(region) if region.begin() == region.end() else region
+        return view.substr(word) if not word.empty() else ""
 
 
 def get_node_content(view, flags):
