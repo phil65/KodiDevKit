@@ -15,6 +15,7 @@ import os
 import cgi
 import webbrowser
 import platform
+import mdpopups
 from itertools import chain
 from subprocess import Popen
 from xml.sax.saxutils import escape
@@ -152,12 +153,12 @@ class KodiDevKit(sublime_plugin.EventListener):
     def show_tooltip(self, view, tooltip_label):
         if self.css:
             tooltip_label = "<style>%s</style>" % self.css + tooltip_label
-        view.show_popup(tooltip_label,
-                        sublime.COOPERATE_WITH_AUTO_COMPLETE,
-                        location=-1,
-                        max_width=self.settings.get("tooltip_width", 1000),
-                        max_height=self.settings.get("height", 300),
-                        on_navigate=lambda label_id, view=view: jump_to_label_declaration(view, label_id))
+        mdpopups.show_popup(view=view,
+                            content=tooltip_label,
+                            flags=sublime.COOPERATE_WITH_AUTO_COMPLETE,
+                            max_width=self.settings.get("tooltip_width", 1000),
+                            max_height=self.settings.get("height", 300),
+                            on_navigate=lambda label_id, view=view: jump_to_label_declaration(view, label_id))
 
     def on_modified_async(self, view):
         if INFOS.project_path and view.file_name() and view.file_name().endswith(".xml"):
