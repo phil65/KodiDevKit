@@ -151,8 +151,6 @@ class KodiDevKit(sublime_plugin.EventListener):
             sublime.set_timeout_async(lambda: self.show_tooltip(view, popup_label), self.settings.get("tooltip_delay", 0))
 
     def show_tooltip(self, view, tooltip_label):
-        if self.css:
-            tooltip_label = "<style>%s</style>" % self.css + tooltip_label
         mdpopups.show_popup(view=view,
                             content=tooltip_label,
                             flags=sublime.COOPERATE_WITH_AUTO_COMPLETE,
@@ -201,8 +199,6 @@ class KodiDevKit(sublime_plugin.EventListener):
             self.settings = sublime.load_settings(SETTINGS_FILE)
             INFOS.get_settings(self.settings)
             INFOS.update_builtin_labels()
-            css_file = 'Packages/KodiDevKit/' + self.settings.get('tooltip_css_file')
-            self.css = sublime.load_resource(css_file)
             self.settings_loaded = True
         view = sublime.active_window().active_view()
         filename = view.file_name()
@@ -222,16 +218,6 @@ class KodiDevKit(sublime_plugin.EventListener):
                     INFOS.init_addon(project_folder)
             else:
                 log("Could not find folder path in project file")
-
-
-class AutoRefreshLogListener(sublime_plugin.EventListener):
-
-    def on_activated_async(self, view):
-        file_name = view.file_name()
-        if file_name:
-            if file_name[-8:].lower() in ['kodi.log', 'xbmc.log']:
-                view.run_command('revert')
-                log("refresh kodi log")
 
 
 class RemoteActionsCommand(sublime_plugin.WindowCommand):
