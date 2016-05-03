@@ -178,13 +178,13 @@ def texturepacker_generator(media_path, settings, xbt_filename="Textures.xbt"):
     tp_path = settings.get("texturechecker_path")
     if not tp_path:
         return None
+    args = ['-dupecheck',
+            '-input "%s"' % media_path,
+            '-output "%s"' % os.path.join(media_path, xbt_filename)]
     if platform.system() == "Linux":
-        args = ['%s -dupecheck -input "%s" -output "%s"' % (tp_path, media_path, os.path.join(media_path, xbt_filename))]
+        args = ['%s %s' % (tp_path, " ".join(args))]
     else:
-        args = [tp_path,
-                '-dupecheck',
-                '-input "%s"' % media_path,
-                '-output "%s"' % os.path.join(media_path, xbt_filename)]
+        args.insert(0, tp_path)
     with subprocess.Popen(args, stdout=subprocess.PIPE, bufsize=1, universal_newlines=True, shell=True) as p:
         for line in p.stdout:
             yield line
@@ -307,8 +307,7 @@ def get_root_from_file(xml_file):
         return None
     try:
         parser = ET.XMLParser(remove_blank_text=True, remove_comments=True)
-        tree = ET.parse(xml_file, parser)
-        return tree.getroot()
+        return ET.parse(xml_file, parser).getroot()
     except Exception as e:
         panel_log("Error in %s:\n %s" % (xml_file, str(e)))
         return None
@@ -330,15 +329,15 @@ def get_xml_file_paths(xml_path):
 
 
 @run_async
-def send_json_request_async(data, settings):
+def send_json_request_async(method, params, settings):
     """
     send JSON command *data to Kodi in separate thread,
     also needs *settings for remote ip etc.
     """
-    return send_json_request(data, settings)
+    return send_json_request(method, params, settings)
 
 
-def send_json_request(data, settings):
+def send_json_request(method, settings, params=None):
     """
     send JSON command *data to Kodi,
     also needs *settings for remote ip etc.
@@ -346,13 +345,17 @@ def send_json_request(data, settings):
     address = settings.get("kodi_address", "http://localhost:8080")
     if not address:
         return None
+    data = {"jsonrpc": "2.0",
+            "method": method,
+            "id": 1}
+    if params:
+        data["params"] = params
     credentials = '%s:%s' % (settings.get("kodi_username", "kodi"), settings.get("kodi_password", ""))
-    encoded_credentials = base64.b64encode(credentials.encode('UTF-8'))
-    authorization = b'Basic ' + encoded_credentials
-    headers = {'Content-Type': 'application/json', 'Authorization': authorization}
-    json_data = json.dumps(json.loads(data))
-    post_data = json_data.encode('utf-8')
-    request = Request(address + "/jsonrpc", post_data, headers)
+    headers = {'Content-Type': 'application/json',
+               'Authorization': b'Basic ' + base64.b64encode(credentials.encode('UTF-8'))}
+    request = Request(url=address + "/jsonrpc",
+                      data=json.dumps(data).encode('utf-8'),
+                      headers=headers)
     try:
         result = urlopen(request).read()
         result = json.loads(result.decode("utf-8"))

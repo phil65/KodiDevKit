@@ -782,8 +782,9 @@ class InfoProvider(object):
                 label += "<b>%s:</b><br>%s<br>" % (e.attrib.get("condition", "fallback"), e.text)
             return label
         elif info_type in ["INFO", "ESCINFO"]:
-            data = '{"jsonrpc":"2.0","method":"XBMC.GetInfoLabels","params":{"labels": ["%s"] },"id":1}' % info_id
-            result = send_json_request(data, self.settings)
+            result = send_json_request(method="XBMC.GetInfoLabels",
+                                       params={"labels": [info_id]},
+                                       settings=self.settings)
             if result:
                 key, value = result["result"].popitem()
                 if value:

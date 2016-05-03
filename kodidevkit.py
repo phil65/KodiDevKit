@@ -35,7 +35,12 @@ if sublime.platform() == "linux":
 elif sublime.platform() == "windows":
     KODI_PRESET_PATH = "C:/%s/" % APP_NAME_LOWER
 elif platform.system() == "Darwin":
-    KODI_PRESET_PATH = os.path.join(os.path.expanduser("~"), "Applications", "%s.app" % APP_NAME, "Contents", "Resources", APP_NAME)
+    KODI_PRESET_PATH = os.path.join(os.path.expanduser("~"),
+                                    "Applications",
+                                    "%s.app" % APP_NAME,
+                                    "Contents",
+                                    "Resources",
+                                    APP_NAME)
 else:
     KODI_PRESET_PATH = ""
 SETTINGS_FILE = 'kodidevkit.sublime-settings'
@@ -120,8 +125,9 @@ class KodiDevKit(sublime_plugin.EventListener):
                     else:
                         popup_label = "include too big for preview"
                 elif "<visible" in line_contents or "<enable" in line_contents:
-                    data = '{"jsonrpc":"2.0","method":"XBMC.GetInfoBooleans","params":{"booleans": ["%s"] },"id":1}' % selected_content
-                    result = send_json_request(data, self.settings)
+                    result = send_json_request(method="XBMC.GetInfoBooleans",
+                                               params={"booleans": [selected_content]},
+                                               settings=self.settings)
                     if result:
                         key, value = result["result"].popitem()
                         if value is not None:
@@ -148,7 +154,8 @@ class KodiDevKit(sublime_plugin.EventListener):
         # log(node)
         # popup_label = node.find(".//available_tags").text.replace("\\n", "<br>")
         if popup_label and self.settings.get("tooltip_delay", 0) > -1:
-            sublime.set_timeout_async(lambda: self.show_tooltip(view, popup_label), self.settings.get("tooltip_delay", 0))
+            sublime.set_timeout_async(lambda: self.show_tooltip(view, popup_label),
+                                      self.settings.get("tooltip_delay", 0))
 
     def show_tooltip(self, view, tooltip_label):
         mdpopups.show_popup(view=view,
@@ -188,9 +195,11 @@ class KodiDevKit(sublime_plugin.EventListener):
             if folder in INFOS.window_file_list and filename in INFOS.window_file_list[folder]:
                 if self.settings.get("auto_reload_skin", True):
                     self.is_modified = False
-                    view.window().run_command("execute_builtin", {"builtin": "ReloadSkin()"})
+                    view.window().run_command("execute_builtin",
+                                              {"builtin": "ReloadSkin()"})
                 if self.settings.get("auto_skin_check", True):
-                    view.window().run_command("check_variables", {"check_type": "file"})
+                    view.window().run_command("check_variables",
+                                              {"check_type": "file"})
         if view.file_name().endswith(".po"):
             INFOS.update_addon_labels()
 
@@ -225,14 +234,19 @@ class RemoteActionsCommand(sublime_plugin.WindowCommand):
     def run(self):
         self.settings = sublime.load_settings(SETTINGS_FILE)
         active_device = "Set device: %s" % self.settings.get("remote_ip", "")
-        listitems = [active_device, "Reconnect", "Send this add-on", "Get log", "Get Screenshot", "Clear cache", "Reboot"]
+        listitems = [active_device, "Reconnect", "Send this add-on",
+                     "Get log", "Get Screenshot", "Clear cache", "Reboot"]
         self.window.show_quick_panel(listitems, lambda s: self.on_done(s), selected_index=0)
 
     def on_done(self, index):
         if index == -1:
             return None
         elif index == 0:
-            self.window.show_input_panel("Set remote IP", self.settings.get("remote_ip", "192.168.0.1"), self.set_ip, None, None)
+            self.window.show_input_panel("Set remote IP",
+                                         self.settings.get("remote_ip", "192.168.0.1"),
+                                         self.set_ip,
+                                         None,
+                                         None)
         elif index == 1:
             REMOTE.adb_reconnect_async()
             self.window.run_command("remote_actions")
@@ -261,7 +275,11 @@ class RemoteActionsCommand(sublime_plugin.WindowCommand):
 class SetKodiFolderCommand(sublime_plugin.WindowCommand):
 
     def run(self):
-        self.window.show_input_panel("Set Kodi folder", KODI_PRESET_PATH, self.set_kodi_folder, None, None)
+        self.window.show_input_panel("Set Kodi folder",
+                                     KODI_PRESET_PATH,
+                                     self.set_kodi_folder,
+                                     None,
+                                     None)
 
     def set_kodi_folder(self, path):
         if os.path.exists(path):
@@ -275,7 +293,11 @@ class ExecuteBuiltinPromptCommand(sublime_plugin.WindowCommand):
 
     def run(self):
         self.settings = sublime.load_settings(SETTINGS_FILE)
-        self.window.show_input_panel("Execute builtin", self.settings.get("prev_json_builtin", ""), self.execute_builtin, None, None)
+        self.window.show_input_panel("Execute builtin",
+                                     self.settings.get("prev_json_builtin", ""),
+                                     self.execute_builtin,
+                                     None,
+                                     None)
 
     def execute_builtin(self, builtin):
         self.settings.set("prev_json_builtin", builtin)
@@ -286,8 +308,9 @@ class ExecuteBuiltinCommand(sublime_plugin.WindowCommand):
 
     def run(self, builtin):
         settings = sublime.load_settings(SETTINGS_FILE)
-        data = '{"jsonrpc":"2.0","id":1,"method":"Addons.ExecuteAddon","params":{"addonid":"script.toolbox", "params": { "info": "builtin", "id": "%s"}}}' % builtin
-        send_json_request_async(data, settings=settings)
+        send_json_request_async(method="Addons.ExecuteAddon",
+                                params={"addonid": "script.toolbox", "params": {"info": "builtin", "id": builtin}},
+                                settings=settings)
 
 
 class ReloadKodiLanguageFilesCommand(sublime_plugin.WindowCommand):
@@ -313,12 +336,14 @@ class QuickPanelCommand(sublime_plugin.WindowCommand):
         if index == -1:
             return None
         node = self.nodes[index]
-        view = self.window.open_file("%s:%i" % (node["file"], node["line"]), sublime.ENCODED_POSITION)
+        view = self.window.open_file("%s:%i" % (node["file"], node["line"]),
+                                     sublime.ENCODED_POSITION)
         self.select_text(view, node)
 
     def show_preview(self, index):
         node = self.nodes[index]
-        self.window.open_file("%s:%i" % (node["file"], node["line"]), sublime.ENCODED_POSITION | sublime.TRANSIENT)
+        self.window.open_file("%s:%i" % (node["file"], node["line"]),
+                              sublime.ENCODED_POSITION | sublime.TRANSIENT)
         # self.select_text(view, node)
 
     @run_async
@@ -355,7 +380,8 @@ class BuildAddonCommand(sublime_plugin.WindowCommand):
         zip_path = os.path.join(media_path, os.path.basename(media_path) + ".zip")
         for filename in make_archive(media_path, zip_path):
             self.window.run_command("log", {"label": "zipped " + filename})
-        do_open = sublime.ok_cancel_dialog("Zip file created!\nDo you want to open its location a with file browser?", "Open")
+        do_open = sublime.ok_cancel_dialog("Zip file created!\nDo you want to open its location a with file browser?",
+                                           "Open")
         if do_open:
             webbrowser.open(media_path)
 
@@ -379,7 +405,8 @@ class BuildThemeCommand(sublime_plugin.WindowCommand):
         media_path = os.path.join(INFOS.project_path, "themes", self.theme_folders[index])
         for line in texturepacker_generator(media_path, settings, self.theme_folders[index] + ".xbt"):
             self.window.run_command("log", {"label": line.strip()})
-        do_open = sublime.ok_cancel_dialog("Theme file created!\nDo you want to open its location a with file browser?", "Open")
+        do_open = sublime.ok_cancel_dialog("Theme file created!\nDo you want to open its location a with file browser?",
+                                           "Open")
         if do_open:
             webbrowser.open(media_path)
 
@@ -428,7 +455,9 @@ class SearchFileForLabelsCommand(QuickPanelCommand):
         self.nodes = []
         labels = []
         label_ids = []
-        regexs = [r"\$LOCALIZE\[([0-9].*?)\]", r"\$ADDON\[.*?([0-9].*?)\]", r"(?:label|property|altlabel|label2)>([0-9].*?)<"]
+        regexs = [r"\$LOCALIZE\[([0-9].*?)\]",
+                  r"\$ADDON\[.*?([0-9].*?)\]",
+                  r"(?:label|property|altlabel|label2)>([0-9].*?)<"]
         view = self.window.active_view()
         path = view.file_name()
         for po_file in INFOS.po_files:
@@ -477,16 +506,20 @@ class GetInfoLabelsPromptCommand(sublime_plugin.WindowCommand):
 
     def run(self):
         self.settings = sublime.load_settings(SETTINGS_FILE)
-        self.window.show_input_panel("Get InfoLabels (comma-separated)", self.settings.get("prev_infolabel", ""), self.show_info_label, None, None)
+        self.window.show_input_panel("Get InfoLabels (comma-separated)",
+                                     self.settings.get("prev_infolabel", ""),
+                                     self.show_info_label,
+                                     None,
+                                     None)
 
     @run_async
     def show_info_label(self, label_string):
         self.settings.set("prev_infolabel", label_string)
         words = label_string.split(",")
-        labels = ', '.join('"{0}"'.format(w) for w in words)
-        data = '{"jsonrpc":"2.0","method":"XBMC.GetInfoLabels","params":{"labels": [%s] },"id":1}' % labels
         self.window.run_command("log", {"label": "send request..."})
-        result = send_json_request(data, self.settings)
+        result = send_json_request(method="XBMC.GetInfoLabels",
+                                   params={"labels": words},
+                                   settings=self.settings)
         if result:
             self.window.run_command("log", {"label": "Got result:"})
             key, value = result["result"].popitem()
@@ -497,16 +530,20 @@ class GetInfoBooleansPromptCommand(sublime_plugin.WindowCommand):
 
     def run(self):
         self.settings = sublime.load_settings(SETTINGS_FILE)
-        self.window.show_input_panel("Get boolean values (comma-separated)", self.settings.get("prev_boolean", ""), self.show_info_boolean, None, None)
+        self.window.show_input_panel("Get boolean values (comma-separated)",
+                                     self.settings.get("prev_boolean", ""),
+                                     self.show_info_boolean,
+                                     None,
+                                     None)
 
     @run_async
     def show_info_boolean(self, label_string):
         self.settings.set("prev_boolean", label_string)
         words = label_string.split(",")
-        labels = ', '.join('"{0}"'.format(w) for w in words)
-        data = '{"jsonrpc":"2.0","method":"XBMC.GetInfoBooleans","params":{"booleans": [%s] },"id":1}' % labels
         self.window.run_command("log", {"label": "send request..."})
-        result = send_json_request(data, self.settings)
+        result = send_json_request(method="XBMC.GetInfoBooleans",
+                                   params={"booleans": words},
+                                   settings=self.settings)
         if result:
             self.window.run_command("log", {"label": "Got result:"})
             key, value = result["result"].popitem()
@@ -519,8 +556,9 @@ class OpenActiveWindowXmlFromRemoteCommand(sublime_plugin.WindowCommand):
     def run(self):
         self.settings = sublime.load_settings(SETTINGS_FILE)
         folder = self.window.active_view().file_name().split(os.sep)[-2]
-        data = '{"jsonrpc":"2.0","method":"XBMC.GetInfoLabels","params":{"labels": ["Window.Property(xmlfile)"] },"id":1}'
-        result = send_json_request(data, self.settings)
+        result = send_json_request(method="XBMC.GetInfoLabels",
+                                   params={"labels": ["Window.Property(xmlfile)"]},
+                                   settings=self.settings)
         if not result:
             return None
         key, value = result["result"].popitem()
@@ -594,8 +632,8 @@ class SearchForJsonCommand(sublime_plugin.WindowCommand):
     @run_async
     def run(self):
         settings = sublime.load_settings(SETTINGS_FILE)
-        data = '{"jsonrpc":"2.0","id":1,"method":"JSONRPC.Introspect"}'
-        result = send_json_request(data, settings=settings)
+        result = send_json_request(method="JSONRPC.Introspect",
+                                   settings=settings)
         self.listitems = [[key, str(value)] for item in result["result"]["types"].items()]
         self.listitems += [[key, str(value)] for item in result["result"]["methods"].items()]
         self.listitems += [[key, str(value)] for item in result["result"]["notifications"].items()]
@@ -628,11 +666,13 @@ class OpenSourceFromLog(sublime_plugin.TextCommand):
                 line_contents = self.view.substr(self.view.line(region))
                 ma = re.search('File "(.*?)", line (\d*), in .*', line_contents)
                 if ma:
-                    sublime.active_window().open_file("%s:%s" % (ma.group(1), ma.group(2)), sublime.ENCODED_POSITION)
+                    sublime.active_window().open_file("%s:%s" % (ma.group(1), ma.group(2)),
+                                                      sublime.ENCODED_POSITION)
                     return
                 ma = re.search(r"', \('(.*?)', (\d+), (\d+), ", line_contents)
                 if ma:
-                    sublime.active_window().open_file("%s:%s:%s" % (ma.group(1), ma.group(2), ma.group(3)), sublime.ENCODED_POSITION)
+                    sublime.active_window().open_file("%s:%s:%s" % (ma.group(1), ma.group(2), ma.group(3)),
+                                                      sublime.ENCODED_POSITION)
                     return
             else:
                 self.view.insert(edit, region.begin(), self.view.substr(region))
@@ -845,7 +885,11 @@ class LogCommand(sublime_plugin.TextCommand):
 class CreateElementRowCommand(sublime_plugin.WindowCommand):
 
     def run(self):
-        self.window.show_input_panel("Enter number of items to generate", "1", on_done=self.generate_items, on_change=None, on_cancel=None)
+        self.window.show_input_panel("Enter number of items to generate",
+                                     "1",
+                                     on_done=self.generate_items,
+                                     on_change=None,
+                                     on_cancel=None)
 
     def generate_items(self, num_items):
         self.window.run_command("replace_xml_elements", {"num_items": num_items})
@@ -857,16 +901,16 @@ class ReplaceXmlElementsCommand(sublime_plugin.TextCommand):
         if not num_items.isdigit():
             return None
         selected_text = self.view.substr(self.view.sel()[0])
-        new_text = ""
+        text = ""
         reg = re.search(r"\[(-?[0-9]+)\]", selected_text)
         offset = 0
         if reg:
             offset = int(reg.group(1))
-        for i in range(0, int(num_items)):
-            new_text = new_text + selected_text.replace("[%i]" % offset, str(i + offset)) + "\n"
+        for i in range(int(num_items)):
+            text = text + selected_text.replace("[%i]" % offset, str(i + offset)) + "\n"
             i += 1
         for region in self.view.sel():
-            self.view.replace(edit, region, new_text)
+            self.view.replace(edit, region, text)
             break
 
 
@@ -917,7 +961,8 @@ class SwitchXmlFolderCommand(QuickPanelCommand):
         if index == -1:
             return None
         node = self.nodes[index]
-        self.window.open_file("%s:%i" % (node["file"], node["line"]), sublime.ENCODED_POSITION)
+        self.window.open_file("%s:%i" % (node["file"], node["line"]),
+                              sublime.ENCODED_POSITION)
 
 
 def plugin_loaded():
@@ -929,13 +974,16 @@ class ColorPickerCommand(sublime_plugin.WindowCommand):
     def is_visible(self):
         settings = sublime.load_settings('KodiColorPicker.sublime-settings')
         settings.set('color_pick_return', None)
-        self.window.run_command('color_pick_api_is_available', {'settings': 'KodiColorPicker.sublime-settings'})
+        self.window.run_command('color_pick_api_is_available',
+                                {'settings': 'KodiColorPicker.sublime-settings'})
         return bool(settings.get('color_pick_return', False))
 
     def run(self):
         settings = sublime.load_settings('KodiColorPicker.sublime-settings')
         settings.set('color_pick_return', None)
-        self.window.run_command('color_pick_api_get_color', {'settings': 'KodiColorPicker.sublime-settings', 'default_color': '#ff0000'})
+        self.window.run_command('color_pick_api_get_color',
+                                {'settings': 'KodiColorPicker.sublime-settings', 'default_color': '#ff0000'})
         color = settings.get('color_pick_return')
         if color:
-            self.window.active_view().run_command("insert", {"characters": "FF" + color[1:]})
+            self.window.active_view().run_command("insert",
+                                                  {"characters": "FF" + color[1:]})
