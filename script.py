@@ -14,11 +14,10 @@ if libs_platform_path not in sys.path:
     sys.path.insert(0, libs_platform_path)
 
 RESULTS_FILE = "results.txt"
-settings = """{
-    "kodi_path": "C:/Kodi",
-    "portable_mode": true,
-    "language_folders": ["English", "resource.language.en_gb"]
-}"""
+
+settings = {"kodi_path": "C:/Kodi",
+            "portable_mode": True,
+            "language_folders": ["English", "resource.language.en_gb"]}
 
 
 def log(text):
@@ -113,7 +112,7 @@ if __name__ == "__main__":
         project_folder = sys.argv[1]
     else:
         project_folder = input("Enter Path to skin: ")
-    INFOS.get_settings(json.loads(settings))
+    INFOS.get_settings(settings)
     INFOS.update_builtin_labels()
     INFOS.init_addon(project_folder)
     INFOS.update_xml_files()
@@ -132,7 +131,10 @@ if __name__ == "__main__":
             log("detected encoding: %s" % encoding["encoding"])
             with codecs.open(path, "rb", encoding=encoding["encoding"]) as f:
                 text = f.read()
-    result = eol.eol_info_from_path_patterns([project_folder], recursive=True, includes=[], excludes=['.svn', '.git'])
+    result = eol.eol_info_from_path_patterns([project_folder],
+                                             recursive=True,
+                                             includes=[],
+                                             excludes=['.svn', '.git'])
     for item in result:
         if item[1] == '\n' or None:
             continue
