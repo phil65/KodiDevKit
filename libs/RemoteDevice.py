@@ -46,7 +46,7 @@ class RemoteDevice(object):
     def adb_connect(self, ip):
         self.ip = ip
         Utils.panel_log("Connect to remote with ip %s" % ip)
-        self.cmd("adb", ["connect", str(ip)])
+        self.cmd("adb", ["connect", ip])
         self.connected = True
 
     @Utils.run_async
@@ -111,13 +111,16 @@ class RemoteDevice(object):
                 continue
             if not all_file and os.path.basename(root) not in ['1080i', '720p']:
                 continue
-            else:
-                target = '%saddons/%s%s' % (self.userdata_folder, os.path.basename(addon), root.replace(addon, "").replace('\\', '/'))
-                self.cmd("adb", ["shell", "mkdir", target])
+            target = '%saddons/%s%s'.format(self.userdata_folder,
+                                            os.path.basename(addon),
+                                            root.replace(addon, "").replace('\\', '/'))
+            self.cmd("adb", ["shell", "mkdir", target])
             for f in files:
                 if f.endswith(('.pyc', '.pyo')):
                     continue
-                self.cmd("adb", ["push", os.path.join(root, f).replace('\\', '/'), target.replace('\\', '/')])
+                self.cmd("adb", ["push",
+                                 os.path.join(root, f).replace('\\', '/'),
+                                 target.replace('\\', '/')])
         Utils.panel_log("All files pushed")
 
     @Utils.run_async
