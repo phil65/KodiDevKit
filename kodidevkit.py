@@ -24,10 +24,8 @@ from lxml import etree as ET
 from .libs import Utils
 from .libs import InfoProvider
 from .libs.kodijson import KodiJson
-from .libs.RemoteDevice import RemoteDevice
 
 INFOS = InfoProvider.InfoProvider()
-REMOTE = RemoteDevice()
 kodijson = KodiJson()
 # sublime.log_commands(True)
 APP_NAME = "Kodi"
@@ -50,7 +48,6 @@ SUBLIME_PATH = Utils.get_sublime_path()
 
 
 def plugin_loaded():
-    REMOTE.setup(sublime.load_settings(SETTINGS_FILE))
     InfoProvider.kodijson.setup(sublime.load_settings(SETTINGS_FILE))
     kodijson.setup(sublime.load_settings(SETTINGS_FILE))
 
@@ -124,7 +121,9 @@ class KodiDevKit(sublime_plugin.EventListener):
                 popup_label = INFOS.return_label(word)
         elif "text.xml" in scope_name:
             if info_type in ["INFO", "ESCINFO", "VAR", "ESCVAR", "LOCALIZE", "EXP"]:
-                popup_label = INFOS.translate_square_bracket(info_type=info_type, info_id=info_id, folder=folder)
+                popup_label = INFOS.translate_square_bracket(info_type=info_type,
+                                                             info_id=info_id,
+                                                             folder=folder)
             if not popup_label:
                 if "<include>" in line_contents or "<include content=" in line_contents:
                     content = Utils.get_node_content(view, flags)
@@ -237,50 +236,6 @@ class KodiDevKit(sublime_plugin.EventListener):
                     INFOS.init_addon(project_folder)
             else:
                 Utils.log("Could not find folder path in project file")
-
-
-class RemoteActionsCommand(sublime_plugin.WindowCommand):
-
-    def run(self):
-        self.settings = sublime.load_settings(SETTINGS_FILE)
-        active_device = "Set device: %s" % self.settings.get("remote_ip", "")
-        listitems = [active_device, "Reconnect", "Send this add-on",
-                     "Get log", "Get Screenshot", "Clear cache", "Reboot"]
-        self.window.show_quick_panel(listitems,
-                                     lambda s: self.on_done(s), selected_index=0)
-
-    def on_done(self, index):
-        if index == -1:
-            return None
-        elif index == 0:
-            self.window.show_input_panel("Set remote IP",
-                                         self.settings.get("remote_ip", "192.168.0.1"),
-                                         self.set_ip,
-                                         None,
-                                         None)
-        elif index == 1:
-            REMOTE.adb_reconnect_async()
-            self.window.run_command("remote_actions")
-        elif index == 2:
-            REMOTE.push_to_box(INFOS.project_path)
-        elif index == 3:
-            plugin_path = os.path.join(sublime.packages_path(), "KodiDevKit")
-            REMOTE.get_log(self.open_file, plugin_path)
-        elif index == 4:
-            plugin_path = os.path.join(sublime.packages_path(), "KodiDevKit")
-            REMOTE.get_screenshot(self.open_file, plugin_path)
-        elif index == 5:
-            REMOTE.clear_cache()
-        elif index == 6:
-            REMOTE.reboot()
-
-    def open_file(self, path):
-        self.window.open_file(path)
-
-    def set_ip(self, ip):
-        self.settings.set("remote_ip", ip)
-        sublime.save_settings(SETTINGS_FILE)
-        self.window.run_command("remote_actions")
 
 
 class SetKodiFolderCommand(sublime_plugin.WindowCommand):
