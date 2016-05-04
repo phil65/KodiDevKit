@@ -3,6 +3,11 @@ import sys
 import codecs
 from lxml import etree as ET
 
+from .libs import Utils
+from .libs.InfoProvider import InfoProvider
+from .libs import chardet
+from .libs import eol
+
 RESULTS_FILE = "results.txt"
 
 settings = {"kodi_path": "C:/Kodi",
@@ -92,10 +97,6 @@ def check_dependencies(skinpath):
 
 
 if __name__ == "__main__":
-    from libs import Utils
-    from libs.InfoProvider import InfoProvider
-    from libs import chardet
-    from libs.eol import eol
     INFOS = InfoProvider()
     open(RESULTS_FILE, 'w').close()
     if len(sys.argv) == 2:

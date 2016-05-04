@@ -155,7 +155,7 @@ class KodiDevKit(sublime_plugin.EventListener):
                 if window_name in InfoProvider.WINDOW_NAMES:
                     popup_label = InfoProvider.WINDOW_FILENAMES[InfoProvider.WINDOW_NAMES.index(window_name)]
         # node = INFOS.template_root.find(".//control[@type='label']")
-        # log(node)
+        # Utils.log(node)
         # popup_label = node.find(".//available_tags").text.replace("\\n", "<br>")
         if popup_label and self.settings.get("tooltip_delay", 0) > -1:
             sublime.set_timeout_async(lambda: self.show_tooltip(view, popup_label),
@@ -167,7 +167,7 @@ class KodiDevKit(sublime_plugin.EventListener):
                             flags=sublime.COOPERATE_WITH_AUTO_COMPLETE,
                             max_width=self.settings.get("tooltip_width", 1000),
                             max_height=self.settings.get("height", 300),
-                            on_navigate=lambda label_id, view=view: jump_to_label_declaration(view, label_id))
+                            on_navigate=lambda label_id, view=view: Utils.jump_to_label_declaration(view, label_id))
 
     def on_modified_async(self, view):
         if INFOS.project_path and view.file_name() and view.file_name().endswith(".xml"):
@@ -227,10 +227,10 @@ class KodiDevKit(sublime_plugin.EventListener):
                 project_folder = variables["folder"]
                 if project_folder and project_folder != self.actual_project:
                     self.actual_project = project_folder
-                    log("project change detected: " + project_folder)
+                    Utils.log("project change detected: " + project_folder)
                     INFOS.init_addon(project_folder)
             else:
-                log("Could not find folder path in project file")
+                Utils.log("Could not find folder path in project file")
 
 
 class RemoteActionsCommand(sublime_plugin.WindowCommand):
@@ -240,7 +240,8 @@ class RemoteActionsCommand(sublime_plugin.WindowCommand):
         active_device = "Set device: %s" % self.settings.get("remote_ip", "")
         listitems = [active_device, "Reconnect", "Send this add-on",
                      "Get log", "Get Screenshot", "Clear cache", "Reboot"]
-        self.window.show_quick_panel(listitems, lambda s: self.on_done(s), selected_index=0)
+        self.window.show_quick_panel(listitems,
+                                     lambda s: self.on_done(s), selected_index=0)
 
     def on_done(self, index):
         if index == -1:
@@ -326,9 +327,9 @@ class ReloadKodiLanguageFilesCommand(sublime_plugin.WindowCommand):
         INFOS.update_addon_labels()
         # view = self.window.active_view()
         # regions = view.find_by_selector("variable.parameter")
-        # log(regions)
+        # Utils.log(regions)
         # for region in regions:
-        #     log(view.substr(region))
+        #     Utils.log(view.substr(region))
         #     view.sel().add(region)
 
 
@@ -351,7 +352,7 @@ class QuickPanelCommand(sublime_plugin.WindowCommand):
                               sublime.ENCODED_POSITION | sublime.TRANSIENT)
         # self.select_text(view, node)
 
-    @run_async
+    @Utils.run_async
     def select_text(self, view, node):
         while view.is_loading():
             pass
@@ -376,14 +377,16 @@ class BuildAddonCommand(sublime_plugin.WindowCommand):
     def is_visible(self):
         return INFOS.addon_type == "skin"
 
-    @run_async
+    @Utils.run_async
     def run(self, pack_textures=True):
         settings = sublime.load_settings(SETTINGS_FILE)
         media_path = os.path.join(INFOS.project_path, "media")
-        for line in texturepacker_generator(media_path, settings):
+        for line in texturepacker_generator(media_path,
+                                            settings):
             self.window.run_command("log", {"label": line.strip()})
         zip_path = os.path.join(media_path, os.path.basename(media_path) + ".zip")
-        for filename in make_archive(media_path, zip_path):
+        for filename in make_archive(media_path,
+                                     zip_path):
             self.window.run_command("log", {"label": "zipped " + filename})
         do_open = sublime.ok_cancel_dialog("Zip file created!\nDo you want to open its location a with file browser?",
                                            "Open")
@@ -402,13 +405,15 @@ class BuildThemeCommand(sublime_plugin.WindowCommand):
                                      lambda s: self.on_done(s),
                                      selected_index=0)
 
-    @run_async
+    @Utils.run_async
     def on_done(self, index):
         if index == -1:
             return None
         settings = sublime.load_settings(SETTINGS_FILE)
         media_path = os.path.join(INFOS.project_path, "themes", self.theme_folders[index])
-        for line in texturepacker_generator(media_path, settings, self.theme_folders[index] + ".xbt"):
+        for line in Utils.texturepacker_generator(media_path,
+                                                  settings,
+                                                  self.theme_folders[index] + ".xbt"):
             self.window.run_command("log", {"label": line.strip()})
         do_open = sublime.ok_cancel_dialog("Theme file created!\nDo you want to open its location a with file browser?",
                                            "Open")
@@ -517,7 +522,7 @@ class GetInfoLabelsPromptCommand(sublime_plugin.WindowCommand):
                                      None,
                                      None)
 
-    @run_async
+    @Utils.run_async
     def show_info_label(self, label_string):
         self.settings.set("prev_infolabel", label_string)
         words = label_string.split(",")
@@ -540,7 +545,7 @@ class GetInfoBooleansPromptCommand(sublime_plugin.WindowCommand):
                                      None,
                                      None)
 
-    @run_async
+    @Utils.run_async
     def show_info_boolean(self, label_string):
         self.settings.set("prev_boolean", label_string)
         words = label_string.split(",")
@@ -555,7 +560,7 @@ class GetInfoBooleansPromptCommand(sublime_plugin.WindowCommand):
 
 class OpenActiveWindowXmlFromRemoteCommand(sublime_plugin.WindowCommand):
 
-    @run_async
+    @Utils.run_async
     def run(self):
         self.settings = sublime.load_settings(SETTINGS_FILE)
         folder = self.window.active_view().file_name().split(os.sep)[-2]
@@ -631,12 +636,12 @@ class SearchForVisibleConditionCommand(sublime_plugin.WindowCommand):
 
 class SearchForJsonCommand(sublime_plugin.WindowCommand):
 
-    @run_async
+    @Utils.run_async
     def run(self):
         result = kodijson.request(method="JSONRPC.Introspect")
-        self.listitems = [[key, str(value)] for item in result["result"]["types"].items()]
-        self.listitems += [[key, str(value)] for item in result["result"]["methods"].items()]
-        self.listitems += [[key, str(value)] for item in result["result"]["notifications"].items()]
+        self.listitems = [[k, str(v)] for k, v in result["result"]["types"].items()]
+        self.listitems += [[k, str(v)] for k, v in result["result"]["methods"].items()]
+        self.listitems += [[k, str(v)] for k, v in result["result"]["notifications"].items()]
         self.window.show_quick_panel(self.listitems,
                                      lambda s: self.builtin_search_on_done(s),
                                      selected_index=0)
@@ -652,9 +657,9 @@ class OpenKodiLogCommand(sublime_plugin.WindowCommand):
 
     def run(self):
         filename = "%s.log" % APP_NAME_LOWER
-        self.log = check_paths([os.path.join(INFOS.get_userdata_folder(), filename),
-                                os.path.join(INFOS.get_userdata_folder(), "temp", filename),
-                                os.path.join(os.path.expanduser("~"), "Library", "Logs", filename)])
+        self.log = Utils.check_paths([os.path.join(INFOS.get_userdata_folder(), filename),
+                                      os.path.join(INFOS.get_userdata_folder(), "temp", filename),
+                                      os.path.join(os.path.expanduser("~"), "Library", "Logs", filename)])
         self.window.open_file(self.log)
 
 
@@ -738,7 +743,7 @@ class SearchForImageCommand(sublime_plugin.TextCommand):
         path, filename = os.path.split(self.view.file_name())
         self.imagepath = INFOS.media_path
         if not self.imagepath:
-            log("Could not find file " + self.imagepath)
+            Utils.log("Could not find file " + self.imagepath)
         self.files = []
         for path, subdirs, files in os.walk(self.imagepath):
             if "studio" in path or "recordlabel" in path:
@@ -814,7 +819,7 @@ class GoToOnlineHelpCommand(sublime_plugin.TextCommand):
             control_type = root.attrib["type"]
             INFOS.go_to_help(control_type)
         except:
-            log("error when trying to open from %s" % line_contents)
+            Utils.log("error when trying to open from %s" % line_contents)
 
 
 class MoveToLanguageFile(sublime_plugin.TextCommand):
