@@ -14,13 +14,11 @@ import re
 import os
 import cgi
 import webbrowser
-import platform
 import mdpopups
 from itertools import chain
 from subprocess import Popen
 from xml.sax.saxutils import escape
 
-from lxml import etree as ET
 from .libs import Utils
 from .libs import InfoProvider
 from .libs.kodijson import KodiJson
@@ -29,20 +27,6 @@ INFOS = InfoProvider.InfoProvider()
 kodijson = KodiJson()
 # sublime.log_commands(True)
 APP_NAME = "Kodi"
-APP_NAME_LOWER = APP_NAME.lower()
-if sublime.platform() == "linux":
-    KODI_PRESET_PATH = "/usr/share/%s/" % APP_NAME_LOWER
-elif sublime.platform() == "windows":
-    KODI_PRESET_PATH = "C:/%s/" % APP_NAME_LOWER
-elif platform.system() == "Darwin":
-    KODI_PRESET_PATH = os.path.join(os.path.expanduser("~"),
-                                    "Applications",
-                                    "%s.app" % APP_NAME,
-                                    "Contents",
-                                    "Resources",
-                                    APP_NAME)
-else:
-    KODI_PRESET_PATH = ""
 SETTINGS_FILE = 'kodidevkit.sublime-settings'
 SUBLIME_PATH = Utils.get_sublime_path()
 
@@ -236,48 +220,6 @@ class KodiDevKit(sublime_plugin.EventListener):
                     INFOS.init_addon(project_folder)
             else:
                 Utils.log("Could not find folder path in project file")
-
-
-class SetKodiFolderCommand(sublime_plugin.WindowCommand):
-
-    def run(self):
-        self.window.show_input_panel("Set Kodi folder",
-                                     KODI_PRESET_PATH,
-                                     self.set_kodi_folder,
-                                     None,
-                                     None)
-
-    def set_kodi_folder(self, path):
-        if os.path.exists(path):
-            sublime.load_settings(SETTINGS_FILE).set("kodi_path", path)
-            sublime.save_settings(SETTINGS_FILE)
-        else:
-            sublime.message_dialog("Folder %s does not exist." % path)
-
-
-class ExecuteBuiltinPromptCommand(sublime_plugin.WindowCommand):
-
-    def run(self):
-        self.settings = sublime.load_settings(SETTINGS_FILE)
-        self.window.show_input_panel("Execute builtin",
-                                     self.settings.get("prev_json_builtin", ""),
-                                     self.execute_builtin,
-                                     None,
-                                     None)
-
-    def execute_builtin(self, builtin):
-        self.settings.set("prev_json_builtin", builtin)
-        self.window.run_command("execute_builtin", {"builtin": builtin})
-
-
-class ExecuteBuiltinCommand(sublime_plugin.WindowCommand):
-
-    def run(self, builtin):
-        params = {"addonid": "script.toolbox",
-                  "params": {"info": "builtin",
-                             "id": builtin}}
-        kodijson.request_async(method="Addons.ExecuteAddon",
-                               params=params)
 
 
 class ReloadKodiLanguageFilesCommand(sublime_plugin.WindowCommand):
@@ -617,33 +559,11 @@ class SearchForJsonCommand(sublime_plugin.WindowCommand):
 class OpenKodiLogCommand(sublime_plugin.WindowCommand):
 
     def run(self):
-        filename = "%s.log" % APP_NAME_LOWER
+        filename = "%s.log" % APP_NAME.lower()
         self.log = Utils.check_paths([os.path.join(INFOS.get_userdata_folder(), filename),
                                       os.path.join(INFOS.get_userdata_folder(), "temp", filename),
                                       os.path.join(os.path.expanduser("~"), "Library", "Logs", filename)])
         self.window.open_file(self.log)
-
-
-class OpenSourceFromLog(sublime_plugin.TextCommand):
-
-    def run(self, edit):
-        for region in self.view.sel():
-            if region.empty():
-                line_contents = self.view.substr(self.view.line(region))
-                ma = re.search('File "(.*?)", line (\d*), in .*', line_contents)
-                if ma:
-                    sublime.active_window().open_file("%s:%s" % (ma.group(1), ma.group(2)),
-                                                      sublime.ENCODED_POSITION)
-                    return
-                ma = re.search(r"', \('(.*?)', (\d+), (\d+), ", line_contents)
-                if ma:
-                    sublime.active_window().open_file("%s:%s:%s".format(ma.group(1),
-                                                                        ma.group(2),
-                                                                        ma.group(3)),
-                                                      sublime.ENCODED_POSITION)
-                    return
-            else:
-                self.view.insert(edit, region.begin(), self.view.substr(region))
 
 
 class PreviewImageCommand(sublime_plugin.TextCommand):
@@ -763,26 +683,6 @@ class SearchForFontCommand(sublime_plugin.TextCommand):
         sublime.active_window().focus_view(self.view)
 
 
-class GoToOnlineHelpCommand(sublime_plugin.TextCommand):
-
-    def is_visible(self):
-        region = self.view.sel()[0]
-        line_contents = self.view.substr(self.view.line(region))
-        scope_name = self.view.scope_name(region.b)
-        return "text.xml" in scope_name and "<control " in line_contents
-
-    def run(self, edit):
-        region = self.view.sel()[0]
-        line = self.view.line(region)
-        line_contents = self.view.substr(line)
-        try:
-            root = ET.fromstring(line_contents + "</control>")
-            control_type = root.attrib["type"]
-            INFOS.go_to_help(control_type)
-        except:
-            Utils.log("error when trying to open from %s" % line_contents)
-
-
 class MoveToLanguageFile(sublime_plugin.TextCommand):
 
     def is_visible(self):
@@ -836,76 +736,6 @@ class ReplaceTextCommand(sublime_plugin.TextCommand):
             self.view.replace(edit, region, new)
 
 
-class AppendTextCommand(sublime_plugin.TextCommand):
-
-    def run(self, edit, label):
-        self.view.insert(edit, self.view.size(), label + "\n")
-
-
-class LogCommand(sublime_plugin.TextCommand):
-
-    def run(self, edit, label, panel_name='example'):
-        self.output_view = self.view.window().create_output_panel(panel_name)
-        self.output_view.insert(edit, self.output_view.size(), label + '\n')
-        self.output_view.show(self.output.size())
-        self.view.window().run_command("show_panel", {"panel": "output." + panel_name})
-
-
-class CreateElementRowCommand(sublime_plugin.WindowCommand):
-
-    def run(self):
-        self.window.show_input_panel("Enter number of items to generate",
-                                     "1",
-                                     on_done=self.generate_items,
-                                     on_change=None,
-                                     on_cancel=None)
-
-    def generate_items(self, num_items):
-        self.window.run_command("replace_xml_elements", {"num_items": num_items})
-
-
-class ReplaceXmlElementsCommand(sublime_plugin.TextCommand):
-
-    def run(self, edit, num_items):
-        if not num_items.isdigit():
-            return None
-        selected_text = self.view.substr(self.view.sel()[0])
-        text = ""
-        reg = re.search(r"\[(-?[0-9]+)\]", selected_text)
-        offset = 0
-        if reg:
-            offset = int(reg.group(1))
-        for i in range(int(num_items)):
-            text = text + selected_text.replace("[%i]" % offset, str(i + offset)) + "\n"
-            i += 1
-        for region in self.view.sel():
-            self.view.replace(edit, region, text)
-            break
-
-
-class EvaluateMathExpressionPromptCommand(sublime_plugin.WindowCommand):
-
-    def run(self):
-        self.window.show_input_panel("Write Equation (x = selected int)",
-                                     "x",
-                                     self.evaluate,
-                                     None,
-                                     None)
-
-    def evaluate(self, equation):
-        self.window.run_command("evaluate_math_expression", {'equation': equation})
-
-
-class EvaluateMathExpressionCommand(sublime_plugin.TextCommand):
-
-    def run(self, edit, equation):
-        for i, region in enumerate(self.view.sel()):
-            text = self.view.substr(region)
-            if text.replace('-', '').isdigit():
-                new_text = eval(equation.replace("x", text).replace("i", str(i)))
-                self.view.replace(edit, region, str(new_text).replace(".0", ""))
-
-
 class SwitchXmlFolderCommand(QuickPanelCommand):
 
     def is_visible(self):
@@ -932,23 +762,3 @@ class SwitchXmlFolderCommand(QuickPanelCommand):
         node = self.nodes[index]
         self.window.open_file("%s:%i" % (node["file"], node["line"]),
                               sublime.ENCODED_POSITION)
-
-
-class ColorPickerCommand(sublime_plugin.WindowCommand):
-
-    def is_visible(self):
-        settings = sublime.load_settings('KodiColorPicker.sublime-settings')
-        settings.set('color_pick_return', None)
-        self.window.run_command('color_pick_api_is_available',
-                                {'settings': 'KodiColorPicker.sublime-settings'})
-        return bool(settings.get('color_pick_return', False))
-
-    def run(self):
-        settings = sublime.load_settings('KodiColorPicker.sublime-settings')
-        settings.set('color_pick_return', None)
-        self.window.run_command('color_pick_api_get_color',
-                                {'settings': 'KodiColorPicker.sublime-settings', 'default_color': '#ff0000'})
-        color = settings.get('color_pick_return')
-        if color:
-            self.window.active_view().run_command("insert",
-                                                  {"characters": "FF" + color[1:]})
