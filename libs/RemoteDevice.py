@@ -7,8 +7,8 @@
 KodiDevKit is a plugin to assist with Kodi skinning / scripting using Sublime Text 3
 """
 
-
-from .Utils import *
+import subprocess
+from . import Utils
 import os
 
 
@@ -28,83 +28,83 @@ class RemoteDevice(object):
         command = [program]
         for arg in args:
             command.append(arg)
-        panel_log(" ".join(command))
+        Utils.panel_log(" ".join(command))
         try:
             output = subprocess.check_output(command, shell=True, stderr=subprocess.STDOUT)
             # log(output.decode("utf-8"))
             if log:
-                panel_log("%s" % (output.decode("utf-8").replace('\r', '').replace('\n', '')))
+                Utils.panel_log("%s" % (output.decode("utf-8").replace('\r', '').replace('\n', '')))
         except subprocess.CalledProcessError as e:
-            panel_log("%s\nErrorCode: %s" % (e, str(e.returncode)))
+            Utils.panel_log("%s\nErrorCode: %s" % (e, str(e.returncode)))
         except Exception as e:
-            panel_log(e)
+            Utils.panel_log(e)
         # proc = subprocess.Popen(['echo', '"to stdout"'],
         #                     stdout=subprocess.PIPE)
         # stdout_value = proc.communicate()[0]
 
-    # @check_busy
+    # @Utils.check_busy
     def adb_connect(self, ip):
         self.ip = ip
-        panel_log("Connect to remote with ip %s" % ip)
+        Utils.panel_log("Connect to remote with ip %s" % ip)
         self.cmd("adb", ["connect", str(ip)])
         self.connected = True
 
-    @run_async
-    @check_busy
+    @Utils.run_async
+    @Utils.check_busy
     def adb_connect_async(self, ip):
         self.adb_connect(ip)
 
-    @check_busy
+    @Utils.check_busy
     def adb_reconnect(self, ip=""):
         if not ip:
             ip = self.ip
         self.adb_disconnect()
         self.adb_connect(ip)
 
-    @run_async
+    @Utils.run_async
     def adb_reconnect_async(self, ip=""):
         self.adb_reconnect(ip)
 
-    # @check_busy
+    # @Utils.check_busy
     def adb_disconnect(self):
-        panel_log("Disconnect from remote")
+        Utils.panel_log("Disconnect from remote")
         self.cmd("adb", ["disconnect"])
         self.connected = False
 
-    @run_async
-    @check_busy
+    @Utils.run_async
+    @Utils.check_busy
     def adb_disconnect_async(self):
         self.adb_disconnect()
 
-    @check_busy
+    @Utils.check_busy
     def adb_push(self, source, target):
         if not target.endswith('/'):
             target += '/'
         self.cmd("adb", ["push", source.replace('\\', '/'), target.replace('\\', '/')])
 
-    @run_async
-    @check_busy
+    @Utils.run_async
+    @Utils.check_busy
     def adb_push_async(self, source, target):
         self.adb_push(source, target)
 
-    @check_busy
+    @Utils.check_busy
     def adb_pull(self, path, target):
         self.cmd("adb", ["pull", path, target])
 
-    @run_async
-    @check_busy
+    @Utils.run_async
+    @Utils.check_busy
     def adb_pull_async(self, path, target):
         self.adb_pull(path, target)
 
-    @run_async
-    @check_busy
+    @Utils.run_async
+    @Utils.check_busy
     def adb_restart_server(self):
         pass
 
-    @run_async
-    @check_busy
+    @Utils.run_async
+    @Utils.check_busy
     def push_to_box(self, addon, all_file=False):
-        panel_log("push %s to remote" % addon)
+        Utils.panel_log("push %s to remote" % addon)
         for root, dirs, files in os.walk(addon):
             # ignore git files
             if ".git" in root.split(os.sep):
@@ -118,41 +118,32 @@ class RemoteDevice(object):
                 if f.endswith(('.pyc', '.pyo')):
                     continue
                 self.cmd("adb", ["push", os.path.join(root, f).replace('\\', '/'), target.replace('\\', '/')])
-        panel_log("All files pushed")
+        Utils.panel_log("All files pushed")
 
-    @run_async
+    @Utils.run_async
     def get_log(self, open_function, target):
-        panel_log("Pull logs from remote")
+        Utils.panel_log("Pull logs from remote")
         self.adb_pull("%stemp/xbmc.log" % self.userdata_folder, target)
         # self.adb_pull("%stemp/xbmc.old.log" % self.userdata_folder)
-        panel_log("Finished pulling logs")
+        Utils.panel_log("Finished pulling logs")
         open_function(os.path.join(target, "xbmc.log"))
 
-    @run_async
-    @check_busy
+    @Utils.run_async
+    @Utils.check_busy
     def get_screenshot(self, f_open, target):
-        panel_log("Pull screenshot from remote")
+        Utils.panel_log("Pull screenshot from remote")
         self.cmd("adb", ["shell", "screencap", "-p", "/sdcard/screen.png"])
         self.cmd("adb", ["pull", "/sdcard/screen.png", target])
         self.cmd("adb", ["shell", "rm", "/sdcard/screen.png"])
         # self.adb_pull("%stemp/xbmc.old.log" % self.userdata_folder)
-        panel_log("Finished pulling screenshot")
+        Utils.panel_log("Finished pulling screenshot")
         f_open(os.path.join(target, "screen.png"))
 
-    @run_async
-    @check_busy
+    @Utils.run_async
+    @Utils.check_busy
     def clear_cache(self):
         self.cmd("adb", ["shell", "rm", "-rf", os.path.join(self.userdata_folder, "temp")])
 
-    @run_async
+    @Utils.run_async
     def reboot(self):
         self.cmd("adb", ["reboot"])
-
-    def panel_log(self, text):
-        try:
-            import sublime
-            wnd = sublime.active_window()
-            wnd.run_command("log", {"label": text.strip()})
-        except Exception as e:
-            log(e)
-            log(text)
