@@ -387,12 +387,12 @@ class BuildAddonCommand(sublime_plugin.WindowCommand):
     def run(self, pack_textures=True):
         settings = sublime.load_settings(SETTINGS_FILE)
         media_path = os.path.join(INFOS.project_path, "media")
-        for line in texturepacker_generator(media_path,
-                                            settings):
+        for line in Utils.texturepacker_generator(media_path,
+                                                  settings):
             self.window.run_command("log", {"label": line.strip()})
         zip_path = os.path.join(media_path, os.path.basename(media_path) + ".zip")
-        for filename in make_archive(media_path,
-                                     zip_path):
+        for filename in Utils.make_archive(media_path,
+                                           zip_path):
             self.window.run_command("log", {"label": "zipped " + filename})
         do_open = sublime.ok_cancel_dialog("Zip file created!\nDo you want to open its location a with file browser?",
                                            "Open")
@@ -697,12 +697,12 @@ class PreviewImageCommand(sublime_plugin.TextCommand):
         if not INFOS.media_path:
             return False
         flags = sublime.CLASS_WORD_START | sublime.CLASS_WORD_END
-        content = get_node_content(self.view, flags)
+        content = Utils.get_node_content(self.view, flags)
         return "/" in content or "\\" in content
 
     def run(self, edit):
         flags = sublime.CLASS_WORD_START | sublime.CLASS_WORD_END
-        path = get_node_content(self.view, flags)
+        path = Utils.get_node_content(self.view, flags)
         imagepath = INFOS.translate_path(path)
         if not os.path.exists(imagepath):
             return None
