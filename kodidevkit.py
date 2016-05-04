@@ -49,6 +49,12 @@ SETTINGS_FILE = 'kodidevkit.sublime-settings'
 SUBLIME_PATH = Utils.get_sublime_path()
 
 
+def plugin_loaded():
+    REMOTE.setup(sublime.load_settings(SETTINGS_FILE))
+    InfoProvider.kodijson.setup(sublime.load_settings(SETTINGS_FILE))
+    kodijson.setup(sublime.load_settings(SETTINGS_FILE))
+
+
 class KodiDevKit(sublime_plugin.EventListener):
 
     def __init__(self, **kwargs):
@@ -727,7 +733,7 @@ class GoToTagCommand(sublime_plugin.WindowCommand):
     def run(self):
         flags = sublime.CLASS_WORD_START | sublime.CLASS_WORD_END
         view = self.window.active_view()
-        keyword = get_node_content(view, flags)
+        keyword = Utils.get_node_content(view, flags)
         folder = view.file_name().split(os.sep)[-2]
         position = INFOS.go_to_tag(keyword, folder)
         if position:
@@ -886,7 +892,7 @@ class LogCommand(sublime_plugin.TextCommand):
     def run(self, edit, label, panel_name='example'):
         self.output_view = self.view.window().create_output_panel(panel_name)
         self.output_view.insert(edit, self.output_view.size(), label + '\n')
-        self.output_view.show(v.size())
+        self.output_view.show(self.output.size())
         self.view.window().run_command("show_panel", {"panel": "output." + panel_name})
 
 
@@ -971,12 +977,6 @@ class SwitchXmlFolderCommand(QuickPanelCommand):
         node = self.nodes[index]
         self.window.open_file("%s:%i" % (node["file"], node["line"]),
                               sublime.ENCODED_POSITION)
-
-
-def plugin_loaded():
-    REMOTE.setup(sublime.load_settings(SETTINGS_FILE))
-    InfoProvider.kodijson.setup(sublime.load_settings(SETTINGS_FILE))
-    kodijson.setup(sublime.load_settings(SETTINGS_FILE))
 
 
 class ColorPickerCommand(sublime_plugin.WindowCommand):
