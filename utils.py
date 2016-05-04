@@ -12,9 +12,10 @@ import sublime_plugin
 import re
 import webbrowser
 from lxml import etree as ET
-from .libs import Utils
 import platform
 import os
+from .libs import Utils
+from .libs.kodijson import KodiJson
 
 APP_NAME = "Kodi"
 SETTINGS_FILE = 'kodidevkit.sublime-settings'
@@ -32,6 +33,12 @@ elif platform.system() == "Darwin":
                                     APP_NAME)
 else:
     KODI_PRESET_PATH = ""
+
+kodijson = KodiJson()
+
+
+def plugin_loaded():
+    kodijson.setup(sublime.load_settings(SETTINGS_FILE))
 
 
 class OpenSourceFromLog(sublime_plugin.TextCommand):
@@ -240,3 +247,48 @@ class ExecuteBuiltinCommand(sublime_plugin.WindowCommand):
         kodijson.request_async(method="Addons.ExecuteAddon",
                                params=params)
 
+
+class GetInfoLabelsPromptCommand(sublime_plugin.WindowCommand):
+
+    def run(self):
+        self.settings = sublime.load_settings(SETTINGS_FILE)
+        self.window.show_input_panel("Get InfoLabels (comma-separated)",
+                                     self.settings.get("prev_infolabel", ""),
+                                     self.show_info_label,
+                                     None,
+                                     None)
+
+    @Utils.run_async
+    def show_info_label(self, label_string):
+        self.settings.set("prev_infolabel", label_string)
+        words = label_string.split(",")
+        self.window.run_command("log", {"label": "send request..."})
+        result = kodijson.request(method="XBMC.GetInfoLabels",
+                                  params={"labels": words})
+        if result:
+            self.window.run_command("log", {"label": "Got result:"})
+            key, value = result["result"].popitem()
+            self.window.run_command("log", {"label": str(value)})
+
+
+class GetInfoBooleansPromptCommand(sublime_plugin.WindowCommand):
+
+    def run(self):
+        self.settings = sublime.load_settings(SETTINGS_FILE)
+        self.window.show_input_panel("Get boolean values (comma-separated)",
+                                     self.settings.get("prev_boolean", ""),
+                                     self.show_info_boolean,
+                                     None,
+                                     None)
+
+    @Utils.run_async
+    def show_info_boolean(self, label_string):
+        self.settings.set("prev_boolean", label_string)
+        words = label_string.split(",")
+        self.window.run_command("log", {"label": "send request..."})
+        result = kodijson.request(method="XBMC.GetInfoBooleans",
+                                  params={"booleans": words})
+        if result:
+            self.window.run_command("log", {"label": "Got result:"})
+            key, value = result["result"].popitem()
+            self.window.run_command("log", {"label": str(value)})
