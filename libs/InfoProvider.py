@@ -14,9 +14,10 @@ import string
 import platform
 import webbrowser
 from time import gmtime, strftime
+from lxml import etree as ET
 
 from .kodijson import KodiJson
-from .Utils import *
+from . import Utils
 from .polib import polib
 from .ImageParser import get_image_size
 
@@ -157,9 +158,9 @@ class InfoProvider(object):
         path = os.path.normpath(os.path.abspath(__file__))
         folder_path = os.path.split(path)[0]
         path = os.path.join(folder_path, "controls.xml")
-        self.template_root = get_root_from_file(path)
+        self.template_root = Utils.get_root_from_file(path)
         path = os.path.join(folder_path, "data.xml")
-        root = get_root_from_file(path)
+        root = Utils.get_root_from_file(path)
         self.builtins = []
         self.conditions = []
         for item in root.find("builtins"):
@@ -169,7 +170,7 @@ class InfoProvider(object):
         # TODO: resolve includes
 
         # for node in self.template.iterchildren():
-        #     log(node.tag)
+        #     Utils.log(node.tag)
 
     def init_addon(self, path):
         """
@@ -178,11 +179,11 @@ class InfoProvider(object):
         self.addon_type = ""
         self.addon_name = ""
         self.project_path = path
-        self.addon_xml_file = check_paths([os.path.join(self.project_path, "addon.xml")])
+        self.addon_xml_file = Utils.check_paths([os.path.join(self.project_path, "addon.xml")])
         self.xml_folders = []
         self.fonts = []
         if self.addon_xml_file:
-            root = get_root_from_file(self.addon_xml_file)
+            root = Utils.get_root_from_file(self.addon_xml_file)
             for item in root.xpath("/addon[@id]"):
                 self.addon_name = item.attrib["id"]
                 break
@@ -195,11 +196,11 @@ class InfoProvider(object):
                 # TODO: parse all python skin folders correctly
                 paths = [os.path.join(self.project_path, "resources", "skins", "Default", "720p"),
                          os.path.join(self.project_path, "resources", "skins", "Default", "1080i")]
-                folder = check_paths(paths)
+                folder = Utils.check_paths(paths)
                 self.xml_folders.append(folder)
         self.update_addon_labels()
         if self.xml_folders:
-            log("Kodi project detected: " + path)
+            Utils.log("Kodi project detected: " + path)
             self.update_include_list()
             self.update_xml_files()
             self.get_colors()
@@ -213,7 +214,7 @@ class InfoProvider(object):
         """
         paths = [os.path.join(self.project_path, "resources", "language"),
                  os.path.join(self.project_path, "language")]
-        return check_paths(paths)
+        return Utils.check_paths(paths)
 
     @property
     def media_path(self):
@@ -222,7 +223,7 @@ class InfoProvider(object):
         """
         paths = [os.path.join(self.project_path, "media"),
                  os.path.join(self.project_path, "resources", "skins", "Default", "media")]
-        return check_paths(paths)
+        return Utils.check_paths(paths)
 
     def get_check_listitems(self, check_type):
         """
@@ -244,7 +245,7 @@ class InfoProvider(object):
         for folder in self.xml_folders:
             for item in WINDOW_FILENAMES:
                 if item not in self.window_file_list[folder]:
-                    log("Skin does not include %s" % item)
+                    Utils.log("Skin does not include %s" % item)
 
     def get_colors(self):
         """
@@ -255,16 +256,16 @@ class InfoProvider(object):
         if not self.addon_xml_file or not os.path.exists(color_path):
             return False
         for path in os.listdir(color_path):
-            log("found color file: " + path)
+            Utils.log("found color file: " + path)
             file_path = os.path.join(color_path, path)
-            root = get_root_from_file(file_path)
+            root = Utils.get_root_from_file(file_path)
             for node in root.findall("color"):
                 color_dict = {"name": node.attrib["name"],
                               "line": node.sourceline,
                               "content": node.text,
                               "file": file_path}
                 self.color_list.append(color_dict)
-            log("color list: %i colors found" % len(self.color_list))
+            Utils.log("color list: %i colors found" % len(self.color_list))
 
     def get_fonts(self):
         """
@@ -276,11 +277,11 @@ class InfoProvider(object):
         for folder in self.xml_folders:
             paths = [os.path.join(self.project_path, folder, "Font.xml"),
                      os.path.join(self.project_path, folder, "font.xml")]
-            font_file = check_paths(paths)
+            font_file = Utils.check_paths(paths)
             if not font_file:
                 return False
             self.fonts[folder] = []
-            root = get_root_from_file(font_file)
+            root = Utils.get_root_from_file(font_file)
             for node in root.find("fontset").findall("font"):
                 string_dict = {"name": node.find("name").text,
                                "size": node.find("size").text,
@@ -328,9 +329,9 @@ class InfoProvider(object):
                      os.path.join(xml_folder, "includes.xml")]
             self.include_file_list[folder] = []
             self.include_list[folder] = []
-            include_file = check_paths(paths)
+            include_file = Utils.check_paths(paths)
             self.update_includes(include_file)
-            log("Include List: %i nodes found in '%s' folder." % (len(self.include_list[folder]), folder))
+            Utils.log("Include List: %i nodes found in '%s' folder." % (len(self.include_list[folder]), folder))
 
     def update_includes(self, xml_file):
         """
@@ -338,16 +339,18 @@ class InfoProvider(object):
         """
         if os.path.exists(xml_file):
             folder = xml_file.split(os.sep)[-2]
-            log("found include file: " + xml_file)
+            Utils.log("found include file: " + xml_file)
             self.include_file_list[folder].append(xml_file)
-            self.include_list[folder] += get_tags_from_file(xml_file, ["include", "variable", "constant", "expression"])
-            root = get_root_from_file(xml_file)
+            tags = ["include", "variable", "constant", "expression"]
+            self.include_list[folder] += Utils.get_tags_from_file(xml_file,
+                                                                  tags)
+            root = Utils.get_root_from_file(xml_file)
             for node in root.findall("include"):
                 if "file" in node.attrib and node.attrib["file"] != "script-skinshortcuts-includes.xml":
                     xml_file = os.path.join(self.project_path, folder, node.attrib["file"])
                     self.update_includes(xml_file)
         else:
-            log("Could not find include file " + xml_file)
+            Utils.log("Could not find include file " + xml_file)
 
     def update_xml_files(self):
         """
@@ -356,8 +359,8 @@ class InfoProvider(object):
         self.window_file_list = {}
         for path in self.xml_folders:
             xml_folder = os.path.join(self.project_path, path)
-            self.window_file_list[path] = get_xml_file_paths(xml_folder)
-            log("found %i XMLs in %s" % (len(self.window_file_list[path]), xml_folder))
+            self.window_file_list[path] = Utils.get_xml_file_paths(xml_folder)
+            Utils.log("found %i XMLs in %s" % (len(self.window_file_list[path]), xml_folder))
 
     def go_to_tag(self, keyword, folder):
         """
@@ -383,7 +386,7 @@ class InfoProvider(object):
             for node in self.color_list:
                 if node["name"] == keyword and node["file"].endswith("defaults.xml"):
                     return "%s:%s" % (node["file"], node["line"])
-            log("no node with name %s found" % keyword)
+            Utils.log("no node with name %s found" % keyword)
         return False
 
     def return_node_content(self, keyword=None, return_entry="content", folder=False):
@@ -408,7 +411,7 @@ class InfoProvider(object):
         """
         self.settings = settings
         self.kodi_path = settings.get("kodi_path")
-        log("kodi path: " + self.kodi_path)
+        Utils.log("kodi path: " + self.kodi_path)
 
     def get_kodi_addons(self):
         addon_path = os.path.join(self.get_userdata_folder(), "addons")
@@ -459,10 +462,10 @@ class InfoProvider(object):
         """
         po_files = []
         for item in self.settings.get("language_folders"):
-            path = check_paths([os.path.join(lang_folder_root, item, "strings.po"),
-                                os.path.join(lang_folder_root, item, "resources", "strings.po")])
+            path = Utils.check_paths([os.path.join(lang_folder_root, item, "strings.po"),
+                                      os.path.join(lang_folder_root, item, "resources", "strings.po")])
             if os.path.exists(path):
-                po_files.append(get_po_file(path))
+                po_files.append(Utils.get_po_file(path))
         return po_files
 
     def get_color_info(self, color_string):
@@ -470,14 +473,14 @@ class InfoProvider(object):
         for item in self.color_list:
             if item["name"] == color_string:
                 color_hex = "#" + item["content"][2:]
-                cont_color = get_cont_col(color_hex)
+                cont_color = Utils.get_cont_col(color_hex)
                 alpha_percent = round(int(item["content"][:2], 16) / (16 * 16) * 100)
                 color_info += '%s&nbsp;<a style="background-color:%s;color:%s">%s</a> %d %% alpha<br>' % (os.path.basename(item["file"]), color_hex, cont_color, item["content"], alpha_percent)
         if color_info:
             return color_info
         if all(c in string.hexdigits for c in color_string) and len(color_string) == 8:
             color_hex = "#" + color_string[2:]
-            cont_color = get_cont_col(color_hex)
+            cont_color = Utils.get_cont_col(color_hex)
             alpha_percent = round(int(color_string[:2], 16) / (16 * 16) * 100)
             return '<a style="background-color:%s;color:%s">%d %% alpha</a>' % (color_hex, cont_color, alpha_percent)
         return color_info
@@ -487,7 +490,7 @@ class InfoProvider(object):
         iter through ancestors and return info about absolute position
         """
         element = None
-        root = get_root_from_file(path)
+        root = Utils.get_root_from_file(path)
         tree = ET.ElementTree(root)
         for e in tree.iter():
             if line <= e.sourceline:
@@ -565,7 +568,7 @@ class InfoProvider(object):
             # get all include refs
             for xml_file in self.window_file_list[folder]:
                 path = os.path.join(self.project_path, folder, xml_file)
-                root = get_root_from_file(path)
+                root = Utils.get_root_from_file(path)
                 if root is None:
                     continue
                 for node in root.xpath(".//include"):
@@ -642,7 +645,7 @@ class InfoProvider(object):
             font_refs[folder] = []
             for xml_file in self.window_file_list[folder]:
                 path = os.path.join(self.project_path, folder, xml_file)
-                font_refs[folder].extend(get_refs_from_file(path, ".//font"))
+                font_refs[folder].extend(Utils.get_refs_from_file(path, ".//font"))
         return font_refs
 
     def check_fonts(self):
@@ -651,7 +654,7 @@ class InfoProvider(object):
         # get confluence fonts..
         confluence_fonts = []
         confluence_font_file = os.path.join(self.kodi_path, "addons", "skin.confluence", "720p", "Font.xml")
-        root = get_root_from_file(confluence_font_file)
+        root = Utils.get_root_from_file(confluence_font_file)
         if root is not None:
             for node in root.find("fontset").findall("font"):
                 confluence_fonts.append(node.find("name").text)
@@ -687,7 +690,7 @@ class InfoProvider(object):
             defines = []
             for xml_file in self.window_file_list[folder]:
                 path = os.path.join(self.project_path, folder, xml_file)
-                root = get_root_from_file(path)
+                root = Utils.get_root_from_file(path)
                 if root is None:
                     continue
                 if "id" in root.attrib:
@@ -836,7 +839,7 @@ class InfoProvider(object):
                 os.makedirs(lang_path)
             lang_path = os.path.join(lang_path, "strings.po")
             self.addon_po_files.append(lang_path)
-            message_dialog("New language file created")
+            Utils.message_dialog("New language file created")
         else:
             po = self.addon_po_files[0]
         string_ids = []
@@ -847,7 +850,7 @@ class InfoProvider(object):
                 string_ids.append(entry.msgctxt)
         for label_id in range(start_id, start_id + 1000):
             if label_id not in string_ids:
-                log("first free: " + str(label_id))
+                Utils.log("first free: " + str(label_id))
                 break
         msgstr = "#" + str(label_id)
         new_entry = polib.POEntry(msgid=word,
@@ -906,7 +909,7 @@ class InfoProvider(object):
         for folder in self.xml_folders:
             for xml_file in self.window_file_list[folder]:
                 path = os.path.join(self.project_path, folder, xml_file)
-                root = get_root_from_file(path)
+                root = Utils.get_root_from_file(path)
                 if root is None:
                     continue
                 # find all referenced label ids (in element content)
@@ -1069,7 +1072,7 @@ class InfoProvider(object):
                         ["aligny", ["top", "center", "bottom"]],
                         ["flipx", ["true", "false"]],
                         ["flipy", ["true", "false"]]]
-        root = get_root_from_file(path)
+        root = Utils.get_root_from_file(path)
         # folder = path.split(os.sep)[-2]
         # root = self.resolve_includes(root, folder)
         if root is None:
@@ -1110,7 +1113,7 @@ class InfoProvider(object):
             if not node.text:
                 message = "Empty condition: %s" % (node.tag)
                 condition = ""
-            elif not check_brackets(node.text):
+            elif not Utils.check_brackets(node.text):
                 condition = str(node.text).replace("  ", "").replace("\t", "")
                 message = "Brackets do not match: %s" % (condition)
             else:
@@ -1124,7 +1127,7 @@ class InfoProvider(object):
             listitems.append(item)
         # check conditions in attribute values
         for node in root.xpath(".//*[@condition]"):
-            if not check_brackets(node.attrib["condition"]):
+            if not Utils.check_brackets(node.attrib["condition"]):
                 condition = str(node.attrib["condition"]).replace("  ", "").replace("\t", "")
                 item = {"line": node.sourceline,
                         "type": node.tag,
@@ -1187,21 +1190,21 @@ class InfoProvider(object):
         return listitems
 
     def check_file2(self, path):
-        root = get_root_from_file(path)
+        root = Utils.get_root_from_file(path)
         # xml_file = os.path.basename(path)
         # folder = path.split(os.sep)[-2]
         # root = self.resolve_includes(root, folder)
-        log(path)
+        Utils.log(path)
         if root is None:
             return []
         tree = ET.ElementTree(root)
         listitems = []
-        log(self.template_root.tag)
+        Utils.log(self.template_root.tag)
         # find invalid tags
         for template in self.template_root:
-            log(template.tag)
+            Utils.log(template.tag)
             for node in root.xpath(".//*[@type='%s']/*" % template.attrib.get("type")):
-                # log("hello")
+                # Utils.log("hello")
                 pass
         return listitems
 

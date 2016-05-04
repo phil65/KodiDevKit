@@ -21,7 +21,7 @@ from subprocess import Popen
 from xml.sax.saxutils import escape
 
 from lxml import etree as ET
-from .libs.Utils import *
+from .libs import Utils
 from .libs import InfoProvider
 from .libs.kodijson import KodiJson
 from .libs.RemoteDevice import RemoteDevice
@@ -46,7 +46,7 @@ elif platform.system() == "Darwin":
 else:
     KODI_PRESET_PATH = ""
 SETTINGS_FILE = 'kodidevkit.sublime-settings'
-SUBLIME_PATH = get_sublime_path()
+SUBLIME_PATH = Utils.get_sublime_path()
 
 
 class KodiDevKit(sublime_plugin.EventListener):
@@ -76,7 +76,7 @@ class KodiDevKit(sublime_plugin.EventListener):
                 completions.append([node["name"], node["name"]])
             for node in chain(INFOS.builtins, INFOS.conditions):
                 completions.append([node[0], node[0]])
-            for item in WINDOW_NAMES:
+            for item in InfoProvider.WINDOW_NAMES:
                 completions.append([item, item])
             for item in completions:
                 for i, match in enumerate(re.findall(r"\([a-z,\]\[]+\)", item[1])):
@@ -121,9 +121,11 @@ class KodiDevKit(sublime_plugin.EventListener):
                 popup_label = INFOS.translate_square_bracket(info_type=info_type, info_id=info_id, folder=folder)
             if not popup_label:
                 if "<include>" in line_contents or "<include content=" in line_contents:
-                    node_content = str(INFOS.return_node_content(get_node_content(view, flags), folder=folder))
+                    content = Utils.get_node_content(view, flags)
+                    node_content = str(INFOS.return_node_content(content, folder=folder))
                     if len(node_content) < 3000:
-                        popup_label = cgi.escape(node_content).replace("\n", "<br>"). replace(" ", "&nbsp;")
+                        popup_label = cgi.escape(node_content)
+                        popup_label = popup_label.replace("\n", "<br>"). replace(" ", "&nbsp;")
                     else:
                         popup_label = "include too big for preview"
                 elif "<visible" in line_contents or "<enable" in line_contents:
@@ -138,7 +140,8 @@ class KodiDevKit(sublime_plugin.EventListener):
                 elif "label" in line_contents or "<property" in line_contents or "localize" in line_contents:
                     popup_label = INFOS.return_label(selected_content)
                 elif "<fadetime" in line_contents:
-                    popup_label = str(INFOS.return_node_content(get_node_content(view, flags), folder=folder))[2:-3]
+                    content = Utils.get_node_content(view, flags)
+                    node_content = str(INFOS.return_node_content(content, folder=folder))[2:-3]
                 elif "<texture" in line_contents or "<alttexture" in line_contents or "<bordertexture" in line_contents or "<icon" in line_contents or "<thumb" in line_contents:
                     popup_label = INFOS.get_image_info(selected_content)
                 elif "<control " in line_contents:
@@ -149,8 +152,8 @@ class KodiDevKit(sublime_plugin.EventListener):
                     popup_label = INFOS.get_color_info(selected_content)
             if not popup_label and "constant.other.allcaps" in scope_name:
                 window_name = scope_content.lower()[1:-1]
-                if window_name in WINDOW_NAMES:
-                    popup_label = WINDOW_FILENAMES[WINDOW_NAMES.index(window_name)]
+                if window_name in InfoProvider.WINDOW_NAMES:
+                    popup_label = InfoProvider.WINDOW_FILENAMES[InfoProvider.WINDOW_NAMES.index(window_name)]
         # node = INFOS.template_root.find(".//control[@type='label']")
         # log(node)
         # popup_label = node.find(".//available_tags").text.replace("\\n", "<br>")
@@ -308,8 +311,11 @@ class ExecuteBuiltinPromptCommand(sublime_plugin.WindowCommand):
 class ExecuteBuiltinCommand(sublime_plugin.WindowCommand):
 
     def run(self, builtin):
+        params = {"addonid": "script.toolbox",
+                  "params": {"info": "builtin",
+                             "id": builtin}}
         kodijson.request_async(method="Addons.ExecuteAddon",
-                               params={"addonid": "script.toolbox", "params": {"info": "builtin", "id": builtin}})
+                               params=params)
 
 
 class ReloadKodiLanguageFilesCommand(sublime_plugin.WindowCommand):
@@ -486,8 +492,8 @@ class SearchFileForLabelsCommand(QuickPanelCommand):
 class CheckVariablesCommand(QuickPanelCommand):
 
     def run(self, check_type):
-        filename = self.window.active_view().file_name()
         if check_type == "file":
+            filename = self.window.active_view().file_name()
             self.nodes = INFOS.check_file(filename)
         else:
             self.nodes = INFOS.get_check_listitems(check_type)
@@ -646,10 +652,10 @@ class OpenKodiLogCommand(sublime_plugin.WindowCommand):
 
     def run(self):
         filename = "%s.log" % APP_NAME_LOWER
-        self.log_file = check_paths([os.path.join(INFOS.get_userdata_folder(), filename),
-                                    os.path.join(INFOS.get_userdata_folder(), "temp", filename),
-                                    os.path.join(os.path.expanduser("~"), "Library", "Logs", filename)])
-        self.window.open_file(self.log_file)
+        self.log = check_paths([os.path.join(INFOS.get_userdata_folder(), filename),
+                                os.path.join(INFOS.get_userdata_folder(), "temp", filename),
+                                os.path.join(os.path.expanduser("~"), "Library", "Logs", filename)])
+        self.window.open_file(self.log)
 
 
 class OpenSourceFromLog(sublime_plugin.TextCommand):
@@ -665,7 +671,9 @@ class OpenSourceFromLog(sublime_plugin.TextCommand):
                     return
                 ma = re.search(r"', \('(.*?)', (\d+), (\d+), ", line_contents)
                 if ma:
-                    sublime.active_window().open_file("%s:%s:%s" % (ma.group(1), ma.group(2), ma.group(3)),
+                    sublime.active_window().open_file("%s:%s:%s".format(ma.group(1),
+                                                                        ma.group(2),
+                                                                        ma.group(3)),
                                                       sublime.ENCODED_POSITION)
                     return
             else:
@@ -736,10 +744,11 @@ class SearchForImageCommand(sublime_plugin.TextCommand):
             if "studio" in path or "recordlabel" in path:
                 continue
             for filename in files:
-                image_path = os.path.join(path, filename).replace(self.imagepath, "").replace("\\", "/")
-                if image_path.startswith("/"):
-                    image_path = image_path[1:]
-                self.files.append(image_path)
+                img_path = os.path.join(path, filename)
+                img_path = img_path.replace(self.imagepath, "").replace("\\", "/")
+                if img_path.startswith("/"):
+                    img_path = img_path[1:]
+                self.files.append(img_path)
         sublime.active_window().show_quick_panel(self.files,
                                                  lambda s: self.on_done(s),
                                                  selected_index=0,

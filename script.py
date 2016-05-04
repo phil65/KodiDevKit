@@ -3,6 +3,7 @@ import sys
 import platform
 import json
 import codecs
+from lxml import etree as ET
 
 __file__ = os.path.normpath(os.path.abspath(__file__))
 __path__ = os.path.dirname(__file__)
@@ -50,7 +51,7 @@ def get_addons(reponames):
     repo_list = 'http://mirrors.kodi.tv/addons/%s/addons.xml'
     addons = {}
     for reponame in reponames:
-        req = urlopen(repo_list % reponame)
+        req = Utils.urlopen(repo_list % reponame)
         data = req.read()
         req.close()
         root = ET.fromstring(data)
@@ -81,7 +82,7 @@ def check_dependencies(skinpath):
     imports = {}
     str_releases = " / ".join([item["name"] for item in RELEASES])
     repo = input('Enter Kodi version (%s): ' % str_releases)
-    root = get_root_from_file(os.path.join(skinpath, 'addon.xml'))
+    root = Utils.get_root_from_file(os.path.join(skinpath, 'addon.xml'))
     for item in root.iter('import'):
         imports[item.get('addon')] = item.get('version')
     for release in RELEASES:
@@ -102,7 +103,7 @@ def check_dependencies(skinpath):
 
 
 if __name__ == "__main__":
-    from libs.Utils import *
+    from libs import Utils
     from libs.InfoProvider import InfoProvider
     from libs import chardet
     from libs.eol import eol
@@ -118,7 +119,7 @@ if __name__ == "__main__":
     INFOS.update_xml_files()
     INFOS.check_xml_files()
     for path in INFOS.file_list_generator():
-        if check_bom(path):
+        if Utils.check_bom(path):
             log("found BOM. File: " + path)
         try:
             with codecs.open(path, "rb", encoding='utf-8', errors="strict") as f:
