@@ -1,0 +1,4 @@
+  Changes in 2.0.8
+  =================
+
+ - fixed loading external resources, 3rd try
