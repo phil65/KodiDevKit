@@ -285,7 +285,7 @@ def get_po_file(po_file_path):
         logging.debug("Parsing po file %s" % po_file_path)
         return polib.pofile(po_file_path)
     except Exception as e:
-        panel_log("Error in %s:\n %s" % (po_file_path, e))
+        logging.warning("Error in %s:\n %s" % (po_file_path, e))
         return []
 
 
@@ -301,7 +301,7 @@ def get_root_from_file(xml_file):
     try:
         return ET.parse(xml_file, PARSER).getroot()
     except Exception as e:
-        panel_log("Error in %s:\n %s" % (xml_file, e))
+        logging.warning("Error in %s:\n %s" % (xml_file, e))
         return None
 
 
@@ -339,13 +339,3 @@ def get_refs_from_file(path, xpath):
                 "file": path}
         font_refs.append(item)
     return font_refs
-
-
-def panel_log(text):
-    try:
-        import sublime
-        wnd = sublime.active_window()
-        wnd.run_command("log", {"label": text.strip()})
-    except Exception as e:
-        logging.debug(e)
-        logging.debug(text)

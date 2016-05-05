@@ -10,6 +10,7 @@ KodiDevKit is a plugin to assist with Kodi skinning / scripting using Sublime Te
 import subprocess
 from . import Utils
 import os
+import logging
 
 
 class RemoteDevice(object):
@@ -28,16 +29,16 @@ class RemoteDevice(object):
         command = [program]
         for arg in args:
             command.append(arg)
-        Utils.panel_log(" ".join(command))
+        logging.warning(" ".join(command))
         try:
             output = subprocess.check_output(command, shell=True, stderr=subprocess.STDOUT)
             # log(output.decode("utf-8"))
             if log:
-                Utils.panel_log("%s" % (output.decode("utf-8").replace('\r', '').replace('\n', '')))
+                logging.warning("%s" % (output.decode("utf-8").replace('\r', '').replace('\n', '')))
         except subprocess.CalledProcessError as e:
-            Utils.panel_log("%s\nErrorCode: %s" % (e, str(e.returncode)))
+            logging.warning("%s\nErrorCode: %s" % (e, str(e.returncode)))
         except Exception as e:
-            Utils.panel_log(e)
+            logging.warning(e)
         # proc = subprocess.Popen(['echo', '"to stdout"'],
         #                     stdout=subprocess.PIPE)
         # stdout_value = proc.communicate()[0]
@@ -45,7 +46,7 @@ class RemoteDevice(object):
     # @Utils.check_busy
     def adb_connect(self, ip):
         self.ip = ip
-        Utils.panel_log("Connect to remote with ip %s" % ip)
+        logging.warning("Connect to remote with ip %s" % ip)
         self.cmd("adb", ["connect", ip])
         self.connected = True
 
@@ -67,7 +68,7 @@ class RemoteDevice(object):
 
     # @Utils.check_busy
     def adb_disconnect(self):
-        Utils.panel_log("Disconnect from remote")
+        logging.warning("Disconnect from remote")
         self.cmd("adb", ["disconnect"])
         self.connected = False
 
@@ -104,7 +105,7 @@ class RemoteDevice(object):
     @Utils.run_async
     @Utils.check_busy
     def push_to_box(self, addon, all_file=False):
-        Utils.panel_log("push %s to remote" % addon)
+        logging.warning("push %s to remote" % addon)
         for root, dirs, files in os.walk(addon):
             # ignore git files
             if ".git" in root.split(os.sep):
@@ -121,25 +122,25 @@ class RemoteDevice(object):
                 self.cmd("adb", ["push",
                                  os.path.join(root, f).replace('\\', '/'),
                                  target.replace('\\', '/')])
-        Utils.panel_log("All files pushed")
+        logging.warning("All files pushed")
 
     @Utils.run_async
     def get_log(self, open_function, target):
-        Utils.panel_log("Pull logs from remote")
+        logging.warning("Pull logs from remote")
         self.adb_pull("%stemp/xbmc.log" % self.userdata_folder, target)
         # self.adb_pull("%stemp/xbmc.old.log" % self.userdata_folder)
-        Utils.panel_log("Finished pulling logs")
+        logging.warning("Finished pulling logs")
         open_function(os.path.join(target, "xbmc.log"))
 
     @Utils.run_async
     @Utils.check_busy
     def get_screenshot(self, f_open, target):
-        Utils.panel_log("Pull screenshot from remote")
+        logging.warning("Pull screenshot from remote")
         self.cmd("adb", ["shell", "screencap", "-p", "/sdcard/screen.png"])
         self.cmd("adb", ["pull", "/sdcard/screen.png", target])
         self.cmd("adb", ["shell", "rm", "/sdcard/screen.png"])
         # self.adb_pull("%stemp/xbmc.old.log" % self.userdata_folder)
-        Utils.panel_log("Finished pulling screenshot")
+        logging.warning("Finished pulling screenshot")
         f_open(os.path.join(target, "screen.png"))
 
     @Utils.run_async
