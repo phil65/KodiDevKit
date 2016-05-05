@@ -127,7 +127,7 @@ class LogCommand(sublime_plugin.TextCommand):
     def run(self, edit, label, panel_name='example'):
         self.output_view = self.view.window().create_output_panel(panel_name)
         self.output_view.insert(edit, self.output_view.size(), label + '\n')
-        self.output_view.show(self.output.size())
+        self.output_view.show(self.output_view.size())
         self.view.window().run_command("show_panel", {"panel": "output." + panel_name})
 
 
