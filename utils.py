@@ -14,6 +14,8 @@ import webbrowser
 from lxml import etree as ET
 import platform
 import os
+import logging
+
 from .libs import Utils
 from .libs.kodijson import KodiJson
 
@@ -107,7 +109,7 @@ class GoToOnlineHelpCommand(sublime_plugin.TextCommand):
             control_type = root.attrib["type"]
             self.go_to_help(control_type)
         except:
-            Utils.log("error when trying to open from %s" % line_contents)
+            logging.debug("error when trying to open from %s" % line_contents)
 
     def go_to_help(self, word):
         """

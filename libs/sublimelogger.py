@@ -1,0 +1,52 @@
+# -*- coding: utf8 -*-
+
+# Copyright (C) 2015 - Philipp Temminghoff <phil65@kodi.tv>
+# This program is Free Software see LICENSE file for details
+
+"""
+KodiDevKit is a plugin to assist with Kodi skinning / scripting using Sublime Text 3
+"""
+
+import sublime
+import logging
+
+
+class SublimeLogHandler(logging.StreamHandler):
+
+    def __init__(self):
+        logging.StreamHandler.__init__(self)
+        formatter = logging.Formatter('[KodiDevKit] %(asctime)s: %(message)s')
+        self.setFormatter(formatter)
+
+    def emit(self, record):
+        levels = {
+            logging.CRITICAL: self.message,
+            logging.ERROR: self.info,
+            logging.WARNING: self.info,
+            logging.INFO: self.debug,
+            logging.DEBUG: self.debug,
+            logging.NOTSET: self.debug,
+        }
+        # if settings.get("debug_mode"):
+        log = levels[record.levelno]
+        log(self.format(record))
+
+    def flush(self):
+        pass
+
+    def debug(self, string):
+        # if settings.get("debug_mode"):
+        print(string)
+
+    def info(self, text):
+        wnd = sublime.active_window()
+        wnd.run_command("log", {"label": text.strip()})
+
+    def message(self, text):
+        sublime.message_dialog(text)
+
+
+def config():
+    logger = logging.getLogger()
+    logger.addHandler(SublimeLogHandler())
+    logger.setLevel(logging.DEBUG)

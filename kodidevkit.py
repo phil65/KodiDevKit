@@ -10,16 +10,20 @@ KodiDevKit is a plugin to assist with Kodi skinning / scripting using Sublime Te
 
 import sublime_plugin
 import sublime
+
 import re
 import os
 import cgi
 import webbrowser
 import mdpopups
+import logging
+
 from itertools import chain
 from subprocess import Popen
 from xml.sax.saxutils import escape
 
 from .libs import Utils
+from .libs import sublimelogger
 from .libs import InfoProvider
 from .libs.kodijson import KodiJson
 
@@ -29,6 +33,8 @@ kodijson = KodiJson()
 APP_NAME = "Kodi"
 SETTINGS_FILE = 'kodidevkit.sublime-settings'
 SUBLIME_PATH = Utils.get_sublime_path()
+
+sublimelogger.config()
 
 
 def plugin_loaded():
@@ -145,7 +151,7 @@ class KodiDevKit(sublime_plugin.EventListener):
                 if window_name in InfoProvider.WINDOW_NAMES:
                     popup_label = InfoProvider.WINDOW_FILENAMES[InfoProvider.WINDOW_NAMES.index(window_name)]
         # node = INFOS.template_root.find(".//control[@type='label']")
-        # Utils.log(node)
+        # logging.debug(node)
         # popup_label = node.find(".//available_tags").text.replace("\\n", "<br>")
         if popup_label and self.settings.get("tooltip_delay", 0) > -1:
             sublime.set_timeout_async(lambda: self.show_tooltip(view, popup_label),
@@ -217,10 +223,10 @@ class KodiDevKit(sublime_plugin.EventListener):
                 project_folder = variables["folder"]
                 if project_folder and project_folder != self.actual_project:
                     self.actual_project = project_folder
-                    Utils.log("project change detected: " + project_folder)
+                    logging.debug("project change detected: " + project_folder)
                     INFOS.init_addon(project_folder)
             else:
-                Utils.log("Could not find folder path in project file")
+                logging.debug("Could not find folder path in project file")
 
 
 class ReloadKodiLanguageFilesCommand(sublime_plugin.WindowCommand):
@@ -231,9 +237,9 @@ class ReloadKodiLanguageFilesCommand(sublime_plugin.WindowCommand):
         INFOS.update_addon_labels()
         # view = self.window.active_view()
         # regions = view.find_by_selector("variable.parameter")
-        # Utils.log(regions)
+        # logging.debug(regions)
         # for region in regions:
-        #     Utils.log(view.substr(region))
+        #     logging.debug(view.substr(region))
         #     view.sel().add(region)
 
 
@@ -579,7 +585,7 @@ class SearchForImageCommand(sublime_plugin.TextCommand):
         path, filename = os.path.split(self.view.file_name())
         self.imagepath = INFOS.media_path
         if not self.imagepath:
-            Utils.log("Could not find file " + self.imagepath)
+            logging.debug("Could not find file " + self.imagepath)
         self.files = []
         for path, subdirs, files in os.walk(self.imagepath):
             if "studio" in path or "recordlabel" in path:

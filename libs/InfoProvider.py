@@ -14,6 +14,7 @@ import string
 import platform
 from time import gmtime, strftime
 from lxml import etree as ET
+import logging
 
 from .kodijson import KodiJson
 from . import Utils
@@ -180,7 +181,7 @@ class InfoProvider(object):
         # TODO: resolve includes
 
         # for node in self.template.iterchildren():
-        #     Utils.log(node.tag)
+        #     logging.debug(node.tag)
 
     def init_addon(self, path):
         """
@@ -210,7 +211,7 @@ class InfoProvider(object):
                 self.xml_folders.append(folder)
         self.update_addon_labels()
         if self.xml_folders:
-            Utils.log("Kodi project detected: " + path)
+            logging.debug("Kodi project detected: " + path)
             self.update_include_list()
             self.update_xml_files()
             self.get_colors()
@@ -255,7 +256,7 @@ class InfoProvider(object):
         for folder in self.xml_folders:
             for item in WINDOW_FILENAMES:
                 if item not in self.window_file_list[folder]:
-                    Utils.log("Skin does not include %s" % item)
+                    logging.debug("Skin does not include %s" % item)
 
     def get_colors(self):
         """
@@ -266,7 +267,7 @@ class InfoProvider(object):
         if not self.addon_xml_file or not os.path.exists(color_path):
             return False
         for path in os.listdir(color_path):
-            Utils.log("found color file: " + path)
+            logging.debug("found color file: " + path)
             file_path = os.path.join(color_path, path)
             root = Utils.get_root_from_file(file_path)
             for node in root.findall("color"):
@@ -275,7 +276,7 @@ class InfoProvider(object):
                               "content": node.text,
                               "file": file_path}
                 self.color_list.append(color_dict)
-            Utils.log("color list: %i colors found" % len(self.color_list))
+            logging.debug("color list: %i colors found" % len(self.color_list))
 
     def get_fonts(self):
         """
@@ -341,7 +342,7 @@ class InfoProvider(object):
             self.include_list[folder] = []
             include_file = Utils.check_paths(paths)
             self.update_includes(include_file)
-            Utils.log("Include List: %i nodes found in '%s' folder." % (len(self.include_list[folder]), folder))
+            logging.debug("Include List: %i nodes found in '%s' folder." % (len(self.include_list[folder]), folder))
 
     def update_includes(self, xml_file):
         """
@@ -349,7 +350,7 @@ class InfoProvider(object):
         """
         if os.path.exists(xml_file):
             folder = xml_file.split(os.sep)[-2]
-            Utils.log("found include file: " + xml_file)
+            logging.debug("found include file: " + xml_file)
             self.include_file_list[folder].append(xml_file)
             tags = ["include", "variable", "constant", "expression"]
             self.include_list[folder] += Utils.get_tags_from_file(xml_file,
@@ -360,7 +361,7 @@ class InfoProvider(object):
                     xml_file = os.path.join(self.project_path, folder, node.attrib["file"])
                     self.update_includes(xml_file)
         else:
-            Utils.log("Could not find include file " + xml_file)
+            logging.debug("Could not find include file " + xml_file)
 
     def update_xml_files(self):
         """
@@ -370,7 +371,7 @@ class InfoProvider(object):
         for path in self.xml_folders:
             xml_folder = os.path.join(self.project_path, path)
             self.window_file_list[path] = Utils.get_xml_file_paths(xml_folder)
-            Utils.log("found %i XMLs in %s" % (len(self.window_file_list[path]), xml_folder))
+            logging.debug("found %i XMLs in %s" % (len(self.window_file_list[path]), xml_folder))
 
     def go_to_tag(self, keyword, folder):
         """
@@ -396,7 +397,7 @@ class InfoProvider(object):
             for node in self.color_list:
                 if node["name"] == keyword and node["file"].endswith("defaults.xml"):
                     return "%s:%s" % (node["file"], node["line"])
-            Utils.log("no node with name %s found" % keyword)
+            logging.debug("no node with name %s found" % keyword)
         return False
 
     def return_node_content(self, keyword=None, return_entry="content", folder=False):
@@ -421,7 +422,7 @@ class InfoProvider(object):
         """
         self.settings = settings
         self.kodi_path = settings.get("kodi_path")
-        Utils.log("kodi path: " + self.kodi_path)
+        logging.debug("kodi path: " + self.kodi_path)
 
     def get_kodi_addons(self):
         addon_path = os.path.join(self.get_userdata_folder(), "addons")
@@ -859,7 +860,7 @@ class InfoProvider(object):
                 string_ids.append(entry.msgctxt)
         for label_id in range(start_id, start_id + 1000):
             if label_id not in string_ids:
-                Utils.log("first free: " + str(label_id))
+                logging.debug("first free: " + str(label_id))
                 break
         msgstr = "#" + str(label_id)
         new_entry = polib.POEntry(msgid=word,
@@ -1169,17 +1170,17 @@ class InfoProvider(object):
         # xml_file = os.path.basename(path)
         # folder = path.split(os.sep)[-2]
         # root = self.resolve_includes(root, folder)
-        Utils.log(path)
+        logging.debug(path)
         if root is None:
             return []
         tree = ET.ElementTree(root)
         listitems = []
-        Utils.log(self.template_root.tag)
+        logging.debug(self.template_root.tag)
         # find invalid tags
         for template in self.template_root:
-            Utils.log(template.tag)
+            logging.debug(template.tag)
             for node in root.xpath(".//*[@type='%s']/*" % template.attrib.get("type")):
-                # Utils.log("hello")
+                # logging.debug("hello")
                 pass
         return listitems
 

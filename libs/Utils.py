@@ -19,6 +19,7 @@ import platform
 from threading import Thread
 from functools import wraps
 import time
+import logging
 
 from .polib import polib
 from lxml import etree as ET
@@ -42,7 +43,7 @@ def retry(ExceptionToCheck, tries=4, delay=3, backoff=2, logger=None):
                     if logger:
                         logger.warning(msg)
                     else:
-                        log(msg)
+                        logging.debug(msg)
                     time.sleep(mdelay)
                     mtries -= 1
                     mdelay *= backoff
@@ -230,14 +231,6 @@ def jump_to_label_declaration(view, label_id):
     view.hide_popup()
 
 
-def log(string):
-    """
-    prefixes "KodiDevKit:" and prints
-    """
-    pass
-    # print("KodiDevKit: " + str(string))
-
-
 def prettyprint(string):
     """
     prints properly formatted output for json objects
@@ -248,13 +241,13 @@ def prettyprint(string):
 def message_dialog(label):
     """
     try to show ST message dialog with label *label,
-    log() in case it fails
+    logging.debug() in case it fails
     """
     try:
         import sublime
         sublime.message_dialog(label)
     except:
-        log(label)
+        logging.debug(label)
 
 
 def get_tags_from_file(path, node_tags):
@@ -263,7 +256,7 @@ def get_tags_from_file(path, node_tags):
     """
     nodes = []
     if not os.path.exists(path):
-        log("%s does not exist" % path)
+        logging.debug("%s does not exist" % path)
         return []
     root = get_root_from_file(path)
     if root is None:
@@ -289,7 +282,7 @@ def get_po_file(po_file_path):
     return pofile object, go-to-failure in case of exception
     """
     try:
-        log("Parsing po file %s" % po_file_path)
+        logging.debug("Parsing po file %s" % po_file_path)
         return polib.pofile(po_file_path)
     except Exception as e:
         panel_log("Error in %s:\n %s" % (po_file_path, e))
@@ -301,7 +294,7 @@ def get_root_from_file(xml_file):
     return XML root node from file *filename
     """
     if not xml_file.endswith(".xml"):
-        log("Tried to get root from non-xml file")
+        logging.debug("Tried to get root from non-xml file")
         return None
     if not os.path.exists(xml_file):
         return None
@@ -354,5 +347,5 @@ def panel_log(text):
         wnd = sublime.active_window()
         wnd.run_command("log", {"label": text.strip()})
     except Exception as e:
-        log(e)
-        log(text)
+        logging.debug(e)
+        logging.debug(text)
