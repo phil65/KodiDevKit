@@ -128,6 +128,8 @@ WINDOW_FILENAMES = [item[4] for item in WINDOW_MAP]
 WINDOW_NAMES = [item[0] for item in WINDOW_MAP]
 WINDOW_IDS = [item[3] for item in WINDOW_MAP]
 
+PARSER = ET.XMLParser(remove_blank_text=True, remove_comments=True)
+
 
 class InfoProvider(object):
 
@@ -157,11 +159,10 @@ class InfoProvider(object):
         try:
             # since we get packaged we need to use load_resource() to load external files
             import sublime
-            parser = ET.XMLParser(remove_blank_text=True, remove_comments=True)
             text = sublime.load_resource("Packages/KodiDevKit/libs/controls.xml").encode("utf-8")
-            self.template_root = ET.fromstring(text, parser).getroot()
+            self.template_root = ET.fromstring(text, PARSER).getroot()
             text = sublime.load_resource("Packages/KodiDevKit/libs/data.xml").encode("utf-8")
-            root = ET.fromstring(text, parser).getroot()
+            root = ET.fromstring(text, PARSER).getroot()
         except:
             # fallback to old method so that class still can get used without sublime import
             path = os.path.normpath(os.path.abspath(__file__))

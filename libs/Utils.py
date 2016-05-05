@@ -23,6 +23,8 @@ import time
 from .polib import polib
 from lxml import etree as ET
 
+PARSER = ET.XMLParser(remove_blank_text=True, remove_comments=True)
+
 
 def retry(ExceptionToCheck, tries=4, delay=3, backoff=2, logger=None):
     """
@@ -304,8 +306,7 @@ def get_root_from_file(xml_file):
     if not os.path.exists(xml_file):
         return None
     try:
-        parser = ET.XMLParser(remove_blank_text=True, remove_comments=True)
-        return ET.parse(xml_file, parser).getroot()
+        return ET.parse(xml_file, PARSER).getroot()
     except Exception as e:
         panel_log("Error in %s:\n %s" % (xml_file, str(e)))
         return None
