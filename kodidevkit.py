@@ -365,7 +365,7 @@ class ShowFontRefsCommand(QuickPanelCommand):
                                          selected_index=0,
                                          on_highlight=lambda s: self.show_preview(s))
         else:
-            sublime.message_dialog("No references found")
+            logging.critical("No references found")
 
 
 class SearchFileForLabelsCommand(QuickPanelCommand):
@@ -401,7 +401,7 @@ class SearchFileForLabelsCommand(QuickPanelCommand):
                                          selected_index=0,
                                          on_highlight=lambda s: self.show_preview(s))
         else:
-            sublime.message_dialog("No references found")
+            logging.critical("No references found")
 
 
 class CheckVariablesCommand(QuickPanelCommand):
@@ -419,7 +419,7 @@ class CheckVariablesCommand(QuickPanelCommand):
                                          selected_index=0,
                                          on_highlight=lambda s: self.show_preview(s))
         elif not check_type == "file":
-            sublime.message_dialog("No errors detected")
+            logging.critical("No errors detected")
 
 
 class OpenActiveWindowXmlFromRemoteCommand(sublime_plugin.WindowCommand):
@@ -658,7 +658,7 @@ class MoveToLanguageFile(sublime_plugin.TextCommand):
         self.labels = []
         region = self.view.sel()[0]
         if region.begin() == region.end():
-            sublime.message_dialog("Please select the complete label")
+            logging.critical("Please select the complete label")
             return False
         word = self.view.substr(region)
         for po_file in INFOS.po_files:
