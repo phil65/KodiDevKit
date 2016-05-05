@@ -47,22 +47,23 @@ class OpenSourceFromLog(sublime_plugin.TextCommand):
 
     def run(self, edit):
         for region in self.view.sel():
-            if region.empty():
-                line_contents = self.view.substr(self.view.line(region))
-                ma = re.search('File "(.*?)", line (\d*), in .*', line_contents)
-                if ma:
-                    sublime.active_window().open_file("%s:%s" % (ma.group(1), ma.group(2)),
-                                                      sublime.ENCODED_POSITION)
-                    return
-                ma = re.search(r"', \('(.*?)', (\d+), (\d+), ", line_contents)
-                if ma:
-                    sublime.active_window().open_file("%s:%s:%s".format(ma.group(1),
-                                                                        ma.group(2),
-                                                                        ma.group(3)),
-                                                      sublime.ENCODED_POSITION)
-                    return
-            else:
+            if not region.empty():
                 self.view.insert(edit, region.begin(), self.view.substr(region))
+                continue
+            line_contents = self.view.substr(self.view.line(region))
+            ma = re.search('File "(.*?)", line (\d*), in .*', line_contents)
+            if ma:
+                sublime.active_window().open_file("{}:{}".format(os.path.realpath(ma.group(1)),
+                                                                 ma.group(2)),
+                                                  sublime.ENCODED_POSITION)
+                return
+            ma = re.search(r"', \('(.*?)', (\d+), (\d+), ", line_contents)
+            if ma:
+                sublime.active_window().open_file("{}:{}:{}".format(os.path.realpath(ma.group(1)),
+                                                                    ma.group(2),
+                                                                    ma.group(3)),
+                                                  sublime.ENCODED_POSITION)
+                return
 
 
 class GoToOnlineHelpCommand(sublime_plugin.TextCommand):
