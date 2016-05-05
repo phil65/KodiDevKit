@@ -48,5 +48,7 @@ class SublimeLogHandler(logging.StreamHandler):
 
 def config():
     logger = logging.getLogger()
+    for hdlr in logger.handlers:  # remove all old handlers
+        logger.removeHandler(hdlr)
     logger.addHandler(SublimeLogHandler())
     logger.setLevel(logging.DEBUG)
