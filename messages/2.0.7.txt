@@ -1,0 +1,5 @@
+  Changes in 2.0.7
+  =================
+
+ - fixed loading external resources, 2nd try
+ - fix for panel output
