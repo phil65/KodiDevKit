@@ -38,7 +38,7 @@ def retry(ExceptionToCheck, tries=4, delay=3, backoff=2, logger=None):
                 try:
                     return f(*args, **kwargs)
                 except ExceptionToCheck as e:
-                    msg = "%s, Retrying in %d seconds..." % (str(e), mdelay)
+                    msg = "%s, Retrying in %d seconds..." % (e, mdelay)
                     if logger:
                         logger.warning(msg)
                     else:
@@ -292,7 +292,7 @@ def get_po_file(po_file_path):
         log("Parsing po file %s" % po_file_path)
         return polib.pofile(po_file_path)
     except Exception as e:
-        panel_log("Error in %s:\n %s" % (po_file_path, str(e)))
+        panel_log("Error in %s:\n %s" % (po_file_path, e))
         return []
 
 
@@ -308,7 +308,7 @@ def get_root_from_file(xml_file):
     try:
         return ET.parse(xml_file, PARSER).getroot()
     except Exception as e:
-        panel_log("Error in %s:\n %s" % (xml_file, str(e)))
+        panel_log("Error in %s:\n %s" % (xml_file, e))
         return None
 
 
