@@ -27,7 +27,7 @@ from lxml import etree as ET
 PARSER = ET.XMLParser(remove_blank_text=True, remove_comments=True)
 
 
-def retry(ExceptionToCheck, tries=4, delay=3, backoff=2, logger=None):
+def retry(ExceptionToCheck, tries=4, delay=3, backoff=2):
     """
     Decorator which re-tries the function in case of Exception
     """
@@ -40,10 +40,7 @@ def retry(ExceptionToCheck, tries=4, delay=3, backoff=2, logger=None):
                     return f(*args, **kwargs)
                 except ExceptionToCheck as e:
                     msg = "%s, Retrying in %d seconds..." % (e, mdelay)
-                    if logger:
-                        logger.warning(msg)
-                    else:
-                        logging.debug(msg)
+                    logging.debug(msg)
                     time.sleep(mdelay)
                     mtries -= 1
                     mdelay *= backoff
