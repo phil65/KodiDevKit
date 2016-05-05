@@ -29,8 +29,7 @@ class KodiJson(object):
         also needs *settings for remote ip etc.
         """
         return self.request(method,
-                            params,
-                            self.settings)
+                            params)
 
     def request(self, method, params=None):
         """
