@@ -223,7 +223,7 @@ class SetKodiFolderCommand(sublime_plugin.WindowCommand):
             sublime.load_settings(SETTINGS_FILE).set("kodi_path", path)
             sublime.save_settings(SETTINGS_FILE)
         else:
-            sublime.message_dialog("Folder %s does not exist." % path)
+            logging.critical("Folder %s does not exist." % path)
 
 
 class ExecuteBuiltinPromptCommand(sublime_plugin.WindowCommand):

@@ -849,7 +849,7 @@ class InfoProvider(object):
                 os.makedirs(lang_path)
             lang_path = os.path.join(lang_path, "strings.po")
             self.addon_po_files.append(lang_path)
-            Utils.message_dialog("New language file created")
+            logging.critical("New language file created")
         else:
             po = self.addon_po_files[0]
         string_ids = []

@@ -76,13 +76,13 @@ def check_busy(func):
     @wraps(func)
     def decorator(self, *args, **kwargs):
         if self.is_busy:
-            message_dialog("Already busy. Please wait.")
+            logging.critical("Already busy. Please wait.")
             return None
         self.is_busy = True
         try:
             func(self, *args, **kwargs)
         except Exception as e:
-            message_dialog(e)
+            logging.critical(e)
         self.is_busy = False
     return decorator
 
@@ -236,18 +236,6 @@ def prettyprint(string):
     prints properly formatted output for json objects
     """
     print(json.dumps(string, sort_keys=True, indent=4, separators=(',', ': ')))
-
-
-def message_dialog(label):
-    """
-    try to show ST message dialog with label *label,
-    logging.debug() in case it fails
-    """
-    try:
-        import sublime
-        sublime.message_dialog(label)
-    except:
-        logging.debug(label)
 
 
 def get_tags_from_file(path, node_tags):
