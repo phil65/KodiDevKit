@@ -235,7 +235,7 @@ def prettyprint(string):
     """
     prints properly formatted output for json objects
     """
-    print(json.dumps(string, sort_keys=True, indent=4, separators=(',', ': ')))
+    logging.debug(json.dumps(string, sort_keys=True, indent=4, separators=(',', ': ')))
 
 
 def get_tags_from_file(path, node_tags):

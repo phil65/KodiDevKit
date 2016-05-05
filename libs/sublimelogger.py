@@ -29,21 +29,21 @@ class SublimeLogHandler(logging.StreamHandler):
         }
         # if settings.get("debug_mode"):
         log = levels[record.levelno]
-        log(self.format(record))
+        log(record)
 
     def flush(self):
         pass
 
-    def debug(self, string):
+    def debug(self, record):
         # if settings.get("debug_mode"):
-        print(string)
+        print(self.format(record))
 
-    def info(self, text):
+    def info(self, record):
         wnd = sublime.active_window()
-        wnd.run_command("log", {"label": text.strip()})
+        wnd.run_command("log", {"label": self.format(record).strip()})
 
-    def message(self, text):
-        sublime.message_dialog(text)
+    def message(self, record):
+        sublime.message_dialog(record.msg)
 
 
 def config():
