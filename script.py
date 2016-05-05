@@ -98,6 +98,7 @@ def check_dependencies(skinpath):
 
 if __name__ == "__main__":
     INFOS = InfoProvider()
+    INFOS.load_data()
     open(RESULTS_FILE, 'w').close()
     if len(sys.argv) == 2:
         project_folder = sys.argv[1]

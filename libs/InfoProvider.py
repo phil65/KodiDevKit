@@ -147,19 +147,29 @@ class InfoProvider(object):
         self.po_files = []
         self.xml_folders = []
         self.addon_po_files = []
-        self.load_data()
 
     def load_data(self):
         """
         loads the xml with control nodes for sanity checking (controls.xml)
         as well as builtins including their help string (data.xml)
         """
-        path = os.path.normpath(os.path.abspath(__file__))
-        folder_path = os.path.split(path)[0]
-        path = os.path.join(folder_path, "controls.xml")
-        self.template_root = Utils.get_root_from_file(path)
-        path = os.path.join(folder_path, "data.xml")
-        root = Utils.get_root_from_file(path)
+        # TODO: clean this up
+        try:
+            # since we get packaged we need to use load_resource() to load external files
+            import sublime
+            parser = ET.XMLParser(remove_blank_text=True, remove_comments=True)
+            text = sublime.load_resource("Packages/KodiDevKit/libs/controls.xml")
+            self.template_root = ET.fromstring(text, parser).getroot()
+            text = sublime.load_resource("Packages/KodiDevKit/libs/data.xml")
+            root = ET.fromstring(text, parser).getroot()
+        except:
+            # fallback to old method so that class still can get used without sublime import
+            path = os.path.normpath(os.path.abspath(__file__))
+            folder_path = os.path.split(path)[0]
+            path = os.path.join(folder_path, "controls.xml")
+            self.template_root = Utils.get_root_from_file(path)
+            path = os.path.join(folder_path, "data.xml")
+            root = Utils.get_root_from_file(path)
         self.builtins = []
         self.conditions = []
         for item in root.find("builtins"):

@@ -34,6 +34,7 @@ SUBLIME_PATH = Utils.get_sublime_path()
 def plugin_loaded():
     InfoProvider.kodijson.setup(sublime.load_settings(SETTINGS_FILE))
     kodijson.setup(sublime.load_settings(SETTINGS_FILE))
+    INFOS.load_data()
 
 
 class KodiDevKit(sublime_plugin.EventListener):
