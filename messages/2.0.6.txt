@@ -2,4 +2,5 @@
   =================
 
  - Code rework
+ - use mdpopups for tooltips
  - fixed loading external resources
