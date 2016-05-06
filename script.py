@@ -19,7 +19,11 @@ settings = {"kodi_path": "C:/Kodi",
 logger = logging.getLogger()
 logging.basicConfig(level=logging.INFO,
                     format="")
-logger.addHandler(logging.FileHandler("result.txt"))
+filehandler = logging.FileHandler("result.txt", mode="w")
+formatter = logging.Formatter('%(asctime)s - %(message)s',
+                              datefmt='%Y-%m-%d %H:%M:%S')
+filehandler.setFormatter(formatter)
+logger.addHandler(filehandler)
 
 
 def check_tags(check_type):
