@@ -643,11 +643,11 @@ class InfoProvider(object):
 
     def get_image_info(self, path):
         imagepath = self.translate_path(path)
-        if os.path.exists(imagepath) and not os.path.isdir(imagepath):
-            width, height = get_image_size(imagepath)
-            file_size = os.path.getsize(imagepath) / 1024
-            return "<b>Dimensions:</b> %sx%s <br><b>File size:</b> %.2f kb" % (width, height, file_size)
-        return ""
+        if not os.path.exists(imagepath) or os.path.isdir(imagepath):
+            return ""
+        width, height = get_image_size(imagepath)
+        file_size = os.path.getsize(imagepath) / 1024
+        return "<b>Dimensions:</b> %sx%s <br><b>File size:</b> %.2f kb" % (width, height, file_size)
 
     def get_font_refs(self):
         font_refs = {}
@@ -661,13 +661,13 @@ class InfoProvider(object):
     def check_fonts(self):
         listitems = []
         font_refs = self.get_font_refs()
-        # get confluence fonts..
-        confluence_fonts = []
-        confluence_font_file = os.path.join(self.kodi_path, "addons", "skin.confluence", "720p", "Font.xml")
-        root = Utils.get_root_from_file(confluence_font_file)
+        # get estuary fonts..
+        estuary_fonts = []
+        estuary_font_file = os.path.join(self.kodi_path, "addons", "skin.estuary", "1080i", "Font.xml")
+        root = Utils.get_root_from_file(estuary_font_file)
         if root is not None:
             for node in root.find("fontset").findall("font"):
-                confluence_fonts.append(node.find("name").text)
+                estuary_fonts.append(node.find("name").text)
             # check fonts from each folder independently....
         for folder in self.xml_folders:
             fontlist = ["-"]
@@ -677,14 +677,14 @@ class InfoProvider(object):
                     fontlist.append(item["name"])
             # find undefined font refs
             for ref in font_refs[folder]:
-                if ref["name"] not in fontlist + confluence_fonts:
+                if ref["name"] not in fontlist + estuary_fonts:
                     ref["message"] = "Font not defined: %s" % ref["name"]
                     listitems.append(ref)
             # find unused font defs
             ref_list = [d['name'] for d in font_refs[folder]]
             if folder in self.fonts:
                 for node in self.fonts[folder]:
-                    if node["name"] not in ref_list + confluence_fonts:
+                    if node["name"] not in ref_list + estuary_fonts:
                         node["message"] = "Unused font: %s" % node["name"]
                         listitems.append(node)
         return listitems
