@@ -64,7 +64,7 @@ def check_dependencies(skinpath):
                 {"version": '5.10.0',
                  "name": "jarvis",
                  "allowed_addons": ['gotham', 'helix', 'isengard', 'jarvis']},
-                {"version": '5.11.0',
+                {"version": '5.12.0',
                  "name": "krypton",
                  "allowed_addons": ['gotham', 'helix', 'isengard', 'jarvis', 'krypton']}]
     imports = {}
