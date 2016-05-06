@@ -108,23 +108,22 @@ def make_archive(folderpath, archive):
     Create zip with path *archive from folder with path *folderpath
     """
     fileList = get_absolute_file_paths(folderpath)
-    a = zipfile.ZipFile(archive, 'w', zipfile.ZIP_DEFLATED)
-    for f in fileList:
-        path_list = re.split(r'[\\/]', f)
-        rel_path = os.path.relpath(f, folderpath)
-        if ".git" in path_list:
-            continue
-        if rel_path.startswith("media") and not rel_path.endswith(".xbt"):
-            continue
-        if rel_path.startswith("themes"):
-            continue
-        if f.endswith(('.pyc', '.pyo', '.zip')):
-            continue
-        if f.startswith(('.')):
-            continue
-        a.write(f, rel_path)
-        yield rel_path
-    a.close()
+    with zipfile.ZipFile(archive, 'w', zipfile.ZIP_DEFLATED) as a:
+        for f in fileList:
+            path_list = re.split(r'[\\/]', f)
+            rel_path = os.path.relpath(f, folderpath)
+            if ".git" in path_list:
+                continue
+            if rel_path.startswith("media") and not rel_path.endswith(".xbt"):
+                continue
+            if rel_path.startswith("themes"):
+                continue
+            if f.endswith(('.pyc', '.pyo', '.zip')):
+                continue
+            if f.startswith(('.')):
+                continue
+            a.write(f, rel_path)
+            logging.warning("zipped %s" % rel_path)
 
 
 def to_hex(r, g, b, a=None):
@@ -168,9 +167,9 @@ def check_paths(paths):
     return ""
 
 
-def texturepacker_generator(media_path, settings, xbt_filename="Textures.xbt"):
+def texturepacker(media_path, settings, xbt_filename="Textures.xbt"):
     """
-    yield command line output from running TexturePacker on *media_path,
+    run TexturePacker on *media_path,
     also needs *settings for TexturePacker path
     """
     tp_path = settings.get("texturechecker_path")
@@ -185,7 +184,7 @@ def texturepacker_generator(media_path, settings, xbt_filename="Textures.xbt"):
         args.insert(0, tp_path)
     with subprocess.Popen(args, stdout=subprocess.PIPE, bufsize=1, universal_newlines=True, shell=True) as p:
         for line in p.stdout:
-            yield line
+            logging.warning(line)
 
 
 def check_brackets(label):

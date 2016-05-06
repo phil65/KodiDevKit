@@ -1,0 +1,10 @@
+  Changes in 2.0.9
+  =================
+
+ - syntax highlighting for include tooltips
+ - cleaned up window tooltips
+ - fixed laggy tooltip in case Kodi isnt reachable via JSON
+ - resolve symlinks for go-to-exception if possible
+ - no line numbers for .po files anymore
+ - do not show empty tooltips
+ - several bugfixes

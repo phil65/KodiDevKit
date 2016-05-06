@@ -7,34 +7,21 @@
 KodiDevKit is a plugin to assist with Kodi skinning / scripting using Sublime Text 3
 """
 
-import sublime
-import sublime_plugin
 import re
 import webbrowser
-from lxml import etree as ET
 import platform
 import os
 import logging
+from lxml import etree as ET
+
+import sublime
+import sublime_plugin
 
 from .libs import Utils
 from .libs.kodijson import KodiJson
 
 APP_NAME = "Kodi"
 SETTINGS_FILE = 'kodidevkit.sublime-settings'
-
-if sublime.platform() == "linux":
-    KODI_PRESET_PATH = "/usr/share/%s/" % APP_NAME.lower()
-elif sublime.platform() == "windows":
-    KODI_PRESET_PATH = "C:/%s/" % APP_NAME.lower()
-elif platform.system() == "Darwin":
-    KODI_PRESET_PATH = os.path.join(os.path.expanduser("~"),
-                                    "Applications",
-                                    "%s.app" % APP_NAME,
-                                    "Contents",
-                                    "Resources",
-                                    APP_NAME)
-else:
-    KODI_PRESET_PATH = ""
 
 kodijson = KodiJson()
 
@@ -213,6 +200,19 @@ class ColorPickerCommand(sublime_plugin.WindowCommand):
 class SetKodiFolderCommand(sublime_plugin.WindowCommand):
 
     def run(self):
+        if sublime.platform() == "linux":
+            KODI_PRESET_PATH = "/usr/share/%s/" % APP_NAME.lower()
+        elif sublime.platform() == "windows":
+            KODI_PRESET_PATH = "C:/%s/" % APP_NAME.lower()
+        elif platform.system() == "Darwin":
+            KODI_PRESET_PATH = os.path.join(os.path.expanduser("~"),
+                                            "Applications",
+                                            "%s.app" % APP_NAME,
+                                            "Contents",
+                                            "Resources",
+                                            APP_NAME)
+        else:
+            KODI_PRESET_PATH = ""
         self.window.show_input_panel("Set Kodi folder",
                                      KODI_PRESET_PATH,
                                      self.set_kodi_folder,
@@ -266,13 +266,13 @@ class GetInfoLabelsPromptCommand(sublime_plugin.WindowCommand):
     def show_info_label(self, label_string):
         self.settings.set("prev_infolabel", label_string)
         words = label_string.split(",")
-        self.window.run_command("log", {"label": "send request..."})
+        logging.warning("send request...")
         result = kodijson.request(method="XBMC.GetInfoLabels",
                                   params={"labels": words})
         if result:
-            self.window.run_command("log", {"label": "Got result:"})
+            logging.warning("Got result:")
             key, value = result["result"].popitem()
-            self.window.run_command("log", {"label": str(value)})
+            logging.warning(str(value))
 
 
 class GetInfoBooleansPromptCommand(sublime_plugin.WindowCommand):
@@ -289,10 +289,11 @@ class GetInfoBooleansPromptCommand(sublime_plugin.WindowCommand):
     def show_info_boolean(self, label_string):
         self.settings.set("prev_boolean", label_string)
         words = label_string.split(",")
-        self.window.run_command("log", {"label": "send request..."})
+        logging.warning("send request...")
         result = kodijson.request(method="XBMC.GetInfoBooleans",
                                   params={"booleans": words})
         if result:
-            self.window.run_command("log", {"label": "Got result:"})
+            logging.warning("Got result:")
             key, value = result["result"].popitem()
-            self.window.run_command("log", {"label": str(value)})
+            logging.warning(str(value))
+

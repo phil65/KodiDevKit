@@ -15,7 +15,8 @@ class SublimeLogHandler(logging.StreamHandler):
 
     def __init__(self):
         logging.StreamHandler.__init__(self)
-        formatter = logging.Formatter('[KodiDevKit] %(asctime)s: %(message)s')
+        formatter = logging.Formatter('[KodiDevKit] %(asctime)s: %(message)s',
+                                      datefmt='%Y-%m-%d %H:%M:%S')
         self.setFormatter(formatter)
 
     def emit(self, record):

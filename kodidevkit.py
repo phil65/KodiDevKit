@@ -295,13 +295,11 @@ class BuildAddonCommand(sublime_plugin.WindowCommand):
     def run(self, pack_textures=True):
         settings = sublime.load_settings(SETTINGS_FILE)
         media_path = os.path.join(INFOS.project_path, "media")
-        for line in Utils.texturepacker_generator(media_path,
-                                                  settings):
-            self.window.run_command("log", {"label": line.strip()})
+        Utils.texturepacker(media_path=media_path,
+                            settings=settings)
         zip_path = os.path.join(media_path, os.path.basename(media_path) + ".zip")
-        for filename in Utils.make_archive(media_path,
-                                           zip_path):
-            self.window.run_command("log", {"label": "zipped " + filename})
+        Utils.make_archive(media_path,
+                           zip_path)
         do_open = sublime.ok_cancel_dialog("Zip file created!\nDo you want to open its location a with file browser?",
                                            "Open")
         if do_open:
@@ -324,10 +322,9 @@ class BuildThemeCommand(sublime_plugin.WindowCommand):
         if index == -1:
             return None
         media_path = os.path.join(INFOS.project_path, "themes", self.theme_folders[index])
-        for line in Utils.texturepacker_generator(media_path,
-                                                  sublime.load_settings(SETTINGS_FILE),
-                                                  self.theme_folders[index] + ".xbt"):
-            self.window.run_command("log", {"label": line.strip()})
+        Utils.texturepacker(media_path=media_path,
+                            settings=sublime.load_settings(SETTINGS_FILE),
+                            xbt_filename=self.theme_folders[index] + ".xbt")
         do_open = sublime.ok_cancel_dialog("Theme file created!\nDo you want to open its location a with file browser?",
                                            "Open")
         if do_open:
