@@ -539,7 +539,7 @@ class InfoProvider(object):
         """
         return message listitems containing non-existing / unused variables
         """
-        var_regex = "\$(?:ESC)?VAR\[(.*?)\]"
+        var_regex = r"\$(?:ESC)?VAR\[(.*?)\]"
         listitems = []
         for folder in self.xml_folders:
             var_refs = []
@@ -691,7 +691,7 @@ class InfoProvider(object):
 
     def check_ids(self):
         window_regex = r"(?:Dialog.Close|Window.IsActive|Window.IsVisible|Window)\(([0-9]+)\)"
-        control_regex = "^(?!.*IsActive)(?!.*Window.IsVisible)(?!.*Dialog.Close)(?!.*Window)(?!.*Row)(?!.*Column).*\(([0-9]*?)\)"
+        control_regex = r"^(?!.*IsActive)(?!.*Window.IsVisible)(?!.*Dialog.Close)(?!.*Window)(?!.*Row)(?!.*Column).*\(([0-9]*?)\)"
         listitems = []
         for folder in self.xml_folders:
             window_ids = []
