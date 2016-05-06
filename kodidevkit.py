@@ -269,19 +269,15 @@ class QuickPanelCommand(sublime_plugin.WindowCommand):
         while view.is_loading():
             pass
         view.sel().clear()
-        text_point = view.text_point(node["line"] - 1, 0)
-        line = view.line(text_point)
         if "identifier" in node:
+            text_point = view.text_point(node["line"] - 1, 0)
             label = escape(node["identifier"])
-            line_contents = view.substr(line)
-            line_start = line_contents.find(label)
-            num = line_contents.count(label)
-            if num != 1:
+            line_contents = view.substr(view.line(text_point))
+            if line_contents.count(label) != 1:
                 return False
+            line_start = line_contents.find(label)
             line_end = line_start + len(label)
-            id_start = text_point + line_start
-            id_end = text_point + line_end
-            view.sel().add(sublime.Region(int(id_start), int(id_end)))
+            view.sel().add(sublime.Region(text_point + line_start, text_point + line_end))
 
 
 class BuildAddonCommand(sublime_plugin.WindowCommand):
