@@ -111,7 +111,7 @@ if __name__ == "__main__":
     else:
         project_folder = input("Enter Path to skin: ")
     INFOS.get_settings(settings)
-    INFOS.update_builtin_labels()
+    INFOS.update_core_labels()
     INFOS.init_addon(project_folder)
     INFOS.update_xml_files()
     INFOS.check_xml_files()

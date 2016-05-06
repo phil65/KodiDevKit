@@ -207,7 +207,7 @@ class KodiDevKit(sublime_plugin.EventListener):
         if not self.settings_loaded:
             self.settings = sublime.load_settings(SETTINGS_FILE)
             INFOS.get_settings(self.settings)
-            INFOS.update_builtin_labels()
+            INFOS.update_core_labels()
             self.settings_loaded = True
         view = sublime.active_window().active_view()
         filename = view.file_name()
@@ -233,7 +233,7 @@ class ReloadKodiLanguageFilesCommand(sublime_plugin.WindowCommand):
 
     def run(self):
         INFOS.get_settings(sublime.load_settings(SETTINGS_FILE))
-        INFOS.update_builtin_labels()
+        INFOS.update_core_labels()
         INFOS.update_addon_labels()
         # view = self.window.active_view()
         # regions = view.find_by_selector("variable.parameter")

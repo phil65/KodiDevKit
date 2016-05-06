@@ -450,14 +450,13 @@ class InfoProvider(object):
                 tooltips += "<b>%s:</b> %s<br>" % (folder, hit.msgid)
         return tooltips
 
-    def update_builtin_labels(self):
+    def update_core_labels(self):
         """
         get core po files
         """
         po_files = self.get_po_files(os.path.join(self.kodi_path, "addons"))
-        po_files2 = self.get_po_files(os.path.join(self.kodi_path, "language"))
-        po_files3 = self.get_po_files(os.path.join(self.get_userdata_folder(), "addons"))
-        self.kodi_po_files = po_files + po_files2 + po_files3
+        po_files2 = self.get_po_files(os.path.join(self.get_userdata_folder(), "addons"))
+        self.kodi_po_files = po_files + po_files2
 
     def update_addon_labels(self):
         """
