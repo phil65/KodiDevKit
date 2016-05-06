@@ -78,7 +78,6 @@ class KodiDevKit(sublime_plugin.EventListener):
             # return (completions, sublime.INHIBIT_WORD_COMPLETIONS | sublime.INHIBIT_EXPLICIT_COMPLETIONS)
 
     def on_selection_modified_async(self, view):
-        logging.info("now")
         if len(view.sel()) > 1 or not INFOS.addon_xml_file:
             return None
         try:
