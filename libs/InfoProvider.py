@@ -828,7 +828,7 @@ class InfoProvider(object):
         }
         return po
 
-    def create_new_label(self, word, filepath, line=""):
+    def create_new_label(self, word, filepath):
         """
         adds a label to the first pofile from settings (or creates new one if non-existing)
         """
@@ -862,13 +862,12 @@ class InfoProvider(object):
             if label_id not in string_ids:
                 logging.debug("first free: " + str(label_id))
                 break
-        msgstr = "#" + str(label_id)
         new_entry = polib.POEntry(msgid=word,
                                   msgstr="",
-                                  msgctxt=msgstr,
-                                  occurrences=[(filepath, str(line))])
-        po_index = int(label_id) - start_id + index_offset
-        po.insert(po_index, new_entry)
+                                  msgctxt="#%s" % label_id,
+                                  occurrences=[(filepath, None)])
+        po.insert(index=int(label_id) - start_id + index_offset,
+                  object=new_entry)
         po.save(self.addon_po_files[0].fpath)
         self.update_addon_labels()
         return label_id
