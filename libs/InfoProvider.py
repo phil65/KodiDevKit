@@ -582,7 +582,7 @@ class InfoProvider(object):
                 if root is None:
                     continue
                 for node in root.xpath(".//include"):
-                    if node.text and node.text.startswith("skinshortcuts-"):
+                    if node.text and not node.text.startswith("skinshortcuts-"):
                         name = node.text
                         if "file" in node.attrib:
                             include_file = os.path.join(self.project_path, folder, node.attrib["file"])
