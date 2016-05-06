@@ -118,7 +118,9 @@ class KodiDevKit(sublime_plugin.EventListener):
                 if "<include>" in line_contents or "<include content=" in line_contents:
                     content = Utils.get_node_content(view, flags)
                     node_content = str(INFOS.return_node_content(content, folder=folder))
-                    if len(node_content) < 3000:
+                    if not node_content:
+                        popup_label = ""
+                    elif len(node_content) < 3000:
                         popup_label = mdpopups.syntax_highlight(view=view,
                                                                 src=node_content,
                                                                 language="xml")
