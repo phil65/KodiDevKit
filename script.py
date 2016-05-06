@@ -2,11 +2,12 @@ import os
 import sys
 import codecs
 from lxml import etree as ET
+from urllib.request import urlopen
 
-from .libs import Utils
-from .libs.InfoProvider import InfoProvider
-from .libs import chardet
-from .libs import eol
+from libs import Utils
+from libs.InfoProvider import InfoProvider
+from libs import chardet
+from libs.eol import eol
 
 RESULTS_FILE = "results.txt"
 
@@ -45,7 +46,7 @@ def get_addons(reponames):
     repo_list = 'http://mirrors.kodi.tv/addons/%s/addons.xml'
     addons = {}
     for reponame in reponames:
-        req = Utils.urlopen(repo_list % reponame)
+        req = urlopen(repo_list % reponame)
         data = req.read()
         req.close()
         root = ET.fromstring(data)
