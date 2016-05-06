@@ -18,18 +18,7 @@ settings = {"kodi_path": "C:/Kodi",
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
-
-
-def log(text):
-    """
-    logs text to both file and console
-    """
-    with open(RESULTS_FILE, "a", encoding='utf-8') as myfile:
-        myfile.write(str(text) + "\n")
-    try:
-        print(text)
-    except:
-        print(text.encode(sys.stdout.encoding, errors='replace').decode("utf-8"))
+logging.basicConfig(format="")
 
 
 def check_tags(check_type):
@@ -38,9 +27,9 @@ def check_tags(check_type):
     """
     errors = INFOS.get_check_listitems(check_type)
     for e in errors:
-        log(e["message"])
+        logging.info(e["message"])
         path = "/".join(e["file"].split(os.sep)[-2:])
-        log("%s: line %s\n" % (path, str(e["line"])))
+        logging.info("%s: line %s\n" % (path, str(e["line"])))
 
 
 def get_addons(reponames):
@@ -87,19 +76,19 @@ def check_dependencies(skinpath):
     for release in RELEASES:
         if repo == release["name"]:
             if imports['xbmc.gui'] > release["version"]:
-                log('xbmc.gui version incorrect')
+                logging.info('xbmc.gui version incorrect')
             addons = get_addons(release["allowed_addons"])
             break
     else:
-        log('You entered an invalid Kodi version')
+        logging.info('You entered an invalid Kodi version')
         return None
     del imports['xbmc.gui']
     for dep, ver in imports.items():
         if dep in addons:
             if ver > addons[dep]:
-                log('%s version higher than in Kodi repository' % dep)
+                logging.info('%s version higher than in Kodi repository' % dep)
         else:
-            log('%s not available in Kodi repository' % dep)
+            logging.info('%s not available in Kodi repository' % dep)
 
 
 if __name__ == "__main__":
@@ -117,16 +106,16 @@ if __name__ == "__main__":
     INFOS.check_xml_files()
     for path in INFOS.file_list_generator():
         if Utils.check_bom(path):
-            log("found BOM. File: " + path)
+            logging.info("found BOM. File: " + path)
         try:
             with codecs.open(path, "rb", encoding='utf-8', errors="strict") as f:
                 text = f.read()
         except:
-            log("Error when trying to read %s as UTF-8" % path)
+            logging.info("Error when trying to read %s as UTF-8" % path)
             with codecs.open(path, "rb", errors="ignore") as f:
                 rawdata = f.read()
             encoding = chardet.detect(rawdata)
-            log("detected encoding: %s" % encoding["encoding"])
+            logging.info("detected encoding: %s" % encoding["encoding"])
             with codecs.open(path, "rb", encoding=encoding["encoding"]) as f:
                 text = f.read()
     result = eol.eol_info_from_path_patterns([project_folder],
@@ -137,20 +126,20 @@ if __name__ == "__main__":
         if item[1] == '\n' or None:
             continue
         elif item[1] == '\r':
-            log("MAC Line Endings detected in " + item[0])
+            logging.info("MAC Line Endings detected in " + item[0])
         else:
-            log("Windows Line Endings detected in " + item[0])
-    log("\n\nADDON DEPENDENCY CHECK\n\n")
+            logging.info("Windows Line Endings detected in " + item[0])
+    logging.info("\n\nADDON DEPENDENCY CHECK\n\n")
     check_dependencies(project_folder)
-    log("\n\nINCLUDE CHECK\n\n")
+    logging.info("\n\nINCLUDE CHECK\n\n")
     check_tags("include")
-    log("\n\nVARIABLE CHECK\n\n")
+    logging.info("\n\nVARIABLE CHECK\n\n")
     check_tags("variable")
-    log("\n\nFONT CHECK\n\n")
+    logging.info("\n\nFONT CHECK\n\n")
     check_tags("font")
-    log("\n\nLABEL CHECK\n\n")
+    logging.info("\n\nLABEL CHECK\n\n")
     check_tags("label")
-    log("\n\nID CHECK\n\n")
+    logging.info("\n\nID CHECK\n\n")
     check_tags("id")
-    log("\n\nCHECK FOR COMMON MISTAKES\n\n")
+    logging.info("\n\nCHECK FOR COMMON MISTAKES\n\n")
     check_tags("general")
