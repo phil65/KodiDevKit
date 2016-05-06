@@ -39,6 +39,7 @@ def get_addons(reponames):
     repo_list = 'http://mirrors.kodi.tv/addons/%s/addons.xml'
     addons = {}
     for reponame in reponames:
+        logging.info("Downloading %s addon list" % reponame)
         req = urlopen(repo_list % reponame)
         data = req.read()
         req.close()
