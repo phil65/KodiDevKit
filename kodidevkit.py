@@ -78,6 +78,7 @@ class KodiDevKit(sublime_plugin.EventListener):
             # return (completions, sublime.INHIBIT_WORD_COMPLETIONS | sublime.INHIBIT_EXPLICIT_COMPLETIONS)
 
     def on_selection_modified_async(self, view):
+        logging.info("now")
         if len(view.sel()) > 1 or not INFOS.addon_xml_file:
             return None
         try:
@@ -127,12 +128,7 @@ class KodiDevKit(sublime_plugin.EventListener):
                     else:
                         popup_label = "include too big for preview"
                 elif "<visible" in line_contents or "<enable" in line_contents:
-                    result = kodijson.request(method="XBMC.GetInfoBooleans",
-                                              params={"booleans": [selected_content]})
-                    if result:
-                        key, value = result["result"].popitem()
-                        if value is not None:
-                            popup_label = str(value)
+                    self.boolean_popup(selected_content, view)
                 elif "<font" in line_contents and "</font" in line_contents:
                     popup_label = INFOS.get_font_info(selected_content, folder)
                 elif "label" in line_contents or "<property" in line_contents or "localize" in line_contents:
@@ -158,6 +154,17 @@ class KodiDevKit(sublime_plugin.EventListener):
         if popup_label and self.settings.get("tooltip_delay", 0) > -1:
             sublime.set_timeout_async(lambda: self.show_tooltip(view, popup_label),
                                       self.settings.get("tooltip_delay", 0))
+
+    @Utils.run_async
+    def boolean_popup(self, selected_content, view):
+        result = kodijson.request(method="XBMC.GetInfoBooleans",
+                                  params={"booleans": [selected_content]})
+        if result:
+            key, value = result["result"].popitem()
+            if value is not None:
+                popup_label = str(value)
+                sublime.set_timeout_async(lambda: self.show_tooltip(view, popup_label),
+                                          self.settings.get("tooltip_delay", 0))
 
     def show_tooltip(self, view, tooltip_label):
         mdpopups.show_popup(view=view,
@@ -317,10 +324,9 @@ class BuildThemeCommand(sublime_plugin.WindowCommand):
     def on_done(self, index):
         if index == -1:
             return None
-        settings = sublime.load_settings(SETTINGS_FILE)
         media_path = os.path.join(INFOS.project_path, "themes", self.theme_folders[index])
         for line in Utils.texturepacker_generator(media_path,
-                                                  settings,
+                                                  sublime.load_settings(SETTINGS_FILE),
                                                   self.theme_folders[index] + ".xbt"):
             self.window.run_command("log", {"label": line.strip()})
         do_open = sublime.ok_cancel_dialog("Theme file created!\nDo you want to open its location a with file browser?",
@@ -353,10 +359,8 @@ class ShowFontRefsCommand(QuickPanelCommand):
         INFOS.update_xml_files()
         font_refs = INFOS.get_font_refs()
         self.folder = view.file_name().split(os.sep)[-2]
-        for ref in font_refs[self.folder]:
-            if ref["name"] == "Font_Reg28":
-                listitems.append(ref["name"])
-                self.nodes.append(ref)
+        self.nodes = [ref for ref in font_refs[self.folder] if ref["name"] == "Font_Reg28"]
+        listitems = [i["name"] for i in self.nodes]
         if listitems:
             self.window.show_quick_panel(listitems,
                                          lambda s: self.on_done(s),
@@ -376,12 +380,10 @@ class SearchFileForLabelsCommand(QuickPanelCommand):
         regexs = [r"\$LOCALIZE\[([0-9].*?)\]",
                   r"\$ADDON\[.*?([0-9].*?)\]",
                   r"(?:label|property|altlabel|label2)>([0-9].*?)<"]
-        view = self.window.active_view()
-        path = view.file_name()
+        path = self.window.active_view().file_name()
         for po_file in INFOS.po_files:
             labels += [s.msgid for s in po_file]
             label_ids += [s.msgctxt for s in po_file]
-        # view.substr(sublime.Region(0, view.size()))
         with open(path, encoding="utf8") as f:
             for i, line in enumerate(f.readlines()):
                 for regex in regexs:
@@ -447,11 +449,11 @@ class SearchForLabelCommand(sublime_plugin.WindowCommand):
 
     def run(self):
         listitems = []
-        self.id_list = []
+        self.ids = []
         for po_file in INFOS.po_files:
             for entry in po_file:
-                if entry.msgctxt not in self.id_list:
-                    self.id_list.append(entry.msgctxt)
+                if entry.msgctxt not in self.ids:
+                    self.ids.append(entry.msgctxt)
                     listitems.append(["%s (%s)" % (entry.msgid, entry.msgctxt), entry.comment])
         self.window.show_quick_panel(listitems,
                                      lambda s: self.label_search_ondone_action(s),
@@ -461,7 +463,7 @@ class SearchForLabelCommand(sublime_plugin.WindowCommand):
         if index == -1:
             return None
         view = self.window.active_view()
-        label_id = int(self.id_list[index][1:])
+        label_id = int(self.ids[index][1:])
         view.run_command("insert",
                          {"characters": INFOS.build_translate_label(label_id, view)})
 
@@ -627,18 +629,16 @@ class SearchForFontCommand(sublime_plugin.TextCommand):
         return bool(INFOS.fonts)
 
     def run(self, edit):
-        self.font_entries = []
+        self.fonts = []
         folder = self.view.file_name().split(os.sep)[-2]
-        for node in INFOS.fonts[folder]:
-            string_array = [node["name"], node["size"] + "  -  " + node["filename"]]
-            self.font_entries.append(string_array)
-        sublime.active_window().show_quick_panel(self.font_entries,
+        self.fonts = [[i["name"], "%s  -  %s" % (i["size"], i["filename"])] for i in INFOS.fonts[folder]]
+        sublime.active_window().show_quick_panel(self.fonts,
                                                  lambda s: self.on_done(s),
                                                  selected_index=0)
 
     def on_done(self, index):
         if index >= 0:
-            self.view.run_command("insert", {"characters": self.font_entries[index][0]})
+            self.view.run_command("insert", {"characters": self.fonts[index][0]})
         sublime.active_window().focus_view(self.view)
 
 
@@ -702,11 +702,10 @@ class SwitchXmlFolderCommand(QuickPanelCommand):
     def run(self):
         view = self.window.active_view()
         self.nodes = []
-        line, column = view.rowcol(view.sel()[0].b)
+        line, _ = view.rowcol(view.sel()[0].b)
         filename = os.path.basename(view.file_name())
         for folder in INFOS.xml_folders:
-            path = os.path.join(INFOS.project_path, folder, filename)
-            node = {"file": path,
+            node = {"file": os.path.join(INFOS.project_path, folder, filename),
                     "line": line + 1}
             self.nodes.append(node)
         self.window.show_quick_panel(INFOS.xml_folders,
