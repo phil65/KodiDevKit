@@ -13,7 +13,6 @@ import sublime
 
 import re
 import os
-import cgi
 import webbrowser
 import mdpopups
 import logging
@@ -120,8 +119,9 @@ class KodiDevKit(sublime_plugin.EventListener):
                     content = Utils.get_node_content(view, flags)
                     node_content = str(INFOS.return_node_content(content, folder=folder))
                     if len(node_content) < 3000:
-                        popup_label = cgi.escape(node_content)
-                        popup_label = popup_label.replace("\n", "<br>"). replace(" ", "&nbsp;")
+                        popup_label = mdpopups.syntax_highlight(view=view,
+                                                                src=node_content,
+                                                                language="xml")
                     else:
                         popup_label = "include too big for preview"
                 elif "<visible" in line_contents or "<enable" in line_contents:
