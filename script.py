@@ -3,6 +3,7 @@ import sys
 import codecs
 from lxml import etree as ET
 from urllib.request import urlopen
+import logging
 
 from libs import Utils
 from libs.InfoProvider import InfoProvider
@@ -14,6 +15,9 @@ RESULTS_FILE = "results.txt"
 settings = {"kodi_path": "C:/Kodi",
             "portable_mode": True,
             "language_folders": ["English", "resource.language.en_gb"]}
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
 
 
 def log(text):
@@ -88,6 +92,7 @@ def check_dependencies(skinpath):
             break
     else:
         log('You entered an invalid Kodi version')
+        return None
     del imports['xbmc.gui']
     for dep, ver in imports.items():
         if dep in addons:
