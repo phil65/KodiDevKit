@@ -110,7 +110,7 @@ class GoToOnlineHelpCommand(sublime_plugin.TextCommand):
             control_type = root.attrib["type"]
             self.go_to_help(control_type)
         except:
-            logging.debug("error when trying to open from %s" % line_contents)
+            logging.info("error when trying to open from %s" % line_contents)
 
     def go_to_help(self, word):
         """

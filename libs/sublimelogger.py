@@ -51,4 +51,4 @@ def config():
     for hdlr in logger.handlers:  # remove all old handlers
         logger.removeHandler(hdlr)
     logger.addHandler(SublimeLogHandler())
-    logger.setLevel(logging.DEBUG)
+    logger.setLevel(logging.INFO)

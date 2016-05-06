@@ -40,7 +40,7 @@ def retry(ExceptionToCheck, tries=4, delay=3, backoff=2):
                     return f(*args, **kwargs)
                 except ExceptionToCheck as e:
                     msg = "%s, Retrying in %d seconds..." % (e, mdelay)
-                    logging.debug(msg)
+                    logging.info(msg)
                     time.sleep(mdelay)
                     mtries -= 1
                     mdelay *= backoff
@@ -232,7 +232,7 @@ def prettyprint(string):
     """
     prints properly formatted output for json objects
     """
-    logging.debug(json.dumps(string, sort_keys=True, indent=4, separators=(',', ': ')))
+    logging.info(json.dumps(string, sort_keys=True, indent=4, separators=(',', ': ')))
 
 
 def get_tags_from_file(path, node_tags):
@@ -241,7 +241,7 @@ def get_tags_from_file(path, node_tags):
     """
     nodes = []
     if not os.path.exists(path):
-        logging.debug("%s does not exist" % path)
+        logging.info("%s does not exist" % path)
         return []
     root = get_root_from_file(path)
     if root is None:
@@ -267,7 +267,7 @@ def get_po_file(po_file_path):
     return pofile object, go-to-failure in case of exception
     """
     try:
-        logging.debug("Parsing po file %s" % po_file_path)
+        logging.info("Parsing po file %s" % po_file_path)
         return polib.pofile(po_file_path)
     except Exception as e:
         logging.warning("Error in %s:\n %s" % (po_file_path, e))
@@ -279,7 +279,7 @@ def get_root_from_file(xml_file):
     return XML root node from file *filename
     """
     if not xml_file.endswith(".xml"):
-        logging.debug("Tried to get root from non-xml file")
+        logging.info("Tried to get root from non-xml file")
         return None
     if not os.path.exists(xml_file):
         return None
