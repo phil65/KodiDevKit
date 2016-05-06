@@ -17,8 +17,9 @@ settings = {"kodi_path": "C:/Kodi",
             "language_folders": ["English", "resource.language.en_gb"]}
 
 logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-logging.basicConfig(format="")
+logging.basicConfig(level=logging.INFO,
+                    format="")
+logger.addHandler(logging.FileHandler("result.txt"))
 
 
 def check_tags(check_type):
