@@ -514,13 +514,11 @@ class InfoProvider(object):
                         values[sib.tag].append(sib.text)
                     else:
                         values[sib.tag] = [sib.text]
-        anc_info = ""
-        for key, value in values.items():
-            anc_info += "<b>%s:</b> %s <br>" % (key, str(value))
-        if anc_info:
-            return "<b>Absolute position</b><br>" + anc_info
-        else:
+        if not values:
             return ""
+        anc_info = ["<b>{}:</b> {}".format(k, v) for k, v in values.items()]
+        anc_info = "<br>".join(anc_info)
+        return "<b>Absolute position</b><br>{}".format(anc_info)
 
     def get_font_info(self, font_name, folder):
         """
