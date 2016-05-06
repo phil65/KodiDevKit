@@ -51,7 +51,7 @@ class OpenSourceFromLog(sublime_plugin.TextCommand):
                 self.view.insert(edit, region.begin(), self.view.substr(region))
                 continue
             line_contents = self.view.substr(self.view.line(region))
-            ma = re.search('File "(.*?)", line (\d*), in .*', line_contents)
+            ma = re.search(r'File "(.*?)", line (\d*), in .*', line_contents)
             if ma:
                 sublime.active_window().open_file("{}:{}".format(os.path.realpath(ma.group(1)),
                                                                  ma.group(2)),
