@@ -32,6 +32,10 @@ def plugin_loaded():
 
 class OpenSourceFromLog(sublime_plugin.TextCommand):
 
+    """
+    open file from exception description and jump to according place in code
+    """
+
     def run(self, edit):
         for region in self.view.sel():
             if not region.empty():
@@ -54,6 +58,11 @@ class OpenSourceFromLog(sublime_plugin.TextCommand):
 
 
 class GoToOnlineHelpCommand(sublime_plugin.TextCommand):
+
+    """
+    open browser and go to wiki page
+    """
+
     CONTROLS = {"group": "http://kodi.wiki/view/Group_Control",
                 "grouplist": "http://kodi.wiki/view/Group_List_Control",
                 "label": "http://kodi.wiki/view/Label_Control",
@@ -108,11 +117,19 @@ class GoToOnlineHelpCommand(sublime_plugin.TextCommand):
 
 class AppendTextCommand(sublime_plugin.TextCommand):
 
+    """
+    append a line of text to the current view
+    """
+
     def run(self, edit, label):
         self.view.insert(edit, self.view.size(), label + "\n")
 
 
 class LogCommand(sublime_plugin.TextCommand):
+
+    """
+    log text into a text panel
+    """
 
     def run(self, edit, label, panel_name='example'):
         if not hasattr(self, "output_view"):
@@ -143,9 +160,7 @@ class ReplaceXmlElementsCommand(sublime_plugin.TextCommand):
         selected_text = self.view.substr(self.view.sel()[0])
         text = ""
         reg = re.search(r"\[(-?[0-9]+)\]", selected_text)
-        offset = 0
-        if reg:
-            offset = int(reg.group(1))
+        offset = int(reg.group(1)) if reg else 0
         for i in range(int(num_items)):
             text = text + selected_text.replace("[%i]" % offset, str(i + offset)) + "\n"
             i += 1
