@@ -164,11 +164,9 @@ class InfoProvider(object):
         except:
             # fallback to old method so that class still can get used without sublime import
             path = os.path.normpath(os.path.abspath(__file__))
-            folder_path = os.path.split(path)[0]
-            path = os.path.join(folder_path, "controls.xml")
-            self.template_root = Utils.get_root_from_file(path)
-            path = os.path.join(folder_path, "data.xml")
-            root = Utils.get_root_from_file(path)
+            folder = os.path.split(path)[0]
+            self.template_root = Utils.get_root_from_file(os.path.join(folder, "controls.xml"))
+            root = Utils.get_root_from_file(os.path.join(folder, "data.xml"))
         self.builtins = []
         self.conditions = []
         for item in root.find("builtins"):
@@ -774,8 +772,7 @@ class InfoProvider(object):
         return root
 
     def resolve_includes(self, xml_source, folder):
-        xpath = ".//include"
-        for node in xml_source.xpath(xpath):
+        for node in xml_source.xpath(".//include"):
             if node.text:
                 new_include = self.resolve_include(node, folder)
                 if new_include is not None:
@@ -842,8 +839,8 @@ class InfoProvider(object):
                 lang_path = os.path.join(self.project_path, "resources", "language", lang_folder)
             if not os.path.exists(lang_path):
                 os.makedirs(lang_path)
-            lang_path = os.path.join(lang_path, "strings.po")
-            self.addon_po_files.append(lang_path)
+            po.save(os.path.join(lang_path, "strings.po"))
+            self.addon_po_files.append(po)
             logging.critical("New language file created")
         else:
             po = self.addon_po_files[0]
@@ -857,12 +854,12 @@ class InfoProvider(object):
             if label_id not in string_ids:
                 logging.info("first free: " + str(label_id))
                 break
-        new_entry = polib.POEntry(msgid=word,
-                                  msgstr="",
-                                  msgctxt="#%s" % label_id,
-                                  occurrences=[(filepath, None)])
+        entry = polib.POEntry(msgid=word,
+                              msgstr="",
+                              msgctxt="#%s" % label_id,
+                              occurrences=[(filepath, None)])
         po.insert(index=int(label_id) - start_id + index_offset,
-                  object=new_entry)
+                  entry=entry)
         po.save(self.addon_po_files[0].fpath)
         self.update_addon_labels()
         return label_id
@@ -1172,7 +1169,7 @@ class InfoProvider(object):
         logging.info(self.template_root.tag)
         # find invalid tags
         for template in self.template_root:
-            logging.info(template.tag)
+            logging.info(template.attrib.get("type"))
             for node in root.xpath(".//*[@type='%s']/*" % template.attrib.get("type")):
                 # logging.info("hello")
                 pass
