@@ -25,16 +25,14 @@ class RemoteDevice(object):
         self.userdata_folder = self.settings.get("remote_userdata_folder")
         self.ip = self.settings.get("remote_ip")
 
-    def cmd(self, program, args, log=True):
+    def cmd(self, program, args):
         command = [program]
         for arg in args:
             command.append(arg)
         logging.warning(" ".join(command))
         try:
             output = subprocess.check_output(command, shell=True, stderr=subprocess.STDOUT)
-            # log(output.decode("utf-8"))
-            if log:
-                logging.warning("%s" % (output.decode("utf-8").replace('\r', '').replace('\n', '')))
+            logging.warning("%s" % (output.decode("utf-8").replace('\r', '').replace('\n', '')))
         except subprocess.CalledProcessError as e:
             logging.warning("%s\nErrorCode: %s" % (e, str(e.returncode)))
         except Exception as e:
