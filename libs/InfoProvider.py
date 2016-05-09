@@ -157,9 +157,9 @@ class InfoProvider(object):
         try:
             # since we get packaged we need to use load_resource() to load external files
             import sublime
-            text = sublime.load_resource("Packages/KodiDevKit/libs/controls.xml").encode("utf-8")
+            text = sublime.load_resource("Packages/KodiDevKit/data/controls.xml").encode("utf-8")
             self.template_root = ET.fromstring(text, PARSER)
-            text = sublime.load_resource("Packages/KodiDevKit/libs/data.xml").encode("utf-8")
+            text = sublime.load_resource("Packages/KodiDevKit/data/data.xml").encode("utf-8")
             root = ET.fromstring(text, PARSER)
         except:
             # fallback to old method so that class still can get used without sublime import
