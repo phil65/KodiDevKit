@@ -298,9 +298,10 @@ def get_xml_file_paths(xml_path):
         return []
     for xml_file in os.listdir(xml_path):
         filename = os.path.basename(xml_file)
-        if filename.endswith(".xml"):
-            if filename.lower() not in ["script-skinshortcuts-includes.xml", "font.xml"]:
-                xml_files.append(xml_file)
+        if not filename.endswith(".xml"):
+            continue
+        if filename.lower() not in ["script-skinshortcuts-includes.xml", "font.xml"]:
+            xml_files.append(xml_file)
     return xml_files
 
 

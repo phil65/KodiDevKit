@@ -1,9 +1,9 @@
 import os
 import sys
 import codecs
-from lxml import etree as ET
 from urllib.request import urlopen
 import logging
+from lxml import etree as ET
 
 from libs import Utils
 from libs.InfoProvider import InfoProvider

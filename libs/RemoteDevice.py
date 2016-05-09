@@ -31,8 +31,10 @@ class RemoteDevice(object):
             command.append(arg)
         logging.warning(" ".join(command))
         try:
-            output = subprocess.check_output(command, shell=True, stderr=subprocess.STDOUT)
-            logging.warning("%s" % (output.decode("utf-8").replace('\r', '').replace('\n', '')))
+            output = subprocess.check_output(command,
+                                             shell=True,
+                                             stderr=subprocess.STDOUT)
+            logging.warning(output.decode("utf-8").replace('\r', '').replace('\n', ''))
         except subprocess.CalledProcessError as e:
             logging.warning("%s\nErrorCode: %s" % (e, str(e.returncode)))
         except Exception as e:

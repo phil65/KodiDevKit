@@ -205,7 +205,8 @@ class ColorPickerCommand(sublime_plugin.WindowCommand):
         settings = sublime.load_settings('KodiColorPicker.sublime-settings')
         settings.set('color_pick_return', None)
         self.window.run_command('color_pick_api_get_color',
-                                {'settings': 'KodiColorPicker.sublime-settings', 'default_color': '#ff0000'})
+                                {'settings': 'KodiColorPicker.sublime-settings',
+                                 'default_color': '#ff0000'})
         color = settings.get('color_pick_return')
         if color:
             self.window.active_view().run_command("insert",
