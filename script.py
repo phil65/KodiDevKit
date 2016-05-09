@@ -9,7 +9,7 @@ RESULTS_FILE = "results.txt"
 
 settings = {"kodi_path": "C:/Kodi",
             "portable_mode": True,
-            "language_folders": ["English", "resource.language.en_gb"]}
+            "language_folders": ["resource.language.en_gb", "English"]}
 
 logger = logging.getLogger()
 logging.basicConfig(level=logging.INFO,

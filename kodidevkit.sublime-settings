@@ -24,7 +24,7 @@
      * Will make use of labels of chosen folders if available
      *
      */
-    "language_folders": ["English", "resource.language.en_gb"],
+    "language_folders": ["resource.language.en_gb", "English"],
     /*
      * Kodi address
      *
