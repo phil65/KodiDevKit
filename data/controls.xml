@@ -14,8 +14,7 @@
     - xpos
     - ypos
     -->
-    <control type="label" id="1">
-        <description></description>
+    <control type="label" id="int">
         <include>common</include>
         <include>label_common</include>
         <scroll>bool</scroll>
@@ -29,7 +28,7 @@
         <scrollsuffix>-</scrollsuffix>
     </control>
 
-    <control type="fadelabel" id="1">
+    <control type="fadelabel" id="int">
         <include>common</include>
         <scrollout>bool</scrollout>
         <pauseatend>int</pauseatend>
@@ -39,7 +38,7 @@
         <textcolor>color</textcolor>
         <textoffsetx>20</textoffsetx>
     </control>
-    <control type="button" id="1">
+    <control type="button" id="int">
         <include>common</include>
         <include>label_common</include>
         <colordiffuse>color</colordiffuse>
@@ -59,7 +58,7 @@
         <onleft>builtin</onleft>
         <onright>builtin</onright>
     </control>
-    <control type="image" id="1">
+    <control type="image" id="int">
         <include>common</include>
         <colordiffuse>color</colordiffuse>
         <fadetime>int</fadetime>
@@ -69,7 +68,7 @@
         <texture>path</texture>
         <aspectratio>aspect</aspectratio>
     </control>
-    <control type="multiimage" id="1">
+    <control type="multiimage" id="int">
         <include>common</include>
         <imagepath>path</imagepath>
         <info></info>
@@ -80,7 +79,7 @@
         <loop>bool</loop>
         <aspectratio>aspect</aspectratio>
     </control>
-    <control type="radiobutton" id="1">
+    <control type="radiobutton" id="int">
         <include>common</include>
         <colordiffuse>color</colordiffuse>
         <texturefocus>path</texturefocus>
@@ -110,7 +109,7 @@
         <onleft>builtin</onleft>
         <onright>builtin</onright>
     </control>
-    <control type="togglebutton" id="1">
+    <control type="togglebutton" id="int">
         <include>common</include>
         <colordiffuse>color</colordiffuse>
         <texturefocus>path</texturefocus>
@@ -136,7 +135,7 @@
         <onleft>builtin</onleft>
         <onright>builtin</onright>
     </control>
-    <control type="spincontrol" id="1">
+    <control type="spincontrol" id="int">
         <include>common</include>
         <colordiffuse>color</colordiffuse>
         <textureup colordiffuse="color">path</textureup>
@@ -157,7 +156,7 @@
         <onleft>builtin</onleft>
         <onright>builtin</onright>
     </control>
-    <control type="spincontrolex" id="1">
+    <control type="spincontrolex" id="int">
         <include>common</include>
         <spinposx>int</spinposx>
         <spinposy>int</spinposy>
@@ -185,7 +184,7 @@
         <onleft>builtin</onleft>
         <onright>builtin</onright>
     </control>
-    <control type="slider" id="1">
+    <control type="slider" id="int">
         <include>common</include>
         <texturesliderbar>path</texturesliderbar>
         <textureslidernib>path</textureslidernib>
@@ -200,7 +199,7 @@
         <onleft>builtin</onleft>
         <onright>builtin</onright>
     </control>
-    <control type="progress" id="1">
+    <control type="progress" id="int">
         <include>common</include>
         <reveal>bool</reveal>
         <texturebg>path</texturebg>
@@ -210,51 +209,51 @@
         <overlaytexture>path</overlaytexture>
         <info></info>
     </control>
-    <control type="textbox" id="1">
+    <control type="textbox" id="int">
         <include>common</include>
         <colordiffuse>color</colordiffuse>
         <font>font</font>
         <textcolor>color</textcolor>
-        <pulseonselect></pulseonselect>
+        <pulseonselect>bool</pulseonselect>
         <pagecontrol>13</pagecontrol>
         <scrolltime>int</scrolltime>
         <autoscroll delay="int" time="int" repeat="int">condition</autoscroll>
         <label>label</label>
     </control>
-    <control type="rss" id="1">
+    <control type="rss" id="int">
         <include>common</include>
         <font>font</font>
         <textcolor>color</textcolor>
         <headlinecolor>color</headlinecolor>
         <titlecolor>color</titlecolor>
     </control>
-    <control type="visualisation" id ="1">
+    <control type="visualisation id="int"" id ="1">
         <include>common</include>
     </control>
-    <control type="videowindow" id="1">
+    <control type="videowindow" id="int">
         <include>common</include>
     </control>
-    <control type="resize" id="1">
+    <control type="resize" id="int">
         <include>common</include>
-        <texturefocus>mytexture.png</texturefocus>
-        <texturenofocus>mytexture.png</texturenofocus>
+        <texturefocus>path</texturefocus>
+        <texturenofocus>path</texturenofocus>
         <pulseonselect>bool</pulseonselect>
     </control>
-    <control type="edit" id="1">
+    <control type="edit" id="int">
         <include>common</include>
         <aligny>center</aligny>
         <label>label</label>
-        <hinttext>Enter search string</hinttext>
+        <hinttext>label</hinttext>
         <font>font</font>
         <textoffsetx>10</textoffsetx>
-        <textcolor>FFB2D4F5</textcolor>
-        <disabledcolor>FF000000</disabledcolor>
-        <invalidcolor>FFFFFFFF</invalidcolor>
-        <texturefocus>button-focus.png</texturefocus>
-        <texturenofocus>button-nofocus.png</texturenofocus>
+        <textcolor>color</textcolor>
+        <disabledcolor>color</disabledcolor>
+        <invalidcolor>color</invalidcolor>
+        <texturefocus>path</texturefocus>
+        <texturenofocus>path</texturenofocus>
         <pulseonselect>no</pulseonselect>
     </control>
-    <control type="epggrid" id="1">
+    <control type="epggrid" id="int">
         <include>common</include>
         <pagecontrol>int</pagecontrol>
         <scrolltime>int</scrolltime>
@@ -265,29 +264,28 @@
         <onright>31</onright>
         <onup>10</onup>
         <ondown>10</ondown>
-        <rulerlayout height="35" width="int"></rulerlayout>
-        <channellayout height="int" width="int"></channellayout>
-        <focusedchannellayout height="int" width="int"></focusedchannellayout>
-        <itemlayout height="int" width="int"></itemlayout>
-        <focusedlayout height="int" width="int"></focusedlayout>
+        <rulerlayout height="int" width="int" condition="condition"></rulerlayout>
+        <channellayout height="int" width="int" condition="condition"></channellayout>
+        <focusedchannellayout height="int" width="int" condition="condition"></focusedchannellayout>
+        <itemlayout height="int" width="int" condition="condition"></itemlayout>
+        <focusedlayout height="int" width="int" condition="condition"></focusedlayout>
     </control>
-    <control type="list" id="1">
+    <control type="list" id="int">
         <include>common</include>
         <include>list_common</include>
     </control>
-    <control type="wraplist" id="1">
+    <control type="wraplist" id="int">
+        <include>common</include>
+        <include>list_common</include>
+        <focusposition>int</focusposition>
+    </control>
+    <control type="fixedlist" id="int">
         <include>common</include>
         <include>list_common</include>
         <focusposition>int</focusposition>
         <movement>int</movement>
     </control>
-    <control type="fixedlist" id="1">
-        <include>common</include>
-        <include>list_common</include>
-        <focusposition>int</focusposition>
-        <movement>int</movement>
-    </control>
-    <control type="panel" id="1">
+    <control type="panel" id="int">
         <include>common</include>
         <include>list_common</include>
     </control>
