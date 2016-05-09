@@ -204,7 +204,7 @@ class InfoProvider(object):
                          os.path.join(self.project_path, "resources", "skins", "Default", "1080i")]
                 folder = Utils.check_paths(paths)
                 self.xml_folders.append(folder)
-        self.update_addon_labels()
+            self.update_addon_labels()
         if self.xml_folders:
             logging.info("Kodi project detected: " + path)
             self.update_include_list()
