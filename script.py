@@ -5,11 +5,6 @@ from urllib.request import urlopen
 import logging
 from lxml import etree as ET
 
-from libs import Utils
-from libs.InfoProvider import InfoProvider
-from libs import chardet
-from libs.eol import eol
-
 RESULTS_FILE = "results.txt"
 
 settings = {"kodi_path": "C:/Kodi",
@@ -98,6 +93,10 @@ def check_dependencies(skinpath):
 
 
 if __name__ == "__main__":
+    from libs import Utils
+    from libs.InfoProvider import InfoProvider
+    from libs import chardet
+    from libs.eol import eol
     INFOS = InfoProvider()
     INFOS.load_data()
     open(RESULTS_FILE, 'w').close()
