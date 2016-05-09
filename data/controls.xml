@@ -227,7 +227,7 @@
         <headlinecolor>color</headlinecolor>
         <titlecolor>color</titlecolor>
     </control>
-    <control type="visualisation id="int"" id ="1">
+    <control type="visualisation" id="int">
         <include>common</include>
     </control>
     <control type="videowindow" id="int">
