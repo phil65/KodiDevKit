@@ -14,12 +14,12 @@ import sublime
 import re
 import os
 import webbrowser
-import mdpopups
 import logging
-
+import subprocess
 from itertools import chain
-from subprocess import Popen
 from xml.sax.saxutils import escape
+
+import mdpopups
 
 from .libs import Utils
 from .libs import sublimelogger
@@ -110,7 +110,7 @@ class KodiDevKit(sublime_plugin.EventListener):
                 word = view.substr(view.word(region))
                 popup_label = INFOS.return_label(word)
         elif "text.xml" in scope_name:
-            if info_type in ["INFO", "ESCINFO", "VAR", "ESCVAR", "LOCALIZE", "EXP"]:
+            if info_type in set(["INFO", "ESCINFO", "VAR", "ESCVAR", "LOCALIZE", "EXP"]):
                 popup_label = INFOS.translate_square_bracket(info_type=info_type,
                                                              info_id=info_id,
                                                              folder=folder)
@@ -146,7 +146,8 @@ class KodiDevKit(sublime_plugin.EventListener):
             if not popup_label and "constant.other.allcaps" in scope_name:
                 window_name = scope_content.lower()[1:-1]
                 if window_name in InfoProvider.WINDOW_NAMES:
-                    popup_label = InfoProvider.WINDOW_FILENAMES[InfoProvider.WINDOW_NAMES.index(window_name)]
+                    window_index = InfoProvider.WINDOW_NAMES.index(window_name)
+                    popup_label = InfoProvider.WINDOW_FILENAMES[window_index]
         # node = INFOS.template_root.find(".//control[@type='label']")
         # logging.info(node)
         # popup_label = node.find(".//available_tags").text.replace("\\n", "<br>")
@@ -293,13 +294,10 @@ class BuildAddonCommand(sublime_plugin.WindowCommand):
 
     @Utils.run_async
     def run(self, pack_textures=True):
-        settings = sublime.load_settings(SETTINGS_FILE)
-        media_path = os.path.join(INFOS.project_path, "media")
-        Utils.texturepacker(media_path=media_path,
-                            settings=settings)
-        zip_path = os.path.join(media_path, os.path.basename(media_path) + ".zip")
+        Utils.texturepacker(media_path=INFOS.media_path,
+                            settings=sublime.load_settings(SETTINGS_FILE))
         Utils.make_archive(media_path,
-                           zip_path)
+                           os.path.join(media_path, os.path.basename(media_path) + ".zip"))
         do_open = sublime.ok_cancel_dialog("Zip file created!\nDo you want to open its location a with file browser?",
                                            "Open")
         if do_open:
@@ -343,7 +341,7 @@ class OpenKodiAddonCommand(sublime_plugin.WindowCommand):
         if index == -1:
             return None
         path = os.path.join(INFOS.get_userdata_folder(), "addons", self.nodes[index])
-        Popen([SUBLIME_PATH, "-n", "-a", path])
+        subprocess.Popen([SUBLIME_PATH, "-n", "-a", path])
 
 
 class ShowFontRefsCommand(QuickPanelCommand):
@@ -422,7 +420,6 @@ class OpenActiveWindowXmlFromRemoteCommand(sublime_plugin.WindowCommand):
 
     @Utils.run_async
     def run(self):
-        self.settings = sublime.load_settings(SETTINGS_FILE)
         folder = self.window.active_view().file_name().split(os.sep)[-2]
         result = kodijson.request(method="XBMC.GetInfoLabels",
                                   params={"labels": ["Window.Property(xmlfile)"]})
@@ -565,9 +562,8 @@ class GoToTagCommand(sublime_plugin.WindowCommand):
     def run(self):
         flags = sublime.CLASS_WORD_START | sublime.CLASS_WORD_END
         view = self.window.active_view()
-        keyword = Utils.get_node_content(view, flags)
-        folder = view.file_name().split(os.sep)[-2]
-        position = INFOS.go_to_tag(keyword, folder)
+        position = INFOS.go_to_tag(keyword=Utils.get_node_content(view, flags),
+                                   folder=view.file_name().split(os.sep)[-2])
         if position:
             self.window.open_file(position, sublime.ENCODED_POSITION)
 
