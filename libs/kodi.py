@@ -13,7 +13,7 @@ APP_NAME = "kodi"
 class Kodi(object):
 
     def __init__(self, *args, **kwargs):
-        pass
+        self.settings = None
 
     def get_userdata_folder(self):
         """
@@ -37,3 +37,6 @@ class Kodi(object):
         if not os.path.exists(addon_path):
             return []
         return [f for f in os.listdir(addon_path) if not os.path.isfile(f)]
+
+    def load_settings(self, settings):
+        self.settings = settings
