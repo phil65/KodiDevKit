@@ -159,6 +159,7 @@ class InfoProvider(object):
             import sublime
             text = sublime.load_resource("Packages/KodiDevKit/data/controls.xml").encode("utf-8")
             self.template_root = ET.fromstring(text, PARSER)
+            # resolve includes
             text = sublime.load_resource("Packages/KodiDevKit/data/data.xml").encode("utf-8")
             root = ET.fromstring(text, PARSER)
         except:
@@ -481,15 +482,14 @@ class InfoProvider(object):
                 color_hex = "#" + item["content"][2:]
                 cont_color = Utils.get_cont_col(color_hex)
                 alpha_percent = round(int(item["content"][:2], 16) / (16 * 16) * 100)
-                color_info += '%s&nbsp;<a style="background-color:%s;color:%s">%s</a> %d %% alpha<br>' % (os.path.basename(item["file"]), color_hex, cont_color, item["content"], alpha_percent)
+                color_info += '%s&nbsp;<a href="test" style="background-color:%s;color:%s">%s</a> %d %% alpha<br>' % (os.path.basename(item["file"]), color_hex, cont_color, item["content"], alpha_percent)
         if color_info:
             return color_info
         if all(c in string.hexdigits for c in color_string) and len(color_string) == 8:
             color_hex = "#" + color_string[2:]
             cont_color = Utils.get_cont_col(color_hex)
             alpha_percent = round(int(color_string[:2], 16) / (16 * 16) * 100)
-            return '<a style="background-color:%s;color:%s">%d %% alpha</a>' % (color_hex, cont_color, alpha_percent)
-        return color_info
+            return '<a href="test" style="background-color:%s;color:%s">%d %% alpha</a>' % (color_hex, cont_color, alpha_percent)
 
     def get_ancestor_info(self, path, line):
         """
@@ -770,8 +770,7 @@ class InfoProvider(object):
         index = include_names.index(ref.text)
         node = self.include_list[folder][index]
         root = ET.fromstring(node["content"])
-        root = self.resolve_includes(root, folder)
-        return root
+        return self.resolve_includes(root, folder)
 
     def resolve_includes(self, xml_source, folder):
         for node in xml_source.xpath(".//include"):
@@ -1042,8 +1041,6 @@ class InfoProvider(object):
                         ["flipx", ["true", "false"]],
                         ["flipy", ["true", "false"]]]
         root = Utils.get_root_from_file(path)
-        # folder = path.split(os.sep)[-2]
-        # root = self.resolve_includes(root, folder)
         if root is None:
             return []
         tree = ET.ElementTree(root)
@@ -1160,21 +1157,25 @@ class InfoProvider(object):
 
     def check_file2(self, path):
         root = Utils.get_root_from_file(path)
-        # xml_file = os.path.basename(path)
-        # folder = path.split(os.sep)[-2]
-        # root = self.resolve_includes(root, folder)
         logging.info(path)
         if root is None:
             return []
-        tree = ET.ElementTree(root)
+        # tree = ET.ElementTree(root)
         listitems = []
         logging.info(self.template_root.tag)
         # find invalid tags
+        all_controls = [t.attrib.get("type") for t in self.template_root]
+        xpath = " or ".join(["@type='{}'".format(c) for c in all_controls])
+        xpath = ".//*[not({}) and @type[string()]]".format(xpath)
+        logging.warning(xpath)
+        for node in root.xpath(xpath):
+            logging.warning(str(node.attrib))
         for template in self.template_root:
+            tpl_tags = [child.tag for child in template.iterchildren()]
             logging.info(template.attrib.get("type"))
-            for node in root.xpath(".//*[@type='%s']/*" % template.attrib.get("type")):
-                # logging.info("hello")
+            for node in root.xpath(".//*[@type='%s']" % template.attrib.get("type")):
+                for subnode in node.iterchildren():
+                    if subnode.tag not in tpl_tags:
+                        logging.info(subnode.tag)
                 pass
         return listitems
-
-
