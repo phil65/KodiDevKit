@@ -453,8 +453,7 @@ class InfoProvider(object):
         po_files = self.get_po_files(os.path.join(self.get_userdata_folder(), "addons"))
         if not po_files:
             po_files = self.get_po_files(os.path.join(self.kodi_path, "addons"))
-        po_files2 = self.get_po_files(os.path.join(self.get_userdata_folder(), "addons"))
-        self.kodi_po_files = po_files + po_files2
+        self.kodi_po_files = po_files
 
     def update_addon_labels(self):
         """
