@@ -296,12 +296,12 @@ class BuildAddonCommand(sublime_plugin.WindowCommand):
     def run(self, pack_textures=True):
         Utils.texturepacker(media_path=INFOS.media_path,
                             settings=sublime.load_settings(SETTINGS_FILE))
-        Utils.make_archive(media_path,
-                           os.path.join(media_path, os.path.basename(media_path) + ".zip"))
+        Utils.make_archive(INFOS.media_path,
+                           os.path.join(INFOS.media_path, os.path.basename(INFOS.media_path) + ".zip"))
         do_open = sublime.ok_cancel_dialog("Zip file created!\nDo you want to open its location a with file browser?",
                                            "Open")
         if do_open:
-            webbrowser.open(media_path)
+            webbrowser.open(INFOS.media_path)
 
 
 class BuildThemeCommand(sublime_plugin.WindowCommand):
