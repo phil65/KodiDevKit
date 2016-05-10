@@ -14,6 +14,7 @@ class Kodi(object):
 
     def __init__(self, *args, **kwargs):
         self.settings = None
+        self.po_files = []
 
     def get_userdata_folder(self):
         """
@@ -40,3 +41,23 @@ class Kodi(object):
 
     def load_settings(self, settings):
         self.settings = settings
+
+    def update_labels(self):
+        """
+        get core po files
+        """
+        self.po_files = self.get_po_files(os.path.join(self.get_userdata_folder(), "addons"))
+        if not self.po_files:
+            self.po_files = self.get_po_files(os.path.join(self.kodi_path, "addons"))
+
+    def get_po_files(self, folder):
+        """
+        get list with pofile objects
+        """
+        po_files = []
+        for item in self.settings.get("language_folders"):
+            path = Utils.check_paths([os.path.join(folder, item, "strings.po"),
+                                      os.path.join(folder, item, "resources", "strings.po")])
+            if os.path.exists(path):
+                po_files.append(Utils.get_po_file(path))
+        return po_files
