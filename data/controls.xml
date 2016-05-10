@@ -14,6 +14,12 @@
     - xpos
     - ypos
     -->
+    <control type="group" id="int">
+        <include>common</include>
+    </control>
+    <control type="grouplist" id="int">
+        <include>common</include>
+    </control>
     <control type="label" id="int">
         <include>common</include>
         <include>label_common</include>
@@ -27,7 +33,6 @@
         <scrollspeed>int</scrollspeed>
         <scrollsuffix>-</scrollsuffix>
     </control>
-
     <control type="fadelabel" id="int">
         <include>common</include>
         <scrollout>bool</scrollout>
