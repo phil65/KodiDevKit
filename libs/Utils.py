@@ -20,7 +20,7 @@ from threading import Thread
 from functools import wraps
 import time
 import logging
-
+from .include import Include
 from .polib import polib
 from lxml import etree as ET
 
@@ -317,10 +317,8 @@ def get_refs_from_file(path, xpath):
     for node in root.xpath(xpath):
         if node.getchildren():
             continue
-        item = {"line": node.sourceline,
-                "type": node.tag,
-                "name": node.text,
-                "filename": xml_file,
-                "file": path}
+        item = Include(node=node,
+                       filename=xml_file,
+                       file=path)
         font_refs.append(item)
     return font_refs

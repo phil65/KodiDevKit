@@ -6,6 +6,9 @@
 import os
 import platform
 from . import Utils
+from urllib.request import Request, urlopen
+import json
+import base64
 
 APP_NAME = "kodi"
 
@@ -15,6 +18,44 @@ class Kodi(object):
     def __init__(self, *args, **kwargs):
         self.settings = None
         self.po_files = []
+        self.kodi_path = None
+
+    @Utils.run_async
+    def request_async(self, method, params):
+        """
+        send JSON command *data to Kodi in separate thread,
+        also needs *settings for remote ip etc.
+        """
+        return self.request(method,
+                            params)
+
+    def request(self, method, params=None):
+        """
+        send JSON command *data to Kodi,
+        also needs *settings for remote ip etc.
+        """
+        address = self.settings.get("kodi_address", "http://localhost:8080")
+        if not address:
+            return None
+        data = {"jsonrpc": "2.0",
+                "method": method,
+                "id": 1}
+        if params:
+            data["params"] = params
+        credentials = '{}:{}'.format(self.settings.get("kodi_username", "kodi"),
+                                     self.settings.get("kodi_password", ""))
+        headers = {'Content-Type': 'application/json',
+                   'Authorization': b'Basic ' + base64.b64encode(credentials.encode('UTF-8'))}
+        request = Request(url=address + "/jsonrpc",
+                          data=json.dumps(data).encode('utf-8'),
+                          headers=headers)
+        try:
+            result = urlopen(request).read()
+            result = json.loads(result.decode("utf-8"))
+            Utils.prettyprint(result)
+            return result
+        except:
+            return None
 
     def get_userdata_folder(self):
         """
@@ -33,6 +74,9 @@ class Kodi(object):
     def get_userdata_addon_folder(self):
         return os.path.join(self.get_userdata_folder(), "addons")
 
+    def get_core_addon_folder(self):
+        return os.path.join(self.kodi_path, "addons")
+
     def get_userdata_addons(self):
         addon_path = self.get_userdata_addon_folder()
         if not os.path.exists(addon_path):
@@ -41,6 +85,7 @@ class Kodi(object):
 
     def load_settings(self, settings):
         self.settings = settings
+        self.kodi_path = settings.get("kodi_path")
 
     def update_labels(self):
         """
@@ -61,3 +106,5 @@ class Kodi(object):
             if os.path.exists(path):
                 po_files.append(Utils.get_po_file(path))
         return po_files
+
+kodi = Kodi()

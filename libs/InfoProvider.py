@@ -11,19 +11,18 @@ KodiDevKit is a tool to assist with Kodi skinning / scripting using Sublime Text
 import os
 import re
 import string
-import platform
 from time import gmtime, strftime
 from lxml import etree as ET
 import logging
 
-from .kodijson import KodiJson
 from . import Utils
+from .addon import Addon
+from .skin import Skin
+from .kodi import kodi
 from .polib import polib
 from .ImageParser import get_image_size
 
-kodijson = KodiJson()
 
-APP_NAME = "kodi"
 # c&p from wiki
 WINDOW_MAP = [("home", "WINDOW_HOME", " 10000", "0", "Home.xml"),
               ("programs", "WINDOW_PROGRAMS", " 10001", "1", "MyPrograms.xml"),
@@ -133,19 +132,15 @@ class InfoProvider(object):
 
     def __init__(self):
         self.include_list = {}
-        self.include_file_list = {}
-        self.window_file_list = {}
+        self.include_files = {}
+        self.window_files = {}
         self.color_list = []
         self.po_files = []
-        self.addon_xml_file = ""
         self.color_file = ""
         self.project_path = ""
-        self.addon_type = ""
-        self.addon_name = ""
-        self.kodi_po_files = []
         self.fonts = {}
+        self.addon = None
         self.po_files = []
-        self.xml_folders = []
         self.addon_po_files = []
 
     def load_data(self):
@@ -183,54 +178,20 @@ class InfoProvider(object):
         """
         scan addon folder and parse skin content etc
         """
-        self.addon_type = ""
-        self.addon_name = ""
+        self.addon = None
         self.project_path = path
-        self.addon_xml_file = Utils.check_paths([os.path.join(self.project_path, "addon.xml")])
-        self.xml_folders = []
+        addon_xml = Utils.check_paths([os.path.join(self.project_path, "addon.xml")])
         self.fonts = []
-        if self.addon_xml_file:
-            root = Utils.get_root_from_file(self.addon_xml_file)
-            for item in root.xpath("/addon[@id]"):
-                self.addon_name = item.attrib["id"]
-                break
-            if root.find(".//import[@addon='xbmc.python']") is None:
-                self.addon_type = "skin"
-                for node in root.findall('.//res'):
-                    self.xml_folders.append(node.attrib["folder"])
-            else:
-                self.addon_type = "python"
-                # TODO: parse all python skin folders correctly
-                paths = [os.path.join(self.project_path, "resources", "skins", "Default", "720p"),
-                         os.path.join(self.project_path, "resources", "skins", "Default", "1080i")]
-                folder = Utils.check_paths(paths)
-                self.xml_folders.append(folder)
+        if addon_xml:
+            self.addon = Addon.by_project(path)
             self.update_addon_labels()
-        if self.xml_folders:
             logging.info("Kodi project detected: " + path)
+        if self.addon and self.addon.xml_folders:
             self.update_include_list()
             self.update_xml_files()
             self.get_colors()
             self.get_fonts()
             # sublime.status_message("KodiDevKit: successfully loaded addon")
-
-    @property
-    def lang_path(self):
-        """
-        returns the add-on language folder path
-        """
-        paths = [os.path.join(self.project_path, "resources", "language"),
-                 os.path.join(self.project_path, "language")]
-        return Utils.check_paths(paths)
-
-    @property
-    def media_path(self):
-        """
-        returns the add-on media folder path
-        """
-        paths = [os.path.join(self.project_path, "media"),
-                 os.path.join(self.project_path, "resources", "skins", "Default", "media")]
-        return Utils.check_paths(paths)
 
     def get_check_listitems(self, check_type):
         """
@@ -249,9 +210,9 @@ class InfoProvider(object):
         """
         Checks if the skin contains all core xml window files
         """
-        for folder in self.xml_folders:
+        for folder in self.addon.xml_folders:
             for item in WINDOW_FILENAMES:
-                if item not in self.window_file_list[folder]:
+                if item not in self.window_files[folder]:
                     logging.info("Skin does not include %s" % item)
 
     def get_colors(self):
@@ -260,7 +221,7 @@ class InfoProvider(object):
         """
         self.color_list = []
         color_path = os.path.join(self.project_path, "colors")
-        if not self.addon_xml_file or not os.path.exists(color_path):
+        if not self.addon.xml_file or not os.path.exists(color_path):
             return False
         for path in os.listdir(color_path):
             logging.info("found color file: " + path)
@@ -278,10 +239,10 @@ class InfoProvider(object):
         """
         create font dict by parsing first fontset
         """
-        if not self.addon_xml_file or not self.xml_folders:
+        if not self.addon.xml_file or not self.addon.xml_folders:
             return False
         self.fonts = {}
-        for folder in self.xml_folders:
+        for folder in self.addon.xml_folders:
             paths = [os.path.join(self.project_path, folder, "Font.xml"),
                      os.path.join(self.project_path, folder, "font.xml")]
             font_file = Utils.check_paths(paths)
@@ -298,31 +259,17 @@ class InfoProvider(object):
                                "filename": node.find("filename").text}
                 self.fonts[folder].append(string_dict)
 
-    def get_userdata_folder(self):
-        """
-        return userdata folder based on platform and portable setting
-        """
-        if platform.system() == "Linux":
-            return os.path.join(os.path.expanduser("~"), ".%s" % APP_NAME)
-        elif platform.system() == "Windows":
-            if self.settings.get("portable_mode"):
-                return os.path.join(self.settings.get("kodi_path"), "portable_data")
-            else:
-                return os.path.join(os.getenv('APPDATA'), "%s" % APP_NAME)
-        elif platform.system() == "Darwin":
-            return os.path.join(os.path.expanduser("~"), "Application Support", "%s" % APP_NAME, "userdata")
-
     def reload_skin_after_save(self, path):
         """
         update include, color and font infos, depending on open file
         """
         folder = path.split(os.sep)[-2]
-        if folder in self.include_file_list:
-            if path in self.include_file_list[folder]:
+        if folder in self.include_files:
+            if path in self.include_files[folder]:
                 self.update_include_list()
         if path.endswith("colors/defaults.xml"):
             self.get_colors()
-        if path.endswith("ont.xml"):
+        if path.endswith(("Font.xml", "font.xml")):
             self.get_fonts()
 
     def update_include_list(self):
@@ -330,11 +277,11 @@ class InfoProvider(object):
         create include list by parsing all include files starting with includes.xml
         """
         self.include_list = {}
-        for folder in self.xml_folders:
+        for folder in self.addon.xml_folders:
             xml_folder = os.path.join(self.project_path, folder)
             paths = [os.path.join(xml_folder, "Includes.xml"),
                      os.path.join(xml_folder, "includes.xml")]
-            self.include_file_list[folder] = []
+            self.include_files[folder] = []
             self.include_list[folder] = []
             include_file = Utils.check_paths(paths)
             self.update_includes(include_file)
@@ -347,7 +294,7 @@ class InfoProvider(object):
         if os.path.exists(xml_file):
             folder = xml_file.split(os.sep)[-2]
             logging.info("found include file: " + xml_file)
-            self.include_file_list[folder].append(xml_file)
+            self.include_files[folder].append(xml_file)
             tags = ["include", "variable", "constant", "expression"]
             self.include_list[folder] += Utils.get_tags_from_file(xml_file,
                                                                   tags)
@@ -363,11 +310,11 @@ class InfoProvider(object):
         """
         update list of all include and window xmls
         """
-        self.window_file_list = {}
-        for path in self.xml_folders:
+        self.window_files = {}
+        for path in self.addon.xml_folders:
             xml_folder = os.path.join(self.project_path, path)
-            self.window_file_list[path] = Utils.get_xml_file_paths(xml_folder)
-            logging.info("found %i XMLs in %s" % (len(self.window_file_list[path]), xml_folder))
+            self.window_files[path] = Utils.get_xml_file_paths(xml_folder)
+            logging.info("found %i XMLs in %s" % (len(self.window_files[path]), xml_folder))
 
     def go_to_tag(self, keyword, folder):
         """
@@ -421,7 +368,7 @@ class InfoProvider(object):
         logging.info("kodi path: " + self.kodi_path)
 
     def get_kodi_addons(self):
-        addon_path = os.path.join(self.get_userdata_folder(), "addons")
+        addon_path = os.path.join(kodi.get_userdata_folder(), "addons")
         if not os.path.exists(addon_path):
             return []
         return [f for f in os.listdir(addon_path) if not os.path.isfile(f)]
@@ -450,16 +397,16 @@ class InfoProvider(object):
         """
         get core po files
         """
-        po_files = self.get_po_files(os.path.join(self.get_userdata_folder(), "addons"))
+        po_files = self.get_po_files(kodi.get_userdata_addon_folder())
         if not po_files:
-            po_files = self.get_po_files(os.path.join(self.kodi_path, "addons"))
+            po_files = self.get_po_files(kodi.get_core_addon_folder())
         self.kodi_po_files = po_files
 
     def update_addon_labels(self):
         """
         get addon po files and update po files list
         """
-        self.addon_po_files = self.get_po_files(self.lang_path)
+        self.addon_po_files = self.get_po_files(self.addon.lang_path)
         self.po_files = self.kodi_po_files + self.addon_po_files
 
     def get_po_files(self, lang_folder_root):
@@ -534,9 +481,9 @@ class InfoProvider(object):
         """
         var_regex = r"\$(?:ESC)?VAR\[(.*?)\]"
         listitems = []
-        for folder in self.xml_folders:
+        for folder in self.addon.xml_folders:
             var_refs = []
-            for xml_file in self.window_file_list[folder]:
+            for xml_file in self.window_files[folder]:
                 path = os.path.join(self.project_path, folder, xml_file)
                 with open(path, encoding="utf8", errors="ignore") as f:
                     for i, line in enumerate(f.readlines()):
@@ -566,10 +513,10 @@ class InfoProvider(object):
         """
         listitems = []
         # include check for each folder separately
-        for folder in self.xml_folders:
+        for folder in self.addon.xml_folders:
             var_refs = []
             # get all include refs
-            for xml_file in self.window_file_list[folder]:
+            for xml_file in self.window_files[folder]:
                 path = os.path.join(self.project_path, folder, xml_file)
                 root = Utils.get_root_from_file(path)
                 if root is None:
@@ -579,7 +526,7 @@ class InfoProvider(object):
                         name = node.text
                         if "file" in node.attrib:
                             include_file = os.path.join(self.project_path, folder, node.attrib["file"])
-                            if include_file not in self.include_file_list[folder]:
+                            if include_file not in self.include_files[folder]:
                                 self.update_includes(include_file)
                     elif node.attrib.get("content"):
                         name = node.attrib["content"]
@@ -614,8 +561,8 @@ class InfoProvider(object):
         """
         scope_name = view.scope_name(view.sel()[0].b)
         # TODO: blank string for settings.xml
-        if "text.xml" in scope_name and self.addon_type == "python" and 32000 <= label_id <= 33000:
-            return "$ADDON[%s %i]" % (self.addon_name, label_id)
+        if "text.xml" in scope_name and self.addon.type == "python" and 32000 <= label_id <= 33000:
+            return "$ADDON[%s %i]" % (self.addon.name, label_id)
         elif "text.xml" in scope_name:
             return "$LOCALIZE[%i]" % label_id
         elif "source.python" in scope_name and 32000 <= label_id <= 33000:
@@ -632,7 +579,7 @@ class InfoProvider(object):
         if path.startswith("special://skin/"):
             return os.path.join(self.project_path, path.replace("special://skin/", ""))
         else:
-            return os.path.join(self.media_path, path)
+            return os.path.join(self.addon.media_path, path)
 
     def get_image_info(self, path):
         imagepath = self.translate_path(path)
@@ -644,9 +591,9 @@ class InfoProvider(object):
 
     def get_font_refs(self):
         font_refs = {}
-        for folder in self.xml_folders:
+        for folder in self.addon.xml_folders:
             font_refs[folder] = []
-            for xml_file in self.window_file_list[folder]:
+            for xml_file in self.window_files[folder]:
                 path = os.path.join(self.project_path, folder, xml_file)
                 font_refs[folder].extend(Utils.get_refs_from_file(path, ".//font"))
         return font_refs
@@ -662,7 +609,7 @@ class InfoProvider(object):
             for node in root.find("fontset").findall("font"):
                 estuary_fonts.append(node.find("name").text)
             # check fonts from each folder independently....
-        for folder in self.xml_folders:
+        for folder in self.addon.xml_folders:
             fontlist = ["-"]
             # create a list with all font names from default fontset
             if folder in self.fonts:
@@ -688,12 +635,12 @@ class InfoProvider(object):
         window_regex = r"(?:Dialog.Close|Window.IsActive|Window.IsVisible|Window)\(([0-9]+)\)"
         control_regex = r"^(?!.*IsActive)(?!.*Window.IsVisible)(?!.*Dialog.Close)(?!.*Window)(?!.*Row)(?!.*Column).*\(([0-9]*?)\)"
         listitems = []
-        for folder in self.xml_folders:
+        for folder in self.addon.xml_folders:
             window_ids = []
             window_refs = []
             control_refs = []
             defines = []
-            for xml_file in self.window_file_list[folder]:
+            for xml_file in self.window_files[folder]:
                 path = os.path.join(self.project_path, folder, xml_file)
                 root = Utils.get_root_from_file(path)
                 if root is None:
@@ -790,8 +737,8 @@ class InfoProvider(object):
                 label += "<b>%s:</b><br>%s<br>" % (e.attrib.get("condition", "fallback"), e.text)
             return label
         elif info_type in ["INFO", "ESCINFO"]:
-            result = kodijson.request(method="XBMC.GetInfoLabels",
-                                      params={"labels": [info_id]})
+            result = kodi.request(method="XBMC.GetInfoLabels",
+                                  params={"labels": [info_id]})
             if result:
                 key, value = result["result"].popitem()
                 if value:
@@ -824,16 +771,10 @@ class InfoProvider(object):
         """
         adds a label to the first pofile from settings (or creates new one if non-existing)
         """
-        if self.addon_type == "skin":
-            start_id = 31000
-            index_offset = 0
-        else:
-            start_id = 32000
-            index_offset = 2
         if not self.addon_po_files:
             po = self.create_new_po_file()
             lang_folder = self.settings.get("language_folders")[0]
-            if self.addon_type == "skin":
+            if self.addon.type == "skin":
                 lang_path = os.path.join(self.project_path, "language", lang_folder)
             else:
                 lang_path = os.path.join(self.project_path, "resources", "language", lang_folder)
@@ -850,7 +791,7 @@ class InfoProvider(object):
                 string_ids.append(int(entry.msgctxt[1:]))
             except:
                 string_ids.append(entry.msgctxt)
-        for label_id in range(start_id, start_id + 1000):
+        for label_id in range(self.addon.LANG_START_ID, self.addon.LANG_START_ID + 1000):
             if label_id not in string_ids:
                 logging.info("first free: " + str(label_id))
                 break
@@ -858,7 +799,7 @@ class InfoProvider(object):
                               msgstr="",
                               msgctxt="#%s" % label_id,
                               occurrences=[(filepath, None)])
-        po.insert(index=int(label_id) - start_id + index_offset,
+        po.insert(index=int(label_id) - self.addon.LANG_START_ID + self.addon.LANG_OFFSET,
                   entry=entry)
         po.save(self.addon_po_files[0].fpath)
         self.update_addon_labels()
@@ -873,8 +814,8 @@ class InfoProvider(object):
         checks = [[".//viewtype[(@label)]", "label"],
                   [".//fontset[(@idloc)]", "idloc"],
                   [".//label[(@fallback)]", "fallback"]]
-        for folder in self.xml_folders:
-            for xml_file in self.window_file_list[folder]:
+        for folder in self.addon.xml_folders:
+            for xml_file in self.window_files[folder]:
                 path = os.path.join(self.project_path, folder, xml_file)
                 root = Utils.get_root_from_file(path)
                 if root is None:
@@ -938,9 +879,9 @@ class InfoProvider(object):
         return listitems
 
     def file_list_generator(self):
-        if self.xml_folders:
-            for folder in self.xml_folders:
-                for xml_file in self.window_file_list[folder]:
+        if self.addon.xml_folders:
+            for folder in self.addon.xml_folders:
+                for xml_file in self.window_files[folder]:
                     yield os.path.join(self.project_path, folder, xml_file)
 
     def check_values(self):
@@ -1163,7 +1104,7 @@ class InfoProvider(object):
         listitems = []
         logging.info(self.template_root.tag)
         # find invalid tags
-        all_controls = [t.attrib.get("type") for t in self.template_root]
+        all_controls = set([t.attrib.get("type") for t in self.template_root])
         xpath = " or ".join(["@type='{}'".format(c) for c in all_controls])
         xpath = ".//*[not({}) and @type[string()]]".format(xpath)
         logging.warning(xpath)

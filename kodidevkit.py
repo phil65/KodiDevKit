@@ -24,10 +24,9 @@ import mdpopups
 from .libs import Utils
 from .libs import sublimelogger
 from .libs import InfoProvider
-from .libs.kodijson import KodiJson
+from .libs.kodi import kodi
 
 INFOS = InfoProvider.InfoProvider()
-kodijson = KodiJson()
 # sublime.log_commands(True)
 APP_NAME = "Kodi"
 SETTINGS_FILE = 'kodidevkit.sublime-settings'
@@ -37,8 +36,8 @@ sublimelogger.config()
 
 
 def plugin_loaded():
-    InfoProvider.kodijson.setup(sublime.load_settings(SETTINGS_FILE))
-    kodijson.setup(sublime.load_settings(SETTINGS_FILE))
+    settings = sublime.load_settings(SETTINGS_FILE)
+    kodi.load_settings(settings)
     INFOS.load_data()
 
 
@@ -78,7 +77,7 @@ class KodiDevKit(sublime_plugin.EventListener):
             # return (completions, sublime.INHIBIT_WORD_COMPLETIONS | sublime.INHIBIT_EXPLICIT_COMPLETIONS)
 
     def on_selection_modified_async(self, view):
-        if len(view.sel()) > 1 or not INFOS.addon_xml_file:
+        if len(view.sel()) > 1 or not INFOS.addon:
             return None
         try:
             region = view.sel()[0]
@@ -157,8 +156,8 @@ class KodiDevKit(sublime_plugin.EventListener):
 
     @Utils.run_async
     def boolean_popup(self, selected_content, view):
-        result = kodijson.request(method="XBMC.GetInfoBooleans",
-                                  params={"booleans": [selected_content]})
+        result = kodi.request(method="XBMC.GetInfoBooleans",
+                              params={"booleans": [selected_content]})
         if result:
             key, value = result["result"].popitem()
             if value is not None:
@@ -181,7 +180,7 @@ class KodiDevKit(sublime_plugin.EventListener):
     def on_load_async(self, view):
         self.check_status()
         # filename = view.file_name()
-        # if INFOS.addon_xml_file and filename and filename.endswith(".xml"):
+        # if INFOS.addon and filename and filename.endswith(".xml"):
         #     self.root = get_root_from_file(filename)
         #     self.tree = ET.ElementTree(self.root)
 
@@ -192,7 +191,7 @@ class KodiDevKit(sublime_plugin.EventListener):
         view.hide_popup()
 
     def on_post_save_async(self, view):
-        if not INFOS.addon_xml_file or not view.file_name():
+        if not INFOS.addon or not view.file_name():
             return False
         if view.file_name().endswith(".xml"):
             if not self.is_modified:
@@ -201,7 +200,7 @@ class KodiDevKit(sublime_plugin.EventListener):
             filename = os.path.basename(view.file_name())
             folder = view.file_name().split(os.sep)[-2]
             INFOS.reload_skin_after_save(view.file_name())
-            if folder in INFOS.window_file_list and filename in INFOS.window_file_list[folder]:
+            if folder in INFOS.window_files and filename in INFOS.window_files[folder]:
                 if self.settings.get("auto_reload_skin", True):
                     self.is_modified = False
                     view.window().run_command("execute_builtin",
@@ -220,7 +219,7 @@ class KodiDevKit(sublime_plugin.EventListener):
             self.settings_loaded = True
         view = sublime.active_window().active_view()
         filename = view.file_name()
-        if INFOS.addon_xml_file and filename and filename.endswith(".xml"):
+        if INFOS.addon and filename and filename.endswith(".xml"):
             view.assign_syntax('Packages/KodiDevKit/KodiSkinXML.sublime-syntax')
         if filename and filename.endswith(".po"):
             view.assign_syntax('Packages/KodiDevKit/Gettext.tmLanguage')
@@ -255,7 +254,7 @@ class ReloadKodiLanguageFilesCommand(sublime_plugin.WindowCommand):
 class QuickPanelCommand(sublime_plugin.WindowCommand):
 
     def is_visible(self):
-        return bool(INFOS.addon_xml_file)
+        return bool(INFOS.addon)
 
     def on_done(self, index):
         if index == -1:
@@ -290,18 +289,16 @@ class QuickPanelCommand(sublime_plugin.WindowCommand):
 class BuildAddonCommand(sublime_plugin.WindowCommand):
 
     def is_visible(self):
-        return INFOS.addon_type == "skin"
+        return INFOS.addon.type == "skin"
 
     @Utils.run_async
     def run(self, pack_textures=True):
-        Utils.texturepacker(media_path=INFOS.media_path,
+        Utils.texturepacker(media_path=INFOS.addon.media_path,
                             settings=sublime.load_settings(SETTINGS_FILE))
-        Utils.make_archive(INFOS.media_path,
-                           os.path.join(INFOS.media_path, os.path.basename(INFOS.media_path) + ".zip"))
-        do_open = sublime.ok_cancel_dialog("Zip file created!\nDo you want to open its location a with file browser?",
-                                           "Open")
-        if do_open:
-            webbrowser.open(INFOS.media_path)
+        Utils.make_archive(INFOS.addon.media_path,
+                           os.path.join(INFOS.addon.media_path, os.path.basename(INFOS.addon.media_path) + ".zip"))
+        if sublime.ok_cancel_dialog("Zip file created!\nDo you want to show it with a file browser?"):
+            webbrowser.open(INFOS.addon.media_path)
 
 
 class BuildThemeCommand(sublime_plugin.WindowCommand):
@@ -323,9 +320,7 @@ class BuildThemeCommand(sublime_plugin.WindowCommand):
         Utils.texturepacker(media_path=media_path,
                             settings=sublime.load_settings(SETTINGS_FILE),
                             xbt_filename=self.theme_folders[index] + ".xbt")
-        do_open = sublime.ok_cancel_dialog("Theme file created!\nDo you want to open its location a with file browser?",
-                                           "Open")
-        if do_open:
+        if sublime.ok_cancel_dialog("Theme file created!\nDo you want to show it with a file browser?"):
             webbrowser.open(media_path)
 
 
@@ -340,7 +335,7 @@ class OpenKodiAddonCommand(sublime_plugin.WindowCommand):
     def on_done(self, index):
         if index == -1:
             return None
-        path = os.path.join(INFOS.get_userdata_folder(), "addons", self.nodes[index])
+        path = os.path.join(kodi.get_userdata_folder(), "addons", self.nodes[index])
         subprocess.Popen([SUBLIME_PATH, "-n", "-a", path])
 
 
@@ -421,14 +416,14 @@ class OpenActiveWindowXmlFromRemoteCommand(sublime_plugin.WindowCommand):
     @Utils.run_async
     def run(self):
         folder = self.window.active_view().file_name().split(os.sep)[-2]
-        result = kodijson.request(method="XBMC.GetInfoLabels",
-                                  params={"labels": ["Window.Property(xmlfile)"]})
+        result = kodi.request(method="XBMC.GetInfoLabels",
+                              params={"labels": ["Window.Property(xmlfile)"]})
         if not result:
             return None
         key, value = result["result"].popitem()
         if os.path.exists(value):
             self.window.open_file(value)
-        for xml_file in INFOS.window_file_list[folder]:
+        for xml_file in INFOS.window_files[folder]:
             if xml_file == value:
                 path = os.path.join(INFOS.project_path, folder, xml_file)
                 self.window.open_file(path)
@@ -495,7 +490,7 @@ class SearchForJsonCommand(sublime_plugin.WindowCommand):
 
     @Utils.run_async
     def run(self):
-        result = kodijson.request(method="JSONRPC.Introspect")
+        result = kodi.request(method="JSONRPC.Introspect")
         self.listitems = [[k, str(v)] for k, v in result["result"]["types"].items()]
         self.listitems += [[k, str(v)] for k, v in result["result"]["methods"].items()]
         self.listitems += [[k, str(v)] for k, v in result["result"]["notifications"].items()]
@@ -514,8 +509,8 @@ class OpenKodiLogCommand(sublime_plugin.WindowCommand):
 
     def run(self):
         filename = "%s.log" % APP_NAME.lower()
-        self.log = Utils.check_paths([os.path.join(INFOS.get_userdata_folder(), filename),
-                                      os.path.join(INFOS.get_userdata_folder(), "temp", filename),
+        self.log = Utils.check_paths([os.path.join(kodi.get_userdata_folder(), filename),
+                                      os.path.join(kodi.get_userdata_folder(), "temp", filename),
                                       os.path.join(os.path.expanduser("~"), "Library", "Logs", filename)])
         self.window.open_file(self.log)
 
@@ -523,7 +518,7 @@ class OpenKodiLogCommand(sublime_plugin.WindowCommand):
 class PreviewImageCommand(sublime_plugin.TextCommand):
 
     def is_visible(self):
-        if not INFOS.media_path:
+        if not INFOS.addon.media_path:
             return False
         flags = sublime.CLASS_WORD_START | sublime.CLASS_WORD_END
         content = Utils.get_node_content(self.view, flags)
@@ -571,11 +566,11 @@ class GoToTagCommand(sublime_plugin.WindowCommand):
 class SearchForImageCommand(sublime_plugin.TextCommand):
 
     def is_visible(self):
-        return bool(INFOS.media_path)
+        return bool(INFOS.addon.media_path)
 
     def run(self, edit):
         path, filename = os.path.split(self.view.file_name())
-        self.imagepath = INFOS.media_path
+        self.imagepath = INFOS.addon.media_path
         if not self.imagepath:
             logging.info("Could not find file " + self.imagepath)
         self.files = []

@@ -18,16 +18,10 @@ import sublime
 import sublime_plugin
 
 from .libs import Utils
-from .libs.kodijson import KodiJson
+from .libs.kodi import kodi
 
 APP_NAME = "Kodi"
 SETTINGS_FILE = 'kodidevkit.sublime-settings'
-
-kodijson = KodiJson()
-
-
-def plugin_loaded():
-    kodijson.setup(sublime.load_settings(SETTINGS_FILE))
 
 
 class OpenSourceFromLog(sublime_plugin.TextCommand):
@@ -264,8 +258,8 @@ class ExecuteBuiltinCommand(sublime_plugin.WindowCommand):
         params = {"addonid": "script.toolbox",
                   "params": {"info": "builtin",
                              "id": builtin}}
-        kodijson.request_async(method="Addons.ExecuteAddon",
-                               params=params)
+        kodi.request_async(method="Addons.ExecuteAddon",
+                           params=params)
 
 
 class GetInfoLabelsPromptCommand(sublime_plugin.WindowCommand):
@@ -283,8 +277,8 @@ class GetInfoLabelsPromptCommand(sublime_plugin.WindowCommand):
         self.settings.set("prev_infolabel", label_string)
         words = label_string.split(",")
         logging.warning("send request...")
-        result = kodijson.request(method="XBMC.GetInfoLabels",
-                                  params={"labels": words})
+        result = kodi.request(method="XBMC.GetInfoLabels",
+                              params={"labels": words})
         if result:
             logging.warning("Got result:")
             key, value = result["result"].popitem()
@@ -306,8 +300,8 @@ class GetInfoBooleansPromptCommand(sublime_plugin.WindowCommand):
         self.settings.set("prev_boolean", label_string)
         words = label_string.split(",")
         logging.warning("send request...")
-        result = kodijson.request(method="XBMC.GetInfoBooleans",
-                                  params={"booleans": words})
+        result = kodi.request(method="XBMC.GetInfoBooleans",
+                              params={"booleans": words})
         if result:
             logging.warning("Got result:")
             key, value = result["result"].popitem()

@@ -3,10 +3,9 @@
 	[
 		"xml"
 	],
-    // "auto_complete_selector": "source - (comment, string.quoted)",
-    "auto_complete_triggers": [
-        {"selector": "text.xml", "characters": "."},
-        {"selector": "text.xml", "characters": ">"},
-        {"selector": "text.xml", "characters": "["}
+    "auto_complete_selector": "source, text",
+    "auto_complete_triggers":
+    [
+        {"selector": "text.xml", "characters": ".>["},
     ]
 }
