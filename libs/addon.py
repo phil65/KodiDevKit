@@ -5,8 +5,10 @@
 
 import os
 from . import Utils
+from .polib import polib
 import sublime
 import logging
+from time import gmtime, strftime
 
 SETTINGS_FILE = 'kodidevkit.sublime-settings'
 
@@ -95,7 +97,65 @@ class Addon(object):
         update list of all include and window xmls
         """
         self.window_files = {}
-        for path in self.addon.xml_folders:
-            xml_folder = os.path.join(self.project_path, path)
+        for path in self.xml_folders:
+            xml_folder = os.path.join(self.path, path)
             self.window_files[path] = Utils.get_xml_file_paths(xml_folder)
             logging.info("found %i XMLs in %s" % (len(self.window_files[path]), xml_folder))
+
+    def create_new_po_file(self):
+        """
+        creates a new pofile and returns it (doesnt save yet)
+        """
+        po = polib.POFile()
+        mail = ""
+        actual_date = strftime("%Y-%m-%d %H:%M:%S", gmtime())
+        po.metadata = {
+            'Project-Id-Version': '1.0',
+            'Report-Msgid-Bugs-To': '%s' % mail,
+            'POT-Creation-Date': actual_date,
+            'PO-Revision-Date': actual_date,
+            'Last-Translator': 'you <%s>' % mail,
+            'Language-Team': 'English <%s>' % mail,
+            'MIME-Version': '1.0',
+            'Content-Type': 'text/plain; charset=utf-8',
+            'Content-Transfer-Encoding': '8bit',
+        }
+        return po
+
+    def create_new_label(self, word, filepath):
+        """
+        adds a label to the first pofile from settings (or creates new one if non-existing)
+        """
+        if not self.po_files:
+            po = self.create_new_po_file()
+            lang_folder = self.settings.get("language_folders")[0]
+            if self.type == "skin":
+                lang_path = os.path.join(self.path, "language", lang_folder)
+            else:
+                lang_path = os.path.join(self.path, "resources", "language", lang_folder)
+            if not os.path.exists(lang_path):
+                os.makedirs(lang_path)
+            po.save(os.path.join(lang_path, "strings.po"))
+            self.po_files.append(po)
+            logging.critical("New language file created")
+        else:
+            po = self.po_files[0]
+        string_ids = []
+        for entry in po:
+            try:
+                string_ids.append(int(entry.msgctxt[1:]))
+            except:
+                string_ids.append(entry.msgctxt)
+        for label_id in range(self.LANG_START_ID, self.LANG_START_ID + 1000):
+            if label_id not in string_ids:
+                logging.info("first free: " + str(label_id))
+                break
+        entry = polib.POEntry(msgid=word,
+                              msgstr="",
+                              msgctxt="#%s" % label_id,
+                              occurrences=[(filepath, None)])
+        po.insert(index=int(label_id) - self.LANG_START_ID + self.LANG_OFFSET,
+                  entry=entry)
+        po.save(self.po_files[0].fpath)
+        self.update_labels()
+        return label_id

@@ -10,6 +10,7 @@ import logging
 from lxml import etree as ET
 import string
 
+
 class Skin(addon.Addon):
     LANG_START_ID = 31000
     LANG_OFFSET = 0

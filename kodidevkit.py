@@ -635,8 +635,8 @@ class MoveToLanguageFile(sublime_plugin.TextCommand):
         region = self.view.sel()[0]
         rel_path = self.view.file_name().replace(INFOS.project_path, "").replace("\\", "/")
         if self.labels[index] == "Create new label":
-            label_id = INFOS.create_new_label(word=self.view.substr(region),
-                                              filepath=rel_path)
+            label_id = INFOS.addon.create_new_label(word=self.view.substr(region),
+                                                    filepath=rel_path)
         else:
             label_id = self.label_ids[index][1:]
             if 31000 <= int(label_id) < 33000:

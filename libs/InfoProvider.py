@@ -10,14 +10,12 @@ KodiDevKit is a tool to assist with Kodi skinning / scripting using Sublime Text
 
 import os
 import re
-from time import gmtime, strftime
 from lxml import etree as ET
 import logging
 
 from . import Utils
 from .addon import Addon
 from .kodi import kodi
-from .polib import polib
 from .ImageParser import get_image_size
 
 
@@ -640,64 +638,6 @@ class InfoProvider(object):
         elif info_type == "LOCALIZE":
             return self.return_label(info_id)
         return ""
-
-    def create_new_po_file(self):
-        """
-        creates a new pofile and returns it (doesnt save yet)
-        """
-        po = polib.POFile()
-        mail = ""
-        actual_date = strftime("%Y-%m-%d %H:%M:%S", gmtime())
-        po.metadata = {
-            'Project-Id-Version': '1.0',
-            'Report-Msgid-Bugs-To': '%s' % mail,
-            'POT-Creation-Date': actual_date,
-            'PO-Revision-Date': actual_date,
-            'Last-Translator': 'you <%s>' % mail,
-            'Language-Team': 'English <%s>' % mail,
-            'MIME-Version': '1.0',
-            'Content-Type': 'text/plain; charset=utf-8',
-            'Content-Transfer-Encoding': '8bit',
-        }
-        return po
-
-    def create_new_label(self, word, filepath):
-        """
-        adds a label to the first pofile from settings (or creates new one if non-existing)
-        """
-        if not self.addon.po_files:
-            po = self.create_new_po_file()
-            lang_folder = self.settings.get("language_folders")[0]
-            if self.addon.type == "skin":
-                lang_path = os.path.join(self.project_path, "language", lang_folder)
-            else:
-                lang_path = os.path.join(self.project_path, "resources", "language", lang_folder)
-            if not os.path.exists(lang_path):
-                os.makedirs(lang_path)
-            po.save(os.path.join(lang_path, "strings.po"))
-            self.addon.po_files.append(po)
-            logging.critical("New language file created")
-        else:
-            po = self.addon.po_files[0]
-        string_ids = []
-        for entry in po:
-            try:
-                string_ids.append(int(entry.msgctxt[1:]))
-            except:
-                string_ids.append(entry.msgctxt)
-        for label_id in range(self.addon.LANG_START_ID, self.addon.LANG_START_ID + 1000):
-            if label_id not in string_ids:
-                logging.info("first free: " + str(label_id))
-                break
-        entry = polib.POEntry(msgid=word,
-                              msgstr="",
-                              msgctxt="#%s" % label_id,
-                              occurrences=[(filepath, None)])
-        po.insert(index=int(label_id) - self.addon.LANG_START_ID + self.addon.LANG_OFFSET,
-                  entry=entry)
-        po.save(self.addon.po_files[0].fpath)
-        self.addon.update_labels()
-        return label_id
 
     def check_labels(self):
         listitems = []
