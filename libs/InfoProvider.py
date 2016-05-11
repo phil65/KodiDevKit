@@ -399,18 +399,9 @@ class InfoProvider(object):
         file_size = os.path.getsize(imagepath) / 1024
         return "<b>Dimensions:</b> %sx%s <br><b>File size:</b> %.2f kb" % (width, height, file_size)
 
-    def get_font_refs(self):
-        font_refs = {}
-        for folder in self.addon.xml_folders:
-            font_refs[folder] = []
-            for xml_file in self.addon.window_files[folder]:
-                path = os.path.join(self.project_path, folder, xml_file)
-                font_refs[folder].extend(Utils.get_refs_from_file(path, ".//font"))
-        return font_refs
-
     def check_fonts(self):
         listitems = []
-        font_refs = self.get_font_refs()
+        font_refs = self.addon.get_font_refs()
         # get estuary fonts..
         estuary_fonts = []
         estuary_font_file = os.path.join(self.kodi_path, "addons", "skin.estuary", "1080i", "Font.xml")

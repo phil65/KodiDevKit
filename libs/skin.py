@@ -159,3 +159,12 @@ class Skin(addon.Addon):
             self.get_colors()
         if path.endswith(("Font.xml", "font.xml")):
             self.get_fonts()
+
+    def get_font_refs(self):
+        font_refs = {}
+        for folder in self.xml_folders:
+            font_refs[folder] = []
+            for xml_file in self.window_files[folder]:
+                path = os.path.join(self.path, folder, xml_file)
+                font_refs[folder].extend(Utils.get_refs_from_file(path, ".//font"))
+        return font_refs

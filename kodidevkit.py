@@ -321,7 +321,7 @@ class ShowFontRefsCommand(QuickPanelCommand):
         self.nodes = []
         view = self.window.active_view()
         INFOS.addon.update_xml_files()
-        font_refs = INFOS.get_font_refs()
+        font_refs = INFOS.addon.get_font_refs()
         self.folder = view.file_name().split(os.sep)[-2]
         self.nodes = [ref for ref in font_refs[self.folder] if ref["name"] == "Font_Reg28"]
         listitems = [i["name"] for i in self.nodes]
