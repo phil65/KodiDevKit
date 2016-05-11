@@ -267,7 +267,8 @@ class QuickPanelCommand(sublime_plugin.WindowCommand):
                               sublime.ENCODED_POSITION | sublime.TRANSIENT)
 
     @Utils.run_async
-    def select_text(self, view, node):
+    @staticmethod
+    def select_text(view, node):
         while view.is_loading():
             pass
         view.sel().clear()
