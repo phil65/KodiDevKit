@@ -38,6 +38,7 @@ def plugin_loaded():
     kodi.load_settings(settings)
     INFOS.load_settings(settings)
     INFOS.load_data()
+    KodiDevKit.settings = settings
 
 
 class KodiDevKit(sublime_plugin.EventListener):
