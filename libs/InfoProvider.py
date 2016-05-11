@@ -525,27 +525,6 @@ class InfoProvider(object):
                     node.getparent().replace(node, new_include)
         return xml_source
 
-    def translate_square_bracket(self, info_type, info_id, folder):
-        if info_type in ["VAR", "ESCVAR", "EXP"]:
-            node = self.addon.return_node(info_id, folder=folder)
-            root = ET.fromstring(node["content"])
-            if root is None:
-                return None
-            label = ""
-            for e in root.iterchildren():
-                label += "<b>%s:</b><br>%s<br>" % (e.attrib.get("condition", "fallback"), e.text)
-            return label
-        elif info_type in ["INFO", "ESCINFO"]:
-            result = kodi.request(method="XBMC.GetInfoLabels",
-                                  params={"labels": [info_id]})
-            if result:
-                _, value = result["result"].popitem()
-                if value:
-                    return str(value)
-        elif info_type == "LOCALIZE":
-            return self.return_label(info_id)
-        return ""
-
     def check_labels(self):
         listitems = []
         refs = []

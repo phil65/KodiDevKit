@@ -18,6 +18,7 @@ import logging
 from itertools import chain
 from xml.sax.saxutils import escape
 
+from lxml import etree as ET
 import mdpopups
 
 from .libs import Utils
@@ -108,9 +109,23 @@ class KodiDevKit(sublime_plugin.EventListener):
                 popup_label = INFOS.return_label(word)
         elif "text.xml" in scope_name:
             if info_type in set(["INFO", "ESCINFO", "VAR", "ESCVAR", "LOCALIZE", "EXP"]):
-                popup_label = INFOS.translate_square_bracket(info_type=info_type,
-                                                             info_id=info_id,
-                                                             folder=folder)
+
+                if info_type in ["VAR", "ESCVAR", "EXP"]:
+                    node = INFOS.addon.return_node(info_id, folder=folder)
+                    node_content = str(node["content"])
+                    if node_content:
+                        popup_label = mdpopups.syntax_highlight(view=view,
+                                                                src=node_content,
+                                                                language="xml")
+                elif info_type in ["INFO", "ESCINFO"]:
+                    result = kodi.request(method="XBMC.GetInfoLabels",
+                                          params={"labels": [info_id]})
+                    if result:
+                        _, value = result["result"].popitem()
+                        if value:
+                            return str(value)
+                elif info_type == "LOCALIZE":
+                    popup_label = self.return_label(info_id)
             if not popup_label:
                 if "<include>" in line_contents or "<include content=" in line_contents:
                     content = Utils.get_node_content(view, flags)
