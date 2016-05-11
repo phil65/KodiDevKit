@@ -179,10 +179,6 @@ class KodiDevKit(sublime_plugin.EventListener):
 
     def on_load_async(self, view):
         self.check_status()
-        # filename = view.file_name()
-        # if INFOS.addon and filename and filename.endswith(".xml"):
-        #     self.root = get_root_from_file(filename)
-        #     self.tree = ET.ElementTree(self.root)
 
     def on_activated_async(self, view):
         self.check_status()
@@ -243,12 +239,6 @@ class ReloadKodiLanguageFilesCommand(sublime_plugin.WindowCommand):
         INFOS.get_settings(sublime.load_settings(SETTINGS_FILE))
         INFOS.update_core_labels()
         INFOS.update_addon_labels()
-        # view = self.window.active_view()
-        # regions = view.find_by_selector("variable.parameter")
-        # logging.info(regions)
-        # for region in regions:
-        #     logging.info(view.substr(region))
-        #     view.sel().add(region)
 
 
 class QuickPanelCommand(sublime_plugin.WindowCommand):
@@ -322,21 +312,6 @@ class BuildThemeCommand(sublime_plugin.WindowCommand):
                             xbt_filename=self.theme_folders[index] + ".xbt")
         if sublime.ok_cancel_dialog("Theme file created!\nDo you want to show it with a file browser?"):
             webbrowser.open(media_path)
-
-
-class OpenKodiAddonCommand(sublime_plugin.WindowCommand):
-
-    def run(self):
-        self.nodes = INFOS.get_kodi_addons()
-        self.window.show_quick_panel(self.nodes,
-                                     lambda s: self.on_done(s),
-                                     selected_index=0)
-
-    def on_done(self, index):
-        if index == -1:
-            return None
-        path = os.path.join(kodi.get_userdata_folder(), "addons", self.nodes[index])
-        subprocess.Popen([SUBLIME_PATH, "-n", "-a", path])
 
 
 class ShowFontRefsCommand(QuickPanelCommand):

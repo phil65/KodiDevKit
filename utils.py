@@ -135,6 +135,12 @@ class LogCommand(sublime_plugin.TextCommand):
 
 class CreateElementRowCommand(sublime_plugin.WindowCommand):
 
+    """
+    Creates duplicates based on a template defined by current text selection
+    Show input panel for user to enter number of items to generate,
+    then execute ReplaceXmlElementsCommand
+    """
+
     def run(self):
         self.window.show_input_panel("Enter number of items to generate",
                                      "1",
@@ -147,6 +153,10 @@ class CreateElementRowCommand(sublime_plugin.WindowCommand):
 
 
 class ReplaceXmlElementsCommand(sublime_plugin.TextCommand):
+
+    """
+    Create *num_items duplicates based on template defined by current text selection
+    """
 
     def run(self, edit, num_items):
         if not num_items.isdigit():
@@ -165,6 +175,11 @@ class ReplaceXmlElementsCommand(sublime_plugin.TextCommand):
 
 class EvaluateMathExpressionPromptCommand(sublime_plugin.WindowCommand):
 
+    """
+    Allows calculations for currently selected regions
+    Shows an input panel so user can enter equation, then execute EvaluateMathExpressionCommand
+    """
+
     def run(self):
         self.window.show_input_panel("Write Equation (x = selected int)",
                                      "x",
@@ -178,6 +193,10 @@ class EvaluateMathExpressionPromptCommand(sublime_plugin.WindowCommand):
 
 class EvaluateMathExpressionCommand(sublime_plugin.TextCommand):
 
+    """
+    Change currently selected regions based on *equation
+    """
+
     def run(self, edit, equation):
         for i, region in enumerate(self.view.sel()):
             text = self.view.substr(region)
@@ -187,6 +206,10 @@ class EvaluateMathExpressionCommand(sublime_plugin.TextCommand):
 
 
 class ColorPickerCommand(sublime_plugin.WindowCommand):
+
+    """
+    Launch ColorPicker, return kodi-formatted color string
+    """
 
     def is_visible(self):
         settings = sublime.load_settings('KodiColorPicker.sublime-settings')
@@ -208,6 +231,10 @@ class ColorPickerCommand(sublime_plugin.WindowCommand):
 
 
 class SetKodiFolderCommand(sublime_plugin.WindowCommand):
+
+    """
+    Show input panel to set kodi folder, set default value according to OS
+    """
 
     def run(self):
         if sublime.platform() == "linux":
@@ -239,6 +266,10 @@ class SetKodiFolderCommand(sublime_plugin.WindowCommand):
 
 class ExecuteBuiltinPromptCommand(sublime_plugin.WindowCommand):
 
+    """
+    Shows an input dialog, then triggers ExecuteBuiltinCommand
+    """
+
     def run(self):
         self.settings = sublime.load_settings(SETTINGS_FILE)
         self.window.show_input_panel("Execute builtin",
@@ -254,6 +285,10 @@ class ExecuteBuiltinPromptCommand(sublime_plugin.WindowCommand):
 
 class ExecuteBuiltinCommand(sublime_plugin.WindowCommand):
 
+    """
+    Sends json request to execute a builtin using script.toolbox
+    """
+
     def run(self, builtin):
         params = {"addonid": "script.toolbox",
                   "params": {"info": "builtin",
@@ -263,6 +298,11 @@ class ExecuteBuiltinCommand(sublime_plugin.WindowCommand):
 
 
 class GetInfoLabelsPromptCommand(sublime_plugin.WindowCommand):
+
+    """
+    Displays the values of chosen infolabels via output panel
+    User chooses infolabels via input panel
+    """
 
     def run(self):
         self.settings = sublime.load_settings(SETTINGS_FILE)
@@ -287,6 +327,11 @@ class GetInfoLabelsPromptCommand(sublime_plugin.WindowCommand):
 
 class GetInfoBooleansPromptCommand(sublime_plugin.WindowCommand):
 
+    """
+    Displays the values of chosen booleans via output panel
+    User chooses booleans via input panel
+    """
+
     def run(self):
         self.settings = sublime.load_settings(SETTINGS_FILE)
         self.window.show_input_panel("Get boolean values (comma-separated)",
@@ -307,3 +352,21 @@ class GetInfoBooleansPromptCommand(sublime_plugin.WindowCommand):
             key, value = result["result"].popitem()
             logging.warning(str(value))
 
+
+class OpenKodiAddonCommand(sublime_plugin.WindowCommand):
+
+    """
+    Open another SublimeText instance containing the chosen addon
+    """
+
+    def run(self):
+        self.nodes = kodi.get_addons()
+        self.window.show_quick_panel(self.nodes,
+                                     lambda s: self.on_done(s),
+                                     selected_index=0)
+
+    def on_done(self, index):
+        if index == -1:
+            return None
+        path = os.path.join(kodi.get_userdata_folder(), "addons", self.nodes[index])
+        subprocess.Popen([SUBLIME_PATH, "-n", "-a", path])
