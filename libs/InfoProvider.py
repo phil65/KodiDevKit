@@ -241,20 +241,20 @@ class InfoProvider(object):
         """
         recursive, walks through include files and updates include list and include file list
         """
-        if os.path.exists(xml_file):
-            folder = xml_file.split(os.sep)[-2]
-            logging.info("found include file: " + xml_file)
-            self.include_files[folder].append(xml_file)
-            tags = ["include", "variable", "constant", "expression"]
-            self.include_list[folder] += Utils.get_tags_from_file(xml_file,
-                                                                  tags)
-            root = Utils.get_root_from_file(xml_file)
-            for node in root.findall("include"):
-                if "file" in node.attrib and node.attrib["file"] != "script-skinshortcuts-includes.xml":
-                    xml_file = os.path.join(self.project_path, folder, node.attrib["file"])
-                    self.update_includes(xml_file)
-        else:
+        if not os.path.exists(xml_file):
             logging.info("Could not find include file " + xml_file)
+            return None
+        folder = xml_file.split(os.sep)[-2]
+        logging.info("found include file: " + xml_file)
+        self.include_files[folder].append(xml_file)
+        tags = ["include", "variable", "constant", "expression"]
+        self.include_list[folder] += Utils.get_tags_from_file(xml_file,
+                                                              tags)
+        root = Utils.get_root_from_file(xml_file)
+        for node in root.findall("include"):
+            if "file" in node.attrib and node.attrib["file"] != "script-skinshortcuts-includes.xml":
+                xml_file = os.path.join(self.project_path, folder, node.attrib["file"])
+                self.update_includes(xml_file)
 
     def update_xml_files(self):
         """
