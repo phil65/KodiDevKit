@@ -5,7 +5,7 @@
 
 import os
 import platform
-from . import Utils
+from .. import Utils
 from urllib.request import Request, urlopen
 import json
 import base64
@@ -107,4 +107,8 @@ class Kodi(object):
                 po_files.append(Utils.get_po_file(path))
         return po_files
 
-kodi = Kodi()
+    def get_addons(self):
+        addon_path = os.path.join(self.get_userdata_folder(), "addons")
+        if not os.path.exists(addon_path):
+            return []
+        return [f for f in os.listdir(addon_path) if not os.path.isfile(f)]
