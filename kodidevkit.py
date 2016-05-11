@@ -544,17 +544,13 @@ class SearchForImageCommand(sublime_plugin.TextCommand):
         return INFOS.addon and INFOS.addon.media_path
 
     def run(self, edit):
-        path, filename = os.path.split(self.view.file_name())
-        self.imagepath = INFOS.addon.media_path
-        if not self.imagepath:
-            logging.info("Could not find file " + self.imagepath)
         self.files = []
-        for path, subdirs, files in os.walk(self.imagepath):
+        for path, subdirs, files in os.walk(INFOS.addon.media_path):
             if "studio" in path or "recordlabel" in path:
                 continue
             for filename in files:
                 img_path = os.path.join(path, filename)
-                img_path = img_path.replace(self.imagepath, "").replace("\\", "/")
+                img_path = img_path.replace(INFOS.addon.media_path, "").replace("\\", "/")
                 if img_path.startswith("/"):
                     img_path = img_path[1:]
                 self.files.append(img_path)
@@ -576,12 +572,12 @@ class SearchForImageCommand(sublime_plugin.TextCommand):
         if index == 0:
             self.view.run_command("insert", {"characters": self.files[fileindex]})
         elif index == 1:
-            os.system("start " + os.path.join(self.imagepath, self.files[fileindex]))
+            os.system("start " + os.path.join(INFOS.addon.media_path, self.files[fileindex]))
         sublime.active_window().focus_view(self.view)
 
     def show_preview(self, index):
         if index >= 0:
-            file_path = os.path.join(self.imagepath, self.files[index])
+            file_path = os.path.join(INFOS.addon.media_path, self.files[index])
         sublime.active_window().open_file(file_path, sublime.TRANSIENT)
 
 
