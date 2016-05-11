@@ -175,7 +175,7 @@ class KodiDevKit(sublime_plugin.EventListener):
                             on_navigate=lambda label_id, view=view: Utils.jump_to_label_declaration(view, label_id))
 
     def on_modified_async(self, view):
-        if INFOS.project_path and view.file_name() and view.file_name().endswith(".xml"):
+        if INFOS.addon.path and view.file_name() and view.file_name().endswith(".xml"):
             self.is_modified = True
 
     def on_load_async(self, view):
@@ -279,7 +279,7 @@ class QuickPanelCommand(sublime_plugin.WindowCommand):
 class BuildAddonCommand(sublime_plugin.WindowCommand):
 
     def is_visible(self):
-        return INFOS.addon.type == "skin"
+        return INFOS.addon and INFOS.addon.type == "skin"
 
     @Utils.run_async
     def run(self, pack_textures=True):
@@ -294,10 +294,10 @@ class BuildAddonCommand(sublime_plugin.WindowCommand):
 class BuildThemeCommand(sublime_plugin.WindowCommand):
 
     def is_visible(self):
-        return os.path.exists(os.path.join(INFOS.project_path, "themes"))
+        return INFOS.addon and os.path.exists(os.path.join(INFOS.addon.path, "themes"))
 
     def run(self, pack_textures=True):
-        self.theme_folders = [folder for folder in os.listdir(os.path.join(INFOS.project_path, "themes"))]
+        self.theme_folders = [folder for folder in os.listdir(os.path.join(INFOS.addon.path, "themes"))]
         self.window.show_quick_panel(self.theme_folders,
                                      lambda s: self.on_done(s),
                                      selected_index=0)
@@ -306,7 +306,7 @@ class BuildThemeCommand(sublime_plugin.WindowCommand):
     def on_done(self, index):
         if index == -1:
             return None
-        media_path = os.path.join(INFOS.project_path, "themes", self.theme_folders[index])
+        media_path = os.path.join(INFOS.addon.path, "themes", self.theme_folders[index])
         Utils.texturepacker(media_path=media_path,
                             settings=sublime.load_settings(SETTINGS_FILE),
                             xbt_filename=self.theme_folders[index] + ".xbt")
@@ -400,7 +400,7 @@ class OpenActiveWindowXmlFromRemoteCommand(sublime_plugin.WindowCommand):
             self.window.open_file(value)
         for xml_file in INFOS.addon.window_files[folder]:
             if xml_file == value:
-                path = os.path.join(INFOS.project_path, folder, xml_file)
+                path = os.path.join(INFOS.addon.path, folder, xml_file)
                 self.window.open_file(path)
                 return None
 
@@ -588,7 +588,7 @@ class SearchForImageCommand(sublime_plugin.TextCommand):
 class SearchForFontCommand(sublime_plugin.TextCommand):
 
     def is_visible(self):
-        return bool(INFOS.addon.fonts)
+        return INFOS.addon and INFOS.addon.fonts
 
     def run(self, edit):
         self.fonts = []
@@ -608,7 +608,7 @@ class MoveToLanguageFile(sublime_plugin.TextCommand):
 
     def is_visible(self):
         scope_name = self.view.scope_name(self.view.sel()[0].b)
-        if INFOS.project_path and INFOS.addon and INFOS.addon.po_files:
+        if INFOS.addon and INFOS.addon.po_files:
             if "text.xml" in scope_name or "source.python" in scope_name:
                 return self.view.sel()[0].b != self.view.sel()[0].a
         return False
@@ -635,7 +635,7 @@ class MoveToLanguageFile(sublime_plugin.TextCommand):
         if index == -1:
             return None
         region = self.view.sel()[0]
-        rel_path = self.view.file_name().replace(INFOS.project_path, "").replace("\\", "/")
+        rel_path = self.view.file_name().replace(INFOS.addon.path, "").replace("\\", "/")
         if self.labels[index] == "Create new label":
             label_id = INFOS.addon.create_new_label(word=self.view.substr(region),
                                                     filepath=rel_path)
@@ -659,18 +659,18 @@ class ReplaceTextCommand(sublime_plugin.TextCommand):
 class SwitchXmlFolderCommand(QuickPanelCommand):
 
     def is_visible(self):
-        return len(INFOS.xml_folders) > 1
+        return INFOS.addon and len(INFOS.addon.xml_folders) > 1
 
     def run(self):
         view = self.window.active_view()
         self.nodes = []
         line, _ = view.rowcol(view.sel()[0].b)
         filename = os.path.basename(view.file_name())
-        for folder in INFOS.xml_folders:
-            node = {"file": os.path.join(INFOS.project_path, folder, filename),
+        for folder in INFOS.addon.xml_folders:
+            node = {"file": os.path.join(INFOS.addon.path, folder, filename),
                     "line": line + 1}
             self.nodes.append(node)
-        self.window.show_quick_panel(INFOS.xml_folders,
+        self.window.show_quick_panel(INFOS.addon.xml_folders,
                                      lambda s: self.on_done(s),
                                      selected_index=0,
                                      on_highlight=lambda s: self.show_preview(s))

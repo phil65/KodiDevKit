@@ -127,7 +127,6 @@ PARSER = ET.XMLParser(remove_blank_text=True, remove_comments=True)
 class InfoProvider(object):
 
     def __init__(self):
-        self.project_path = ""
         self.addon = None
 
     def load_data(self):
@@ -166,8 +165,7 @@ class InfoProvider(object):
         scan addon folder and parse skin content etc
         """
         self.addon = None
-        self.project_path = path
-        addon_xml = Utils.check_paths([os.path.join(self.project_path, "addon.xml")])
+        addon_xml = Utils.check_paths([os.path.join(path, "addon.xml")])
         if addon_xml:
             self.addon = Addon.by_project(path)
             logging.info("Kodi project detected: " + path)
@@ -214,7 +212,7 @@ class InfoProvider(object):
                     return "%s:%s" % (node["file"], node["line"])
             for node in self.addon.fonts[folder]:
                 if node["name"] == keyword:
-                    path = os.path.join(self.project_path, folder, "Font.xml")
+                    path = os.path.join(self.addon.path, folder, "Font.xml")
                     return "%s:%s" % (path, node["line"])
             for node in self.addon.colors:
                 if node["name"] == keyword and node["file"].endswith("defaults.xml"):
@@ -303,7 +301,7 @@ class InfoProvider(object):
         for folder in self.addon.xml_folders:
             var_refs = []
             for xml_file in self.addon.window_files[folder]:
-                path = os.path.join(self.project_path, folder, xml_file)
+                path = os.path.join(self.addon.path, folder, xml_file)
                 with open(path, encoding="utf8", errors="ignore") as f:
                     for i, line in enumerate(f.readlines()):
                         for match in re.finditer(var_regex, line):
@@ -336,7 +334,7 @@ class InfoProvider(object):
             var_refs = []
             # get all include refs
             for xml_file in self.addon.window_files[folder]:
-                path = os.path.join(self.project_path, folder, xml_file)
+                path = os.path.join(self.addon.path, folder, xml_file)
                 root = Utils.get_root_from_file(path)
                 if root is None:
                     continue
@@ -344,7 +342,7 @@ class InfoProvider(object):
                     if node.text and not node.text.startswith("skinshortcuts-"):
                         name = node.text
                         if "file" in node.attrib:
-                            include_file = os.path.join(self.project_path, folder, node.attrib["file"])
+                            include_file = os.path.join(self.addon.path, folder, node.attrib["file"])
                             if include_file not in self.addon.include_files[folder]:
                                 self.addon.update_includes(include_file)
                     elif node.attrib.get("content"):
@@ -442,7 +440,7 @@ class InfoProvider(object):
             control_refs = []
             defines = []
             for xml_file in self.addon.window_files[folder]:
-                path = os.path.join(self.project_path, folder, xml_file)
+                path = os.path.join(self.addon.path, folder, xml_file)
                 root = Utils.get_root_from_file(path)
                 if root is None:
                     continue
@@ -559,7 +557,7 @@ class InfoProvider(object):
                   [".//label[(@fallback)]", "fallback"]]
         for folder in self.addon.xml_folders:
             for xml_file in self.addon.window_files[folder]:
-                path = os.path.join(self.project_path, folder, xml_file)
+                path = os.path.join(self.addon.path, folder, xml_file)
                 root = Utils.get_root_from_file(path)
                 if root is None:
                     continue
@@ -625,7 +623,7 @@ class InfoProvider(object):
         if self.addon.xml_folders:
             for folder in self.addon.xml_folders:
                 for xml_file in self.addon.window_files[folder]:
-                    yield os.path.join(self.project_path, folder, xml_file)
+                    yield os.path.join(self.addon.path, folder, xml_file)
 
     def check_values(self):
         listitems = []
