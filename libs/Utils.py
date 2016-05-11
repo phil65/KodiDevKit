@@ -309,7 +309,7 @@ def get_refs_from_file(path, xpath):
     """
     load xml file from *path and return dict list for nodes which match *xpath
     """
-    font_refs = []
+    matches = []
     xml_file = os.path.basename(path)
     root = get_root_from_file(path)
     if root is None:
@@ -320,5 +320,5 @@ def get_refs_from_file(path, xpath):
         item = Include(node=node,
                        filename=xml_file,
                        file=path)
-        font_refs.append(item)
-    return font_refs
+        matches.append(item)
+    return matches
