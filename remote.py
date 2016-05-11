@@ -9,9 +9,9 @@ KodiDevKit is a plugin to assist with Kodi skinning / scripting using Sublime Te
 import os
 import sublime
 import sublime_plugin
-from .libs.RemoteDevice import RemoteDevice
+from .libs.adbdevice import AdbDevice
 
-REMOTE = RemoteDevice()
+REMOTE = AdbDevice()
 SETTINGS_FILE = 'kodidevkit.sublime-settings'
 
 

@@ -94,7 +94,7 @@ def check_dependencies(skinpath):
 
 if __name__ == "__main__":
     from libs import Utils
-    from libs.InfoProvider import InfoProvider
+    from libs.infoprovider import InfoProvider
     from libs import chardet
     from libs.eol import eol
     INFOS = InfoProvider()

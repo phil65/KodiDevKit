@@ -13,7 +13,7 @@ import os
 import logging
 
 
-class RemoteDevice(object):
+class AdbDevice(object):
 
     """
     Class to communicate with Android Devices via ADB.

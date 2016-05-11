@@ -22,10 +22,10 @@ import mdpopups
 
 from .libs import Utils
 from .libs import sublimelogger
-from .libs import InfoProvider
+from .libs import infoprovider
 from .libs.kodi import kodi
 
-INFOS = InfoProvider.InfoProvider()
+INFOS = infoprovider.InfoProvider()
 # sublime.log_commands(True)
 APP_NAME = "Kodi"
 SETTINGS_FILE = 'kodidevkit.sublime-settings'
@@ -66,7 +66,7 @@ class KodiDevKit(sublime_plugin.EventListener):
                 completions.append([node["name"], node["name"]])
             for node in chain(INFOS.builtins, INFOS.conditions):
                 completions.append([node[0], node[0]])
-            for item in InfoProvider.WINDOW_NAMES:
+            for item in infoprovider.WINDOW_NAMES:
                 completions.append([item, item])
             for item in completions:
                 for i, match in enumerate(re.findall(r"\([a-z,\]\[]+\)", item[1])):
@@ -155,9 +155,9 @@ class KodiDevKit(sublime_plugin.EventListener):
                     popup_label = INFOS.addon.get_color_info(selected_content)
             if not popup_label and "constant.other.allcaps" in scope_name:
                 window_name = scope_content.lower()[1:-1]
-                if window_name in InfoProvider.WINDOW_NAMES:
-                    window_index = InfoProvider.WINDOW_NAMES.index(window_name)
-                    popup_label = InfoProvider.WINDOW_FILENAMES[window_index]
+                if window_name in infoprovider.WINDOW_NAMES:
+                    window_index = infoprovider.WINDOW_NAMES.index(window_name)
+                    popup_label = infoprovider.WINDOW_FILENAMES[window_index]
         # node = INFOS.template_root.find(".//control[@type='label']")
         # logging.info(node)
         # popup_label = node.find(".//available_tags").text.replace("\\n", "<br>")
@@ -307,7 +307,7 @@ class BuildThemeCommand(sublime_plugin.WindowCommand):
         return INFOS.addon and os.path.exists(os.path.join(INFOS.addon.path, "themes"))
 
     def run(self, pack_textures=True):
-        self.themes = [folder for folder in os.listdir(os.path.join(INFOS.addon.path, "themes"))]
+        self.themes = INFOS.addon.get_themes()
         self.window.show_quick_panel(items=self.themes,
                                      on_select=self.on_done,
                                      selected_index=0)

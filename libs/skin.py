@@ -179,3 +179,9 @@ class Skin(addon.Addon):
                 path = os.path.join(self.path, folder, xml_file)
                 font_refs[folder].extend(Utils.get_refs_from_file(path, ".//font"))
         return font_refs
+
+    def get_themes(self):
+        """
+        returns a list of all theme names, taken from "themes" folder
+        """
+        return [folder for folder in os.listdir(os.path.join(self.path, "themes"))]
