@@ -15,6 +15,10 @@ import logging
 
 class RemoteDevice(object):
 
+    """
+    Class to communicate with Android Devices via ADB.
+    """
+
     def __init__(self):
         self.is_busy = False
         pass

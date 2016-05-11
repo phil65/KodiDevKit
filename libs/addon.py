@@ -36,6 +36,9 @@ class Addon(object):
         self.update_labels()
 
     def load_xml_folders(self):
+        """
+        find and load skin xml folder if existing
+        """
         paths = [os.path.join(self.path, "resources", "skins", "Default", "720p"),
                  os.path.join(self.path, "resources", "skins", "Default", "1080i")]
         folder = Utils.check_paths(paths)
@@ -50,6 +53,9 @@ class Addon(object):
 
     @property
     def primary_lang_folder(self):
+        """
+        returns default language folder (first one from settings file)
+        """
         lang_folder = self.settings.get("language_folders")[0]
         lang_path = os.path.join(self.path, "resources", "language", lang_folder)
         if not os.path.exists(lang_path):
@@ -65,6 +71,9 @@ class Addon(object):
 
     @staticmethod
     def by_project(project_path):
+        """
+        factory, return proper instance based on addon.xml
+        """
         xml_file = os.path.join(project_path, "addon.xml")
         root = Utils.get_root_from_file(xml_file)
         if root.find(".//import[@addon='xbmc.python']") is None:

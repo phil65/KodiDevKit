@@ -91,6 +91,9 @@ class Skin(addon.Addon):
                 self.fonts[folder].append(string_dict)
 
     def get_color_info(self, color_string):
+        """
+        return formatted info for *color_string, taken from color xmls (default + themes).
+        """
         color_info = ""
         for item in self.colors:
             if item["name"] == color_string:
