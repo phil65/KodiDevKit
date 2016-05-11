@@ -127,8 +127,6 @@ PARSER = ET.XMLParser(remove_blank_text=True, remove_comments=True)
 class InfoProvider(object):
 
     def __init__(self):
-        self.includes = {}
-        self.include_files = {}
         self.project_path = ""
         self.addon = None
 
@@ -173,8 +171,6 @@ class InfoProvider(object):
         if addon_xml:
             self.addon = Addon.by_project(path)
             logging.info("Kodi project detected: " + path)
-        if self.addon and self.addon.xml_folders:
-            self.update_include_list()
             # sublime.status_message("KodiDevKit: successfully loaded addon")
 
     def get_check_listitems(self, check_type):
@@ -204,47 +200,13 @@ class InfoProvider(object):
         update include, color and font infos, depending on open file
         """
         folder = path.split(os.sep)[-2]
-        if folder in self.include_files:
-            if path in self.include_files[folder]:
-                self.update_include_list()
+        if folder in self.addon.include_files:
+            if path in self.addon.include_files[folder]:
+                self.addon.update_include_list()
         if path.endswith("colors/defaults.xml"):
             self.addon.get_colors()
         if path.endswith(("Font.xml", "font.xml")):
             self.addon.get_fonts()
-
-    def update_include_list(self):
-        """
-        create include list by parsing all include files starting with includes.xml
-        """
-        self.includes = {}
-        for folder in self.addon.xml_folders:
-            xml_folder = os.path.join(self.project_path, folder)
-            paths = [os.path.join(xml_folder, "Includes.xml"),
-                     os.path.join(xml_folder, "includes.xml")]
-            self.include_files[folder] = []
-            self.includes[folder] = []
-            include_file = Utils.check_paths(paths)
-            self.update_includes(include_file)
-            logging.info("Include List: %i nodes found in '%s' folder." % (len(self.includes[folder]), folder))
-
-    def update_includes(self, xml_file):
-        """
-        recursive, walks through include files and updates include list and include file list
-        """
-        if not os.path.exists(xml_file):
-            logging.info("Could not find include file " + xml_file)
-            return None
-        folder = xml_file.split(os.sep)[-2]
-        logging.info("found include file: " + xml_file)
-        self.include_files[folder].append(xml_file)
-        tags = ["include", "variable", "constant", "expression"]
-        self.includes[folder] += Utils.get_tags_from_file(path=xml_file,
-                                                          node_tags=tags)
-        root = Utils.get_root_from_file(xml_file)
-        for node in root.findall("include"):
-            if "file" in node.attrib and node.attrib["file"] != "script-skinshortcuts-includes.xml":
-                xml_file = os.path.join(self.project_path, folder, node.attrib["file"])
-                self.update_includes(xml_file)
 
     def go_to_tag(self, keyword, folder):
         """
@@ -260,7 +222,7 @@ class InfoProvider(object):
                         return "%s:%s" % (po_file.fpath, entry.linenum)
         else:
             # TODO: need to check for include file attribute
-            for node in self.includes[folder]:
+            for node in self.addon.includes[folder]:
                 if node["name"] == keyword:
                     return "%s:%s" % (node["file"], node["line"])
             for node in self.addon.fonts[folder]:
@@ -283,8 +245,8 @@ class InfoProvider(object):
             for node in self.addon.fonts[folder]:
                 if node["name"] == keyword:
                     return node[return_entry]
-        if folder in self.includes:
-            for node in self.includes[folder]:
+        if folder in self.addon.includes:
+            for node in self.addon.includes[folder]:
                 if node["name"] == keyword:
                     return node[return_entry]
         return ""
@@ -296,12 +258,6 @@ class InfoProvider(object):
         self.settings = settings
         self.kodi_path = settings.get("kodi_path")
         logging.info("kodi path: " + self.kodi_path)
-
-    def get_kodi_addons(self):
-        addon_path = os.path.join(kodi.get_userdata_folder(), "addons")
-        if not os.path.exists(addon_path):
-            return []
-        return [f for f in os.listdir(addon_path) if not os.path.isfile(f)]
 
     def return_label(self, selection):
         """
@@ -386,14 +342,14 @@ class InfoProvider(object):
                                     "name": match.group(1).split(",")[0]}
                             var_refs.append(item)
             for ref in var_refs:
-                for node in self.includes[folder]:
+                for node in self.addon.includes[folder]:
                     if node["type"] == "variable" and node["name"] == ref["name"]:
                         break
                 else:
                     ref["message"] = "Variable not defined: %s" % ref["name"]
                     listitems.append(ref)
             ref_list = [d['name'] for d in var_refs]
-            for node in self.includes[folder]:
+            for node in self.addon.includes[folder]:
                 if node["type"] == "variable" and node["name"] not in ref_list:
                     node["message"] = "Unused variable: %s" % node["name"]
                     listitems.append(node)
@@ -418,8 +374,8 @@ class InfoProvider(object):
                         name = node.text
                         if "file" in node.attrib:
                             include_file = os.path.join(self.project_path, folder, node.attrib["file"])
-                            if include_file not in self.include_files[folder]:
-                                self.update_includes(include_file)
+                            if include_file not in self.addon.include_files[folder]:
+                                self.addon.update_includes(include_file)
                     elif node.attrib.get("content"):
                         name = node.attrib["content"]
                     else:
@@ -431,7 +387,7 @@ class InfoProvider(object):
                     var_refs.append(item)
             # find undefined include refs
             for ref in var_refs:
-                for node in self.includes[folder]:
+                for node in self.addon.includes[folder]:
                     if node["type"] == "include" and node["name"] == ref["name"]:
                         break
                 else:
@@ -441,7 +397,7 @@ class InfoProvider(object):
                     listitems.append(ref)
             # find unused include defs
             ref_list = [d['name'] for d in var_refs]
-            for node in self.includes[folder]:
+            for node in self.addon.includes[folder]:
                 if node["type"] == "include" and node["name"] not in ref_list:
                     node["message"] = "Unused include: %s" % node["name"]
                     listitems.append(node)
@@ -593,11 +549,11 @@ class InfoProvider(object):
     def resolve_include(self, ref, folder):
         if not ref.text:
             return None
-        include_names = [item["name"] for item in self.includes[folder]]
+        include_names = [item["name"] for item in self.addon.includes[folder]]
         if ref.text not in include_names:
             return None
         index = include_names.index(ref.text)
-        node = self.includes[folder][index]
+        node = self.addon.includes[folder][index]
         root = ET.fromstring(node["content"])
         return self.resolve_includes(root, folder)
 

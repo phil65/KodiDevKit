@@ -55,7 +55,7 @@ class KodiDevKit(sublime_plugin.EventListener):
         if not filename:
             return []
         folder = filename.split(os.sep)[-2]
-        if folder not in INFOS.includes:
+        if folder not in INFOS.addon.includes:
             return []
         if "text.xml" in scope_name:
             colors = []
@@ -63,7 +63,7 @@ class KodiDevKit(sublime_plugin.EventListener):
                 if node["name"] not in colors:
                     colors.append(node["name"])
                     completions.append(["%s (%s)" % (node["name"], node["content"]), node["name"]])
-            for node in chain(INFOS.includes[folder], INFOS.addon.fonts[folder]):
+            for node in chain(INFOS.addon.includes[folder], INFOS.addon.fonts[folder]):
                 completions.append([node["name"], node["name"]])
             for node in chain(INFOS.builtins, INFOS.conditions):
                 completions.append([node[0], node[0]])

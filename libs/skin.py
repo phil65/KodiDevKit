@@ -17,7 +17,10 @@ class Skin(addon.Addon):
 
     def __init__(self, *args, **kwargs):
         super(Skin, self).__init__(*args, **kwargs)
+        self.includes = {}
+        self.include_files = {}
         self.type = "skin"
+        self.update_include_list()
         self.get_colors()
         self.get_fonts()
 
@@ -109,3 +112,36 @@ class Skin(addon.Addon):
             alpha_percent = round(int(color_string[:2], 16) / (16 * 16) * 100)
             return '<a href="test" style="background-color:%s;color:%s">%d %% alpha</a>' % (color_hex, cont_color, alpha_percent)
 
+    def update_include_list(self):
+        """
+        create include list by parsing all include files starting with includes.xml
+        """
+        self.includes = {}
+        for folder in self.xml_folders:
+            xml_folder = os.path.join(self.project_path, folder)
+            paths = [os.path.join(xml_folder, "Includes.xml"),
+                     os.path.join(xml_folder, "includes.xml")]
+            self.include_files[folder] = []
+            self.includes[folder] = []
+            include_file = Utils.check_paths(paths)
+            self.update_includes(include_file)
+            logging.info("Include List: %i nodes found in '%s' folder." % (len(self.includes[folder]), folder))
+
+    def update_includes(self, xml_file):
+        """
+        recursive, walks through include files and updates include list and include file list
+        """
+        if not os.path.exists(xml_file):
+            logging.info("Could not find include file " + xml_file)
+            return None
+        folder = xml_file.split(os.sep)[-2]
+        logging.info("found include file: " + xml_file)
+        self.include_files[folder].append(xml_file)
+        tags = ["include", "variable", "constant", "expression"]
+        self.includes[folder] += Utils.get_tags_from_file(path=xml_file,
+                                                          node_tags=tags)
+        root = Utils.get_root_from_file(xml_file)
+        for node in root.findall("include"):
+            if "file" in node.attrib and node.attrib["file"] != "script-skinshortcuts-includes.xml":
+                xml_file = os.path.join(self.project_path, folder, node.attrib["file"])
+                self.update_includes(xml_file)
