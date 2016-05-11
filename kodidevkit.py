@@ -129,7 +129,7 @@ class KodiDevKit(sublime_plugin.EventListener):
                     node_content = str(node["content"])
                     if not node_content:
                         popup_label = ""
-                    elif len(node_content) < 3000:
+                    elif len(node_content) < 10000:
                         popup_label = mdpopups.syntax_highlight(view=view,
                                                                 src=node_content,
                                                                 language="xml")
