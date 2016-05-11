@@ -210,7 +210,7 @@ class InfoProvider(object):
         if path.endswith("colors/defaults.xml"):
             self.addon.get_colors()
         if path.endswith(("Font.xml", "font.xml")):
-            self.get_fonts()
+            self.addon.get_fonts()
 
     def update_include_list(self):
         """
