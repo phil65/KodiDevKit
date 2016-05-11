@@ -140,7 +140,7 @@ class KodiDevKit(sublime_plugin.EventListener):
                     line, column = view.rowcol(view.sel()[0].b)
                     popup_label = INFOS.get_ancestor_info(view.file_name(), line)
                 if not popup_label:
-                    popup_label = INFOS.get_color_info(selected_content)
+                    popup_label = INFOS.addon.get_color_info(selected_content)
             if not popup_label and "constant.other.allcaps" in scope_name:
                 window_name = scope_content.lower()[1:-1]
                 if window_name in InfoProvider.WINDOW_NAMES:

@@ -8,7 +8,7 @@ from . import Utils
 from . import addon
 import logging
 from lxml import etree as ET
-
+import string
 
 class Skin(addon.Addon):
     LANG_START_ID = 31000
@@ -88,3 +88,20 @@ class Skin(addon.Addon):
                                "file": font_file,
                                "filename": node.find("filename").text}
                 self.fonts[folder].append(string_dict)
+
+    def get_color_info(self, color_string):
+        color_info = ""
+        for item in self.colors:
+            if item["name"] == color_string:
+                color_hex = "#" + item["content"][2:]
+                cont_color = Utils.get_cont_col(color_hex)
+                alpha_percent = round(int(item["content"][:2], 16) / (16 * 16) * 100)
+                color_info += '%s&nbsp;<a href="test" style="background-color:%s;color:%s">%s</a> %d %% alpha<br>' % (os.path.basename(item["file"]), color_hex, cont_color, item["content"], alpha_percent)
+        if color_info:
+            return color_info
+        if all(c in string.hexdigits for c in color_string) and len(color_string) == 8:
+            color_hex = "#" + color_string[2:]
+            cont_color = Utils.get_cont_col(color_hex)
+            alpha_percent = round(int(color_string[:2], 16) / (16 * 16) * 100)
+            return '<a href="test" style="background-color:%s;color:%s">%d %% alpha</a>' % (color_hex, cont_color, alpha_percent)
+
