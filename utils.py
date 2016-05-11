@@ -24,6 +24,7 @@ import subprocess
 
 APP_NAME = "Kodi"
 SETTINGS_FILE = 'kodidevkit.sublime-settings'
+SUBLIME_PATH = Utils.get_sublime_path()
 
 
 class OpenSourceFromLog(sublime_plugin.TextCommand):
@@ -323,7 +324,7 @@ class GetInfoLabelsPromptCommand(sublime_plugin.WindowCommand):
                               params={"labels": words})
         if result:
             logging.warning("Got result:")
-            key, value = result["result"].popitem()
+            _, value = result["result"].popitem()
             logging.warning(str(value))
 
 
@@ -351,7 +352,7 @@ class GetInfoBooleansPromptCommand(sublime_plugin.WindowCommand):
                               params={"booleans": words})
         if result:
             logging.warning("Got result:")
-            key, value = result["result"].popitem()
+            _, value = result["result"].popitem()
             logging.warning(str(value))
 
 

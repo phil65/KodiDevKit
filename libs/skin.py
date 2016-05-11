@@ -114,7 +114,7 @@ class Skin(addon.Addon):
             return '<a href="test" style="background-color:%s;color:%s">%d %% alpha</a>' % (color_hex, cont_color, alpha_percent)
 
     def get_skin_files(self):
-        for path, subdirs, files in os.walk(self.media_path):
+        for path, _, files in os.walk(self.media_path):
             if "studio" in path or "recordlabel" in path:
                 continue
             for filename in files:

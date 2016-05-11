@@ -539,7 +539,7 @@ class InfoProvider(object):
             result = kodi.request(method="XBMC.GetInfoLabels",
                                   params={"labels": [info_id]})
             if result:
-                key, value = result["result"].popitem()
+                _, value = result["result"].popitem()
                 if value:
                     return str(value)
         elif info_type == "LOCALIZE":

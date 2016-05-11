@@ -29,7 +29,6 @@ INFOS = InfoProvider.InfoProvider()
 # sublime.log_commands(True)
 APP_NAME = "Kodi"
 SETTINGS_FILE = 'kodidevkit.sublime-settings'
-SUBLIME_PATH = Utils.get_sublime_path()
 
 sublimelogger.config()
 
@@ -139,7 +138,7 @@ class KodiDevKit(sublime_plugin.EventListener):
                     popup_label = INFOS.get_image_info(selected_content)
                 elif "<control " in line_contents:
                     # TODO: add positioning based on parent nodes
-                    line, column = view.rowcol(view.sel()[0].b)
+                    line, _ = view.rowcol(view.sel()[0].b)
                     popup_label = INFOS.get_ancestor_info(view.file_name(), line)
                 if not popup_label:
                     popup_label = INFOS.addon.get_color_info(selected_content)
@@ -160,7 +159,7 @@ class KodiDevKit(sublime_plugin.EventListener):
         result = kodi.request(method="XBMC.GetInfoBooleans",
                               params={"booleans": [selected_content]})
         if result:
-            key, value = result["result"].popitem()
+            _, value = result["result"].popitem()
             if value is not None:
                 popup_label = str(value)
                 sublime.set_timeout_async(lambda: self.show_tooltip(view, popup_label),
@@ -506,7 +505,7 @@ class PreviewImageCommand(sublime_plugin.TextCommand):
             return None
         if os.path.isdir(imagepath):
             self.files = []
-            for (dirpath, dirnames, filenames) in os.walk(imagepath):
+            for (dirpath, _, filenames) in os.walk(imagepath):
                 self.files.extend(filenames)
                 break
             self.files = [imagepath + s for s in self.files]
