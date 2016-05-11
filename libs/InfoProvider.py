@@ -133,7 +133,6 @@ class InfoProvider(object):
         self.include_list = {}
         self.include_files = {}
         self.window_files = {}
-        self.po_files = []
         self.color_file = ""
         self.project_path = ""
         self.addon = None
