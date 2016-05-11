@@ -109,15 +109,7 @@ class KodiDevKit(sublime_plugin.EventListener):
                 word = view.substr(view.word(region))
                 popup_label = INFOS.return_label(word)
         elif "text.xml" in scope_name:
-            if info_type in set(["INFO", "ESCINFO"]):
-                popup_label = INFOS.translate_square_bracket(info_type=info_type,
-                                                             info_id=info_id,
-                                                             folder=folder)
-            if info_type in set(["VAR", "ESCVAR", "LOCALIZE", "EXP"]):
-                node_content = INFOS.return_node_content(info_id, folder=folder)
-                root = ET.fromstring(node_content)
-                if root is None:
-                    return None
+            if info_type in set(["INFO", "ESCINFO", "VAR", "ESCVAR", "LOCALIZE", "EXP"]):
                 popup_label = INFOS.translate_square_bracket(info_type=info_type,
                                                              info_id=info_id,
                                                              folder=folder)
