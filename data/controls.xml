@@ -5,6 +5,7 @@
     - condition
     - bool
     - int
+    - float
     - font
     - color
     - label
@@ -71,7 +72,7 @@
         <bordertexture border="int">path</bordertexture>
         <bordersize>int</bordersize>
         <texture>path</texture>
-        <aspectratio>aspect</aspectratio>
+        <aspectratio align="align" aligny="aligny">aspect</aspectratio>
     </control>
     <control type="multiimage" id="int">
         <include>common</include>
@@ -295,14 +296,24 @@
         <include>list_common</include>
     </control>
     <include name="common">
-        <description>xxx</description>
+        <description>label</description>
+        <camera>int</camera>
+        <depth>float</depth>
         <posx>int</posx>
         <posy>int</posy>
         <left>int</left>
         <right>int</right>
+        <top>int</top>
+        <animation>xxx</animation>
+        <centertop>int</centertop>
+        <centerbottom>int</centerbottom>
+        <centerleft>int</centerleft>
+        <centerright>int</centerright>
+        <bottom>int</bottom>
         <width>int</width>
         <height>int</height>
         <visible>bool</visible>
+        <include>include</include>
     </include>
     <include name="list_common">
         <onup>builtin</onup>
