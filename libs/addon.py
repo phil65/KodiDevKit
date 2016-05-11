@@ -184,12 +184,12 @@ class Addon(object):
         """
         if not keyword or not folder:
             return ""
-        if folder in self.addon.fonts:
-            for node in self.addon.fonts[folder]:
+        if folder in self.fonts:
+            for node in self.fonts[folder]:
                 if node["name"] == keyword:
                     return node
-        if folder in self.addon.includes:
-            for node in self.addon.includes[folder]:
+        if folder in self.includes:
+            for node in self.includes[folder]:
                 if node["name"] == keyword:
                     return node
         return ""
