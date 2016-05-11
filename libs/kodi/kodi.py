@@ -9,7 +9,6 @@ from .. import Utils
 from urllib.request import Request, urlopen
 import json
 import base64
-import logging
 
 APP_NAME = "kodi"
 
@@ -20,6 +19,7 @@ class Kodi(object):
         self.settings = None
         self.po_files = []
         self.kodi_path = None
+        self.userdata_folder = None
 
     @Utils.run_async
     def request_async(self, method, params):
@@ -73,7 +73,7 @@ class Kodi(object):
             return os.path.join(os.path.expanduser("~"), "Application Support", APP_NAME, "userdata")
 
     def get_userdata_addon_folder(self):
-        return os.path.join(self.get_userdata_folder(), "addons")
+        return os.path.join(self.userdata_folder, "addons")
 
     def get_core_addon_folder(self):
         return os.path.join(self.kodi_path, "addons")
@@ -87,13 +87,14 @@ class Kodi(object):
     def load_settings(self, settings):
         self.settings = settings
         self.kodi_path = settings.get("kodi_path")
+        self.userdata_folder = self.get_userdata_folder()
         self.update_labels()
 
     def update_labels(self):
         """
         get core po files
         """
-        self.po_files = self.get_po_files(os.path.join(self.get_userdata_folder(), "addons"))
+        self.po_files = self.get_po_files(os.path.join(self.userdata_folder, "addons"))
         if not self.po_files:
             self.po_files = self.get_po_files(os.path.join(self.kodi_path, "addons"))
 
@@ -110,7 +111,7 @@ class Kodi(object):
         return po_files
 
     def get_addons(self):
-        addon_path = os.path.join(self.get_userdata_folder(), "addons")
+        addon_path = os.path.join(self.userdata_folder, "addons")
         if not os.path.exists(addon_path):
             return []
         return [f for f in os.listdir(addon_path) if not os.path.isfile(f)]

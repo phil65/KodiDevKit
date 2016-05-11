@@ -371,5 +371,5 @@ class OpenKodiAddonCommand(sublime_plugin.WindowCommand):
     def on_done(self, index):
         if index == -1:
             return None
-        path = os.path.join(kodi.get_userdata_folder(), "addons", self.nodes[index])
+        path = os.path.join(kodi.userdata_folder, "addons", self.nodes[index])
         subprocess.Popen([SUBLIME_PATH, "-n", "-a", path])
