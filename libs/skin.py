@@ -113,6 +113,17 @@ class Skin(addon.Addon):
             alpha_percent = round(int(color_string[:2], 16) / (16 * 16) * 100)
             return '<a href="test" style="background-color:%s;color:%s">%d %% alpha</a>' % (color_hex, cont_color, alpha_percent)
 
+    def get_skin_files(self):
+        for path, subdirs, files in os.walk(self.media_path):
+            if "studio" in path or "recordlabel" in path:
+                continue
+            for filename in files:
+                img_path = os.path.join(path, filename)
+                img_path = img_path.replace(self.media_path, "").replace("\\", "/")
+                if img_path.startswith("/"):
+                    img_path = img_path[1:]
+                yield img_path
+
     def update_include_list(self):
         """
         create include list by parsing all include files starting with includes.xml

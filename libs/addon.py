@@ -4,11 +4,12 @@
 # This program is Free Software see LICENSE file for details
 
 import os
+import logging
+from time import gmtime, strftime
+
 from . import Utils
 from .polib import polib
 import sublime
-import logging
-from time import gmtime, strftime
 
 SETTINGS_FILE = 'kodidevkit.sublime-settings'
 
@@ -161,7 +162,7 @@ class Addon(object):
         for entry in po:
             try:
                 string_ids.append(int(entry.msgctxt[1:]))
-            except:
+            except Exception:
                 string_ids.append(entry.msgctxt)
         for label_id in range(self.LANG_START_ID, self.LANG_START_ID + 1000):
             if label_id not in string_ids:

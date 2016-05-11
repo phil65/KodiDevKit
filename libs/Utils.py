@@ -218,7 +218,7 @@ def get_node_content(view, flags):
         try:
             bracket_region = view.expand_by_class(region, flags, '<>"[]')
             return view.substr(bracket_region)
-        except:
+        except Exception:
             return ""
 
 

@@ -55,7 +55,7 @@ class Kodi(object):
             result = json.loads(result.decode("utf-8"))
             Utils.prettyprint(result)
             return result
-        except:
+        except Exception:
             return None
 
     def get_userdata_folder(self):

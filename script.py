@@ -113,7 +113,7 @@ if __name__ == "__main__":
         try:
             with codecs.open(path, "rb", encoding='utf-8', errors="strict") as f:
                 text = f.read()
-        except:
+        except Exception:
             logging.info("Error when trying to read %s as UTF-8" % path)
             with codecs.open(path, "rb", errors="ignore") as f:
                 rawdata = f.read()

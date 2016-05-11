@@ -81,7 +81,7 @@ class KodiDevKit(sublime_plugin.EventListener):
         try:
             region = view.sel()[0]
             folder = view.file_name().split(os.sep)[-2]
-        except:
+        except Exception:
             return None
         if region == self.prev_selection:
             return None
@@ -320,7 +320,6 @@ class ShowFontRefsCommand(QuickPanelCommand):
         listitems = []
         self.nodes = []
         view = self.window.active_view()
-        INFOS.addon.update_xml_files()
         font_refs = INFOS.addon.get_font_refs()
         self.folder = view.file_name().split(os.sep)[-2]
         self.nodes = [ref for ref in font_refs[self.folder] if ref["name"] == "Font_Reg28"]
@@ -395,7 +394,7 @@ class OpenActiveWindowXmlFromRemoteCommand(sublime_plugin.WindowCommand):
                               params={"labels": ["Window.Property(xmlfile)"]})
         if not result:
             return None
-        key, value = result["result"].popitem()
+        _, value = result["result"].popitem()
         if os.path.exists(value):
             self.window.open_file(value)
         for xml_file in INFOS.addon.window_files[folder]:
@@ -544,16 +543,7 @@ class SearchForImageCommand(sublime_plugin.TextCommand):
         return INFOS.addon and INFOS.addon.media_path
 
     def run(self, edit):
-        self.files = []
-        for path, subdirs, files in os.walk(INFOS.addon.media_path):
-            if "studio" in path or "recordlabel" in path:
-                continue
-            for filename in files:
-                img_path = os.path.join(path, filename)
-                img_path = img_path.replace(INFOS.addon.media_path, "").replace("\\", "/")
-                if img_path.startswith("/"):
-                    img_path = img_path[1:]
-                self.files.append(img_path)
+        self.files = [i for i in INFOS.addon.get_skin_files()]
         sublime.active_window().show_quick_panel(self.files,
                                                  lambda s: self.on_done(s),
                                                  selected_index=0,
@@ -618,10 +608,10 @@ class MoveToLanguageFile(sublime_plugin.TextCommand):
             return False
         word = self.view.substr(region)
         for po_file in INFOS.get_po_files():
-            for label in po_file:
-                if label.msgid.lower() == word.lower() and label.msgctxt not in self.label_ids:
-                    self.label_ids.append(label.msgctxt)
-                    self.labels.append(["%s (%s)" % (label.msgid, label.msgctxt), label.comment])
+            for entry in po_file:
+                if entry.msgid.lower() == word.lower() and entry.msgctxt not in self.label_ids:
+                    self.label_ids.append(entry.msgctxt)
+                    self.labels.append(["%s (%s)" % (entry.msgid, entry.msgctxt), entry.comment])
         self.labels.append("Create new label")
         sublime.active_window().show_quick_panel(self.labels,
                                                  lambda s: self.on_done(s, region),
@@ -636,9 +626,9 @@ class MoveToLanguageFile(sublime_plugin.TextCommand):
             label_id = INFOS.addon.create_new_label(word=self.view.substr(region),
                                                     filepath=rel_path)
         else:
-            label_id = self.label_ids[index][1:]
-            if 31000 <= int(label_id) < 33000:
-                entry = INFOS.addon.po_files[0].find(self.label_ids[index], by="msgctxt")
+            label_id = self.label_ids[index]
+            if 31000 <= int(label_id[1:]) < 33000:
+                entry = INFOS.addon.po_files[0].find(label_id, by="msgctxt")
                 entry.occurrences.append((rel_path, None))
                 INFOS.addon.po_files[0].save(INFOS.addon_po_files[0].fpath)
         self.view.run_command("replace_text", {"label_id": label_id})

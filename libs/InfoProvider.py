@@ -143,7 +143,7 @@ class InfoProvider(object):
             # resolve includes
             text = sublime.load_resource("Packages/KodiDevKit/data/data.xml").encode("utf-8")
             root = ET.fromstring(text, PARSER)
-        except:
+        except Exception:
             # fallback to old method so that class still can get used without sublime import
             path = os.path.normpath(os.path.abspath(__file__))
             folder = os.path.split(path)[0]
