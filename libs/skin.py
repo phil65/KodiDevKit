@@ -118,7 +118,7 @@ class Skin(addon.Addon):
         """
         self.includes = {}
         for folder in self.xml_folders:
-            xml_folder = os.path.join(self.project_path, folder)
+            xml_folder = os.path.join(self.path, folder)
             paths = [os.path.join(xml_folder, "Includes.xml"),
                      os.path.join(xml_folder, "includes.xml")]
             self.include_files[folder] = []
@@ -143,5 +143,5 @@ class Skin(addon.Addon):
         root = Utils.get_root_from_file(xml_file)
         for node in root.findall("include"):
             if "file" in node.attrib and node.attrib["file"] != "script-skinshortcuts-includes.xml":
-                xml_file = os.path.join(self.project_path, folder, node.attrib["file"])
+                xml_file = os.path.join(self.path, folder, node.attrib["file"])
                 self.update_includes(xml_file)
