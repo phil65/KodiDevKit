@@ -24,6 +24,9 @@ class Addon(object):
         for item in self.root.xpath("/addon[@id]"):
             self.name = item.attrib["id"]
             break
+        self.load_xml_folders()
+
+    def load_xml_folders(self):
         paths = [os.path.join(self.path, "resources", "skins", "Default", "720p"),
                  os.path.join(self.path, "resources", "skins", "Default", "1080i")]
         folder = Utils.check_paths(paths)

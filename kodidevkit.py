@@ -493,7 +493,7 @@ class OpenKodiLogCommand(sublime_plugin.WindowCommand):
 class PreviewImageCommand(sublime_plugin.TextCommand):
 
     def is_visible(self):
-        if not INFOS.addon.media_path:
+        if not INFOS.addon or not INFOS.addon.media_path:
             return False
         flags = sublime.CLASS_WORD_START | sublime.CLASS_WORD_END
         content = Utils.get_node_content(self.view, flags)
@@ -541,7 +541,7 @@ class GoToTagCommand(sublime_plugin.WindowCommand):
 class SearchForImageCommand(sublime_plugin.TextCommand):
 
     def is_visible(self):
-        return bool(INFOS.addon.media_path)
+        return INFOS.addon and INFOS.addon.media_path
 
     def run(self, edit):
         path, filename = os.path.split(self.view.file_name())

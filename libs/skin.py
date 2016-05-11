@@ -17,10 +17,12 @@ class Skin(addon.Addon):
     def __init__(self, *args, **kwargs):
         super(Skin, self).__init__(*args, **kwargs)
         self.type = "skin"
-        for node in self.root.findall('.//res'):
-            self.xml_folders.append(node.attrib["folder"])
         self.get_colors()
         self.get_fonts()
+
+    def load_xml_folders(self):
+        for node in self.root.findall('.//res'):
+            self.xml_folders.append(node.attrib["folder"])
 
     @property
     def lang_path(self):
