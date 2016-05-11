@@ -287,10 +287,7 @@ class InfoProvider(object):
         if not node:
             return ""
         root = ET.fromstring(node["content"])
-        label = ""
-        for e in root.iterchildren():
-            label += "<b>%s:</b> %s<br>" % (e.tag, e.text)
-        return label
+        return ["<b>%s:</b> %s<br>" % (e.tag, e.text) for e in root.iterchildren()]
 
     def check_variables(self):
         """

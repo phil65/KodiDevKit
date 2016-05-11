@@ -189,8 +189,9 @@ class KodiDevKit(sublime_plugin.EventListener):
                             on_navigate=lambda label_id, view=view: Utils.jump_to_label_declaration(view, label_id))
 
     def on_modified_async(self, view):
-        if INFOS.addon.path and view.file_name() and view.file_name().endswith(".xml"):
-            self.is_modified = True
+        if INFOS.addon and INFOS.addon.path:
+            if view.file_name() and view.file_name().endswith(".xml"):
+                self.is_modified = True
 
     def on_load_async(self, view):
         self.check_status()
