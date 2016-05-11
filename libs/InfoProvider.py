@@ -17,7 +17,6 @@ import logging
 
 from . import Utils
 from .addon import Addon
-from .skin import Skin
 from .kodi import kodi
 from .polib import polib
 from .ImageParser import get_image_size
@@ -137,7 +136,6 @@ class InfoProvider(object):
         self.po_files = []
         self.color_file = ""
         self.project_path = ""
-        self.fonts = {}
         self.addon = None
         self.po_files = []
         self.addon_po_files = []
@@ -180,7 +178,6 @@ class InfoProvider(object):
         self.addon = None
         self.project_path = path
         addon_xml = Utils.check_paths([os.path.join(self.project_path, "addon.xml")])
-        self.fonts = []
         if addon_xml:
             self.addon = Addon.by_project(path)
             self.update_addon_labels()
@@ -188,8 +185,6 @@ class InfoProvider(object):
         if self.addon and self.addon.xml_folders:
             self.update_include_list()
             self.update_xml_files()
-            self.addon.get_colors()
-            self.addon.get_fonts()
             # sublime.status_message("KodiDevKit: successfully loaded addon")
 
     def get_check_listitems(self, check_type):
@@ -213,30 +208,6 @@ class InfoProvider(object):
             for item in WINDOW_FILENAMES:
                 if item not in self.window_files[folder]:
                     logging.info("Skin does not include %s" % item)
-
-    def get_fonts(self):
-        """
-        create font dict by parsing first fontset
-        """
-        if not self.addon.xml_file or not self.addon.xml_folders:
-            return False
-        self.fonts = {}
-        for folder in self.addon.xml_folders:
-            paths = [os.path.join(self.project_path, folder, "Font.xml"),
-                     os.path.join(self.project_path, folder, "font.xml")]
-            font_file = Utils.check_paths(paths)
-            if not font_file:
-                return False
-            self.fonts[folder] = []
-            root = Utils.get_root_from_file(font_file)
-            for node in root.find("fontset").findall("font"):
-                string_dict = {"name": node.find("name").text,
-                               "size": node.find("size").text,
-                               "line": node.sourceline,
-                               "content": ET.tostring(node, pretty_print=True, encoding="unicode"),
-                               "file": font_file,
-                               "filename": node.find("filename").text}
-                self.fonts[folder].append(string_dict)
 
     def reload_skin_after_save(self, path):
         """
@@ -312,7 +283,7 @@ class InfoProvider(object):
             for node in self.include_list[folder]:
                 if node["name"] == keyword:
                     return "%s:%s" % (node["file"], node["line"])
-            for node in self.fonts[folder]:
+            for node in self.addon.fonts[folder]:
                 if node["name"] == keyword:
                     path = os.path.join(self.project_path, folder, "Font.xml")
                     return "%s:%s" % (path, node["line"])
@@ -328,8 +299,8 @@ class InfoProvider(object):
         """
         if not keyword or not folder:
             return ""
-        if folder in self.fonts:
-            for node in self.fonts[folder]:
+        if folder in self.addon.fonts:
+            for node in self.addon.fonts[folder]:
                 if node["name"] == keyword:
                     return node[return_entry]
         if folder in self.include_list:
@@ -591,8 +562,8 @@ class InfoProvider(object):
         for folder in self.addon.xml_folders:
             fontlist = ["-"]
             # create a list with all font names from default fontset
-            if folder in self.fonts:
-                for item in self.fonts[folder]:
+            if folder in self.addon.fonts:
+                for item in self.addon.fonts[folder]:
                     fontlist.append(item["name"])
             # find undefined font refs
             for ref in font_refs[folder]:
@@ -603,8 +574,8 @@ class InfoProvider(object):
                     listitems.append(ref)
             # find unused font defs
             ref_list = [d['name'] for d in font_refs[folder]]
-            if folder in self.fonts:
-                for node in self.fonts[folder]:
+            if folder in self.addon.fonts:
+                for node in self.addon.fonts[folder]:
                     if node["name"] not in ref_list + estuary_fonts:
                         node["message"] = "Unused font: %s" % node["name"]
                         listitems.append(node)

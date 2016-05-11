@@ -17,6 +17,7 @@ import webbrowser
 import logging
 from itertools import chain
 from xml.sax.saxutils import escape
+from lxml import etree as ET
 
 import mdpopups
 
@@ -63,7 +64,7 @@ class KodiDevKit(sublime_plugin.EventListener):
                 if node["name"] not in colors:
                     colors.append(node["name"])
                     completions.append(["%s (%s)" % (node["name"], node["content"]), node["name"]])
-            for node in chain(INFOS.include_list[folder], INFOS.fonts[folder]):
+            for node in chain(INFOS.include_list[folder], INFOS.addon.fonts[folder]):
                 completions.append([node["name"], node["name"]])
             for node in chain(INFOS.builtins, INFOS.conditions):
                 completions.append([node[0], node[0]])
@@ -595,12 +596,12 @@ class SearchForImageCommand(sublime_plugin.TextCommand):
 class SearchForFontCommand(sublime_plugin.TextCommand):
 
     def is_visible(self):
-        return bool(INFOS.fonts)
+        return bool(INFOS.addon.fonts)
 
     def run(self, edit):
         self.fonts = []
         folder = self.view.file_name().split(os.sep)[-2]
-        self.fonts = [[i["name"], "%s  -  %s" % (i["size"], i["filename"])] for i in INFOS.fonts[folder]]
+        self.fonts = [[i["name"], "%s  -  %s" % (i["size"], i["filename"])] for i in INFOS.addon.fonts[folder]]
         sublime.active_window().show_quick_panel(self.fonts,
                                                  lambda s: self.on_done(s),
                                                  selected_index=0)

@@ -7,6 +7,7 @@ import os
 from . import Utils
 from . import addon
 import logging
+from lxml import etree as ET
 
 
 class Skin(addon.Addon):
@@ -18,6 +19,8 @@ class Skin(addon.Addon):
         self.type = "skin"
         for node in self.root.findall('.//res'):
             self.xml_folders.append(node.attrib["folder"])
+        self.get_colors()
+        self.get_fonts()
 
     @property
     def lang_path(self):
@@ -47,7 +50,7 @@ class Skin(addon.Addon):
         """
         self.colors = []
         color_path = os.path.join(self.path, "colors")
-        if not self.addon.xml_file or not os.path.exists(color_path):
+        if not self.xml_file or not os.path.exists(color_path):
             return False
         for path in os.listdir(color_path):
             logging.info("found color file: " + path)
@@ -60,3 +63,27 @@ class Skin(addon.Addon):
                               "file": file_path}
                 self.colors.append(color_dict)
             logging.info("color list: %i colors found" % len(self.colors))
+
+    def get_fonts(self):
+        """
+        create font dict by parsing first fontset
+        """
+        if not self.xml_file or not self.xml_folders:
+            return False
+        self.fonts = {}
+        for folder in self.xml_folders:
+            paths = [os.path.join(self.path, folder, "Font.xml"),
+                     os.path.join(self.path, folder, "font.xml")]
+            font_file = Utils.check_paths(paths)
+            if not font_file:
+                return False
+            self.fonts[folder] = []
+            root = Utils.get_root_from_file(font_file)
+            for node in root.find("fontset").findall("font"):
+                string_dict = {"name": node.find("name").text,
+                               "size": node.find("size").text,
+                               "line": node.sourceline,
+                               "content": ET.tostring(node, pretty_print=True, encoding="unicode"),
+                               "file": font_file,
+                               "filename": node.find("filename").text}
+                self.fonts[folder].append(string_dict)

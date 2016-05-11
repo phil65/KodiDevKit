@@ -16,10 +16,11 @@ class Addon(object):
         self.window_files = {}
         self.po_files = []
         self.colors = []
+        self.fonts = {}
         self.xml_folders = []
-        self.xml_file = os.path.join(self.project_path, "addon.xml")
-        self.root = Utils.get_root_from_file(self.xml_file)
         self.path = kwargs.get("project_path")
+        self.xml_file = os.path.join(self.path, "addon.xml")
+        self.root = Utils.get_root_from_file(self.xml_file)
         for item in self.root.xpath("/addon[@id]"):
             self.name = item.attrib["id"]
             break
