@@ -553,7 +553,7 @@ class SearchForImageCommand(sublime_plugin.TextCommand):
         return INFOS.addon and INFOS.addon.media_path
 
     def run(self, edit):
-        self.files = [i for i in INFOS.addon.get_skin_files()]
+        self.files = [i for i in INFOS.addon.get_media_files()]
         sublime.active_window().show_quick_panel(items=self.files,
                                                  on_select=self.on_done,
                                                  selected_index=0,

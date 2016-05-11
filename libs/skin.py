@@ -86,13 +86,13 @@ class Skin(addon.Addon):
             self.fonts[folder] = []
             root = Utils.get_root_from_file(self.font_file)
             for node in root.find("fontset").findall("font"):
-                string_dict = {"name": node.find("name").text,
-                               "size": node.find("size").text,
-                               "line": node.sourceline,
-                               "content": ET.tostring(node, pretty_print=True, encoding="unicode"),
-                               "file": self.font_file,
-                               "filename": node.find("filename").text}
-                self.fonts[folder].append(string_dict)
+                font = {"name": node.find("name").text,
+                        "size": node.find("size").text,
+                        "line": node.sourceline,
+                        "content": ET.tostring(node, pretty_print=True, encoding="unicode"),
+                        "file": self.font_file,
+                        "filename": node.find("filename").text}
+                self.fonts[folder].append(font)
 
     def get_color_info(self, color_string):
         """
@@ -113,7 +113,7 @@ class Skin(addon.Addon):
             alpha_percent = round(int(color_string[:2], 16) / (16 * 16) * 100)
             return '<a href="test" style="background-color:%s;color:%s">%d %% alpha</a>' % (color_hex, cont_color, alpha_percent)
 
-    def get_skin_files(self):
+    def get_media_files(self):
         for path, _, files in os.walk(self.media_path):
             if "studio" in path or "recordlabel" in path:
                 continue
