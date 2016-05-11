@@ -18,7 +18,6 @@ import logging
 from itertools import chain
 from xml.sax.saxutils import escape
 
-from lxml import etree as ET
 import mdpopups
 
 from .libs import Utils
@@ -108,24 +107,21 @@ class KodiDevKit(sublime_plugin.EventListener):
                 word = view.substr(view.word(region))
                 popup_label = INFOS.return_label(word)
         elif "text.xml" in scope_name:
-            if info_type in set(["INFO", "ESCINFO", "VAR", "ESCVAR", "LOCALIZE", "EXP"]):
-
-                if info_type in ["VAR", "ESCVAR", "EXP"]:
-                    node = INFOS.addon.return_node(info_id, folder=folder)
-                    node_content = str(node["content"])
-                    if node_content:
-                        popup_label = mdpopups.syntax_highlight(view=view,
-                                                                src=node_content,
-                                                                language="xml")
-                elif info_type in ["INFO", "ESCINFO"]:
-                    result = kodi.request(method="XBMC.GetInfoLabels",
-                                          params={"labels": [info_id]})
-                    if result:
-                        _, value = result["result"].popitem()
-                        if value:
-                            return str(value)
-                elif info_type == "LOCALIZE":
-                    popup_label = self.return_label(info_id)
+            if info_type in ["VAR", "ESCVAR", "EXP"]:
+                node = INFOS.addon.return_node(info_id, folder=folder)
+                if node["content"]:
+                    popup_label = mdpopups.syntax_highlight(view=view,
+                                                            src=node["content"],
+                                                            language="xml")
+            elif info_type in ["INFO", "ESCINFO"]:
+                result = kodi.request(method="XBMC.GetInfoLabels",
+                                      params={"labels": [info_id]})
+                if result:
+                    _, value = result["result"].popitem()
+                    if value:
+                        return str(value)
+            elif info_type == "LOCALIZE":
+                popup_label = self.return_label(info_id)
             if not popup_label:
                 if "<include>" in line_contents or "<include content=" in line_contents:
                     content = Utils.get_node_content(view, flags)
@@ -176,8 +172,7 @@ class KodiDevKit(sublime_plugin.EventListener):
         if result:
             _, value = result["result"].popitem()
             if value is not None:
-                popup_label = str(value)
-                sublime.set_timeout_async(lambda: self.show_tooltip(view, popup_label),
+                sublime.set_timeout_async(lambda: self.show_tooltip(view, str(value)),
                                           self.settings.get("tooltip_delay", 0))
 
     def show_tooltip(self, view, tooltip_label):
@@ -273,7 +268,6 @@ class QuickPanelCommand(sublime_plugin.WindowCommand):
         node = self.nodes[index]
         self.window.open_file("%s:%i" % (node["file"], node["line"]),
                               sublime.ENCODED_POSITION | sublime.TRANSIENT)
-        # self.select_text(view, node)
 
     @Utils.run_async
     def select_text(self, view, node):
@@ -298,12 +292,13 @@ class BuildAddonCommand(sublime_plugin.WindowCommand):
 
     @Utils.run_async
     def run(self, pack_textures=True):
-        Utils.texturepacker(media_path=INFOS.addon.media_path,
+        path = INFOS.addon.media_path
+        Utils.texturepacker(media_path=path,
                             settings=sublime.load_settings(SETTINGS_FILE))
-        Utils.make_archive(INFOS.addon.media_path,
-                           os.path.join(INFOS.addon.media_path, os.path.basename(INFOS.addon.media_path) + ".zip"))
+        Utils.make_archive(folderpath=path,
+                           archive=os.path.join(path, os.path.basename(path) + ".zip"))
         if sublime.ok_cancel_dialog("Zip file created!\nDo you want to show it with a file browser?"):
-            webbrowser.open(INFOS.addon.media_path)
+            webbrowser.open(path)
 
 
 class BuildThemeCommand(sublime_plugin.WindowCommand):
@@ -312,8 +307,8 @@ class BuildThemeCommand(sublime_plugin.WindowCommand):
         return INFOS.addon and os.path.exists(os.path.join(INFOS.addon.path, "themes"))
 
     def run(self, pack_textures=True):
-        self.theme_folders = [folder for folder in os.listdir(os.path.join(INFOS.addon.path, "themes"))]
-        self.window.show_quick_panel(items=self.theme_folders,
+        self.themes = [folder for folder in os.listdir(os.path.join(INFOS.addon.path, "themes"))]
+        self.window.show_quick_panel(items=self.themes,
                                      on_select=self.on_done,
                                      selected_index=0)
 
@@ -321,10 +316,10 @@ class BuildThemeCommand(sublime_plugin.WindowCommand):
     def on_done(self, index):
         if index == -1:
             return None
-        media_path = os.path.join(INFOS.addon.path, "themes", self.theme_folders[index])
+        media_path = os.path.join(INFOS.addon.path, "themes", self.themes[index])
         Utils.texturepacker(media_path=media_path,
                             settings=sublime.load_settings(SETTINGS_FILE),
-                            xbt_filename=self.theme_folders[index] + ".xbt")
+                            xbt_filename=self.themes[index] + ".xbt")
         if sublime.ok_cancel_dialog("Theme file created!\nDo you want to show it with a file browser?"):
             webbrowser.open(media_path)
 
