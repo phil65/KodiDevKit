@@ -191,11 +191,11 @@ class KodiDevKit(sublime_plugin.EventListener):
         if view.file_name().endswith(".xml"):
             if not self.is_modified:
                 return False
-            INFOS.update_xml_files()
+            INFOS.addon.update_xml_files()
             filename = os.path.basename(view.file_name())
             folder = view.file_name().split(os.sep)[-2]
             INFOS.reload_skin_after_save(view.file_name())
-            if folder in INFOS.window_files and filename in INFOS.window_files[folder]:
+            if folder in INFOS.addon.window_files and filename in INFOS.addon.window_files[folder]:
                 if self.settings.get("auto_reload_skin", True):
                     self.is_modified = False
                     view.window().run_command("execute_builtin",
@@ -318,7 +318,7 @@ class ShowFontRefsCommand(QuickPanelCommand):
         listitems = []
         self.nodes = []
         view = self.window.active_view()
-        INFOS.update_xml_files()
+        INFOS.addon.update_xml_files()
         font_refs = INFOS.get_font_refs()
         self.folder = view.file_name().split(os.sep)[-2]
         self.nodes = [ref for ref in font_refs[self.folder] if ref["name"] == "Font_Reg28"]
@@ -396,7 +396,7 @@ class OpenActiveWindowXmlFromRemoteCommand(sublime_plugin.WindowCommand):
         key, value = result["result"].popitem()
         if os.path.exists(value):
             self.window.open_file(value)
-        for xml_file in INFOS.window_files[folder]:
+        for xml_file in INFOS.addon.window_files[folder]:
             if xml_file == value:
                 path = os.path.join(INFOS.project_path, folder, xml_file)
                 self.window.open_file(path)

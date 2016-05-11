@@ -131,7 +131,6 @@ class InfoProvider(object):
     def __init__(self):
         self.includes = {}
         self.include_files = {}
-        self.window_files = {}
         self.project_path = ""
         self.addon = None
 
@@ -178,14 +177,14 @@ class InfoProvider(object):
             logging.info("Kodi project detected: " + path)
         if self.addon and self.addon.xml_folders:
             self.update_include_list()
-            self.update_xml_files()
+            self.addon.update_xml_files()
             # sublime.status_message("KodiDevKit: successfully loaded addon")
 
     def get_check_listitems(self, check_type):
         """
         starts check with type check_type and returns result nodes
         """
-        self.update_xml_files()
+        self.addon.update_xml_files()
         checks = {"variable": self.check_variables,
                   "include": self.check_includes,
                   "font": self.check_fonts,
@@ -200,7 +199,7 @@ class InfoProvider(object):
         """
         for folder in self.addon.xml_folders:
             for item in WINDOW_FILENAMES:
-                if item not in self.window_files[folder]:
+                if item not in self.addon.window_files[folder]:
                     logging.info("Skin does not include %s" % item)
 
     def reload_skin_after_save(self, path):
@@ -249,16 +248,6 @@ class InfoProvider(object):
             if "file" in node.attrib and node.attrib["file"] != "script-skinshortcuts-includes.xml":
                 xml_file = os.path.join(self.project_path, folder, node.attrib["file"])
                 self.update_includes(xml_file)
-
-    def update_xml_files(self):
-        """
-        update list of all include and window xmls
-        """
-        self.window_files = {}
-        for path in self.addon.xml_folders:
-            xml_folder = os.path.join(self.project_path, path)
-            self.window_files[path] = Utils.get_xml_file_paths(xml_folder)
-            logging.info("found %i XMLs in %s" % (len(self.window_files[path]), xml_folder))
 
     def go_to_tag(self, keyword, folder):
         """
@@ -389,7 +378,7 @@ class InfoProvider(object):
         listitems = []
         for folder in self.addon.xml_folders:
             var_refs = []
-            for xml_file in self.window_files[folder]:
+            for xml_file in self.addon.window_files[folder]:
                 path = os.path.join(self.project_path, folder, xml_file)
                 with open(path, encoding="utf8", errors="ignore") as f:
                     for i, line in enumerate(f.readlines()):
@@ -422,7 +411,7 @@ class InfoProvider(object):
         for folder in self.addon.xml_folders:
             var_refs = []
             # get all include refs
-            for xml_file in self.window_files[folder]:
+            for xml_file in self.addon.window_files[folder]:
                 path = os.path.join(self.project_path, folder, xml_file)
                 root = Utils.get_root_from_file(path)
                 if root is None:
@@ -499,7 +488,7 @@ class InfoProvider(object):
         font_refs = {}
         for folder in self.addon.xml_folders:
             font_refs[folder] = []
-            for xml_file in self.window_files[folder]:
+            for xml_file in self.addon.window_files[folder]:
                 path = os.path.join(self.project_path, folder, xml_file)
                 font_refs[folder].extend(Utils.get_refs_from_file(path, ".//font"))
         return font_refs
@@ -546,7 +535,7 @@ class InfoProvider(object):
             window_refs = []
             control_refs = []
             defines = []
-            for xml_file in self.window_files[folder]:
+            for xml_file in self.addon.window_files[folder]:
                 path = os.path.join(self.project_path, folder, xml_file)
                 root = Utils.get_root_from_file(path)
                 if root is None:
@@ -721,7 +710,7 @@ class InfoProvider(object):
                   [".//fontset[(@idloc)]", "idloc"],
                   [".//label[(@fallback)]", "fallback"]]
         for folder in self.addon.xml_folders:
-            for xml_file in self.window_files[folder]:
+            for xml_file in self.addon.window_files[folder]:
                 path = os.path.join(self.project_path, folder, xml_file)
                 root = Utils.get_root_from_file(path)
                 if root is None:
@@ -787,7 +776,7 @@ class InfoProvider(object):
     def file_list_generator(self):
         if self.addon.xml_folders:
             for folder in self.addon.xml_folders:
-                for xml_file in self.window_files[folder]:
+                for xml_file in self.addon.window_files[folder]:
                     yield os.path.join(self.project_path, folder, xml_file)
 
     def check_values(self):

@@ -6,6 +6,7 @@
 import os
 from . import Utils
 import sublime
+import logging
 
 SETTINGS_FILE = 'kodidevkit.sublime-settings'
 
@@ -16,11 +17,11 @@ class Addon(object):
 
     def __init__(self, *args, **kwargs):
         self.type = "python"
-        self.window_files = {}
         self.po_files = []
         self.colors = []
         self.fonts = {}
         self.xml_folders = []
+        self.window_files = {}
         self.settings = sublime.load_settings(SETTINGS_FILE)
         self.path = kwargs.get("project_path")
         self.xml_file = os.path.join(self.path, "addon.xml")
@@ -87,3 +88,13 @@ class Addon(object):
             if os.path.exists(path):
                 po_files.append(Utils.get_po_file(path))
         return po_files
+
+    def update_xml_files(self):
+        """
+        update list of all include and window xmls
+        """
+        self.window_files = {}
+        for path in self.addon.xml_folders:
+            xml_folder = os.path.join(self.project_path, path)
+            self.window_files[path] = Utils.get_xml_file_paths(xml_folder)
+            logging.info("found %i XMLs in %s" % (len(self.window_files[path]), xml_folder))
