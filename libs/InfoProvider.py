@@ -177,7 +177,6 @@ class InfoProvider(object):
             logging.info("Kodi project detected: " + path)
         if self.addon and self.addon.xml_folders:
             self.update_include_list()
-            self.addon.update_xml_files()
             # sublime.status_message("KodiDevKit: successfully loaded addon")
 
     def get_check_listitems(self, check_type):

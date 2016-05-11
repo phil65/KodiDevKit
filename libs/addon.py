@@ -30,6 +30,7 @@ class Addon(object):
             self.name = item.attrib["id"]
             break
         self.load_xml_folders()
+        self.update_xml_files()
         self.update_labels()
 
     def load_xml_folders(self):
