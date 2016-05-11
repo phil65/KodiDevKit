@@ -289,22 +289,6 @@ def get_root_from_file(xml_file):
         return None
 
 
-def get_xml_file_paths(xml_path):
-    """
-    return list with absolute file paths from XML files in *xml_path
-    """
-    xml_files = []
-    if not os.path.exists(xml_path):
-        return []
-    for xml_file in os.listdir(xml_path):
-        filename = os.path.basename(xml_file)
-        if not filename.endswith(".xml"):
-            continue
-        if filename.lower() not in ["script-skinshortcuts-includes.xml", "font.xml"]:
-            xml_files.append(xml_file)
-    return xml_files
-
-
 def get_refs_from_file(path, xpath):
     """
     load xml file from *path and return dict list for nodes which match *xpath

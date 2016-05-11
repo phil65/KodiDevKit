@@ -108,7 +108,15 @@ class Addon(object):
         self.window_files = {}
         for path in self.xml_folders:
             xml_folder = os.path.join(self.path, path)
-            self.window_files[path] = Utils.get_xml_file_paths(xml_folder)
+            self.window_files[path] = []
+            if not os.path.exists(xml_folder):
+                return []
+            for xml_file in os.listdir(xml_folder):
+                filename = os.path.basename(xml_file)
+                if not filename.endswith(".xml"):
+                    continue
+                if filename.lower() not in ["script-skinshortcuts-includes.xml", "font.xml"]:
+                    self.window_files[path].append(xml_file)
             logging.info("found %i XMLs in %s" % (len(self.window_files[path]), xml_folder))
 
     def create_new_po_file(self):
