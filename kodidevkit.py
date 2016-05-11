@@ -297,8 +297,8 @@ class BuildThemeCommand(sublime_plugin.WindowCommand):
 
     def run(self, pack_textures=True):
         self.theme_folders = [folder for folder in os.listdir(os.path.join(INFOS.addon.path, "themes"))]
-        self.window.show_quick_panel(self.theme_folders,
-                                     lambda s: self.on_done(s),
+        self.window.show_quick_panel(items=self.theme_folders,
+                                     on_select=self.on_done,
                                      selected_index=0)
 
     @Utils.run_async
@@ -324,10 +324,10 @@ class ShowFontRefsCommand(QuickPanelCommand):
         self.nodes = [ref for ref in font_refs[self.folder] if ref["name"] == "Font_Reg28"]
         listitems = [i["name"] for i in self.nodes]
         if listitems:
-            self.window.show_quick_panel(listitems,
-                                         lambda s: self.on_done(s),
+            self.window.show_quick_panel(items=listitems,
+                                         on_select=self.on_done,
                                          selected_index=0,
-                                         on_highlight=lambda s: self.show_preview(s))
+                                         on_highlight=self.show_preview)
         else:
             logging.critical("No references found")
 
@@ -358,10 +358,10 @@ class SearchFileForLabelsCommand(QuickPanelCommand):
                                 "line": i + 1}
                         self.nodes.append(node)
         if listitems:
-            self.window.show_quick_panel(listitems,
-                                         lambda s: self.on_done(s),
+            self.window.show_quick_panel(items=listitems,
+                                         on_select=self.on_done,
                                          selected_index=0,
-                                         on_highlight=lambda s: self.show_preview(s))
+                                         on_highlight=self.show_preview)
         else:
             logging.critical("No references found")
 
@@ -376,10 +376,10 @@ class CheckVariablesCommand(QuickPanelCommand):
             self.nodes = INFOS.get_check_listitems(check_type)
         listitems = [[i["message"], "%s: %s" % (os.path.basename(i["file"]), i["line"])] for i in self.nodes]
         if listitems:
-            self.window.show_quick_panel(listitems,
-                                         lambda s: self.on_done(s),
+            self.window.show_quick_panel(items=listitems,
+                                         on_select=self.on_done,
                                          selected_index=0,
-                                         on_highlight=lambda s: self.show_preview(s))
+                                         on_highlight=self.show_preview)
         elif not check_type == "file":
             logging.critical("No errors detected")
 
@@ -416,8 +416,8 @@ class SearchForLabelCommand(sublime_plugin.WindowCommand):
                 if entry.msgctxt not in self.ids:
                     self.ids.append(entry.msgctxt)
                     listitems.append(["%s (%s)" % (entry.msgid, entry.msgctxt), entry.comment])
-        self.window.show_quick_panel(listitems,
-                                     lambda s: self.label_search_ondone_action(s),
+        self.window.show_quick_panel(items=listitems,
+                                     on_select=self.label_search_ondone_action,
                                      selected_index=0)
 
     def label_search_ondone_action(self, index):
@@ -433,8 +433,8 @@ class SearchForBuiltinCommand(sublime_plugin.WindowCommand):
 
     def run(self):
         listitems = [["%s" % (item[0]), item[1]] for item in INFOS.builtins]
-        self.window.show_quick_panel(listitems,
-                                     lambda s: self.builtin_search_on_done(s),
+        self.window.show_quick_panel(items=listitems,
+                                     on_select=self.builtin_search_on_done,
                                      selected_index=0)
 
     def builtin_search_on_done(self, index):
@@ -448,8 +448,8 @@ class SearchForVisibleConditionCommand(sublime_plugin.WindowCommand):
 
     def run(self):
         listitems = [["%s" % (item[0]), item[1]] for item in INFOS.conditions]
-        self.window.show_quick_panel(listitems,
-                                     lambda s: self.builtin_search_on_done(s),
+        self.window.show_quick_panel(items=listitems,
+                                     on_select=self.builtin_search_on_done,
                                      selected_index=0)
 
     def builtin_search_on_done(self, index):
@@ -467,8 +467,8 @@ class SearchForJsonCommand(sublime_plugin.WindowCommand):
         self.listitems = [[k, str(v)] for k, v in result["result"]["types"].items()]
         self.listitems += [[k, str(v)] for k, v in result["result"]["methods"].items()]
         self.listitems += [[k, str(v)] for k, v in result["result"]["notifications"].items()]
-        self.window.show_quick_panel(self.listitems,
-                                     lambda s: self.builtin_search_on_done(s),
+        self.window.show_quick_panel(items=self.listitems,
+                                     on_select=self.builtin_search_on_done,
                                      selected_index=0)
 
     def builtin_search_on_done(self, index):
@@ -511,10 +511,10 @@ class PreviewImageCommand(sublime_plugin.TextCommand):
             self.files = [imagepath + s for s in self.files]
         else:
             self.files = [imagepath]
-        sublime.active_window().show_quick_panel(self.files,
-                                                 lambda s: self.on_done(s),
+        sublime.active_window().show_quick_panel(items=self.files,
+                                                 on_select=self.on_done,
                                                  selected_index=0,
-                                                 on_highlight=lambda s: self.show_preview(s))
+                                                 on_highlight=self.show_preview)
 
     def on_done(self, index):
         sublime.active_window().focus_view(self.view)
@@ -543,16 +543,16 @@ class SearchForImageCommand(sublime_plugin.TextCommand):
 
     def run(self, edit):
         self.files = [i for i in INFOS.addon.get_skin_files()]
-        sublime.active_window().show_quick_panel(self.files,
-                                                 lambda s: self.on_done(s),
+        sublime.active_window().show_quick_panel(items=self.files,
+                                                 on_select=self.on_done,
                                                  selected_index=0,
-                                                 on_highlight=lambda s: self.show_preview(s))
+                                                 on_highlight=self.show_preview)
 
     def on_done(self, index):
         items = ["Insert path", "Open Image"]
         if index >= 0:
-            sublime.active_window().show_quick_panel(items,
-                                                     lambda s: self.insert_char(s, index),
+            sublime.active_window().show_quick_panel(items=items,
+                                                     on_select=lambda s: self.insert_char(s, index),
                                                      selected_index=0)
         else:
             sublime.active_window().focus_view(self.view)
@@ -579,8 +579,8 @@ class SearchForFontCommand(sublime_plugin.TextCommand):
         self.fonts = []
         folder = self.view.file_name().split(os.sep)[-2]
         self.fonts = [[i["name"], "%s  -  %s" % (i["size"], i["filename"])] for i in INFOS.addon.fonts[folder]]
-        sublime.active_window().show_quick_panel(self.fonts,
-                                                 lambda s: self.on_done(s),
+        sublime.active_window().show_quick_panel(items=self.fonts,
+                                                 on_select=self.on_done,
                                                  selected_index=0)
 
     def on_done(self, index):
@@ -612,8 +612,8 @@ class MoveToLanguageFile(sublime_plugin.TextCommand):
                     self.label_ids.append(entry.msgctxt)
                     self.labels.append(["%s (%s)" % (entry.msgid, entry.msgctxt), entry.comment])
         self.labels.append("Create new label")
-        sublime.active_window().show_quick_panel(self.labels,
-                                                 lambda s: self.on_done(s, region),
+        sublime.active_window().show_quick_panel(items=self.labels,
+                                                 on_select=lambda s: self.on_done(s, region),
                                                  selected_index=0)
 
     def on_done(self, index, region):
@@ -655,10 +655,10 @@ class SwitchXmlFolderCommand(QuickPanelCommand):
             node = {"file": os.path.join(INFOS.addon.path, folder, filename),
                     "line": line + 1}
             self.nodes.append(node)
-        self.window.show_quick_panel(INFOS.addon.xml_folders,
-                                     lambda s: self.on_done(s),
+        self.window.show_quick_panel(items=INFOS.addon.xml_folders,
+                                     on_select=self.on_done,
                                      selected_index=0,
-                                     on_highlight=lambda s: self.show_preview(s))
+                                     on_highlight=self.show_preview)
 
     def on_done(self, index):
         if index == -1:

@@ -26,8 +26,9 @@ class RemoteActionsCommand(sublime_plugin.WindowCommand):
         active_device = "Set device: %s" % self.settings.get("remote_ip", "")
         listitems = [active_device, "Reconnect", "Send this add-on",
                      "Get log", "Get Screenshot", "Clear cache", "Reboot"]
-        self.window.show_quick_panel(listitems,
-                                     lambda s: self.on_done(s), selected_index=0)
+        self.window.show_quick_panel(items=listitems,
+                                     on_select=self.on_done,
+                                     selected_index=0)
 
     def on_done(self, index):
         if index == -1:
