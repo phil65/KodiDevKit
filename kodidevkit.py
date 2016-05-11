@@ -51,7 +51,7 @@ class KodiDevKit(sublime_plugin.EventListener):
         completions = []
         scope_name = view.scope_name(view.sel()[0].b)
         filename = view.file_name()
-        if not filename:
+        if not filename or not INFOS.addon:
             return []
         folder = filename.split(os.sep)[-2]
         if folder not in INFOS.addon.includes:
@@ -121,7 +121,7 @@ class KodiDevKit(sublime_plugin.EventListener):
                     if value:
                         return str(value)
             elif info_type == "LOCALIZE":
-                popup_label = self.return_label(info_id)
+                popup_label = INFOS.return_label(info_id)
             if not popup_label:
                 if "<include>" in line_contents or "<include content=" in line_contents:
                     content = Utils.get_node_content(view, flags)
