@@ -19,6 +19,7 @@ class Skin(addon.Addon):
         super(Skin, self).__init__(*args, **kwargs)
         self.includes = {}
         self.include_files = {}
+        self.font_file = None
         self.type = "skin"
         self.update_include_list()
         self.get_colors()
@@ -79,17 +80,17 @@ class Skin(addon.Addon):
         for folder in self.xml_folders:
             paths = [os.path.join(self.path, folder, "Font.xml"),
                      os.path.join(self.path, folder, "font.xml")]
-            font_file = Utils.check_paths(paths)
-            if not font_file:
+            self.font_file = Utils.check_paths(paths)
+            if not self.font_file:
                 return False
             self.fonts[folder] = []
-            root = Utils.get_root_from_file(font_file)
+            root = Utils.get_root_from_file(self.font_file)
             for node in root.find("fontset").findall("font"):
                 string_dict = {"name": node.find("name").text,
                                "size": node.find("size").text,
                                "line": node.sourceline,
                                "content": ET.tostring(node, pretty_print=True, encoding="unicode"),
-                               "file": font_file,
+                               "file": self.font_file,
                                "filename": node.find("filename").text}
                 self.fonts[folder].append(string_dict)
 
@@ -145,3 +146,16 @@ class Skin(addon.Addon):
             if "file" in node.attrib and node.attrib["file"] != "script-skinshortcuts-includes.xml":
                 xml_file = os.path.join(self.path, folder, node.attrib["file"])
                 self.update_includes(xml_file)
+
+    def reload_after_save(self, path):
+        """
+        update include, color and font infos, depending on open file
+        """
+        folder = path.split(os.sep)[-2]
+        if folder in self.include_files:
+            if path in self.include_files[folder]:
+                self.update_include_list()
+        if path.endswith("colors/defaults.xml"):
+            self.get_colors()
+        if path.endswith(("Font.xml", "font.xml")):
+            self.get_fonts()

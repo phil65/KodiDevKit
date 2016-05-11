@@ -195,19 +195,6 @@ class InfoProvider(object):
                 if item not in self.addon.window_files[folder]:
                     logging.info("Skin does not include %s" % item)
 
-    def reload_skin_after_save(self, path):
-        """
-        update include, color and font infos, depending on open file
-        """
-        folder = path.split(os.sep)[-2]
-        if folder in self.addon.include_files:
-            if path in self.addon.include_files[folder]:
-                self.addon.update_include_list()
-        if path.endswith("colors/defaults.xml"):
-            self.addon.get_colors()
-        if path.endswith(("Font.xml", "font.xml")):
-            self.addon.get_fonts()
-
     def go_to_tag(self, keyword, folder):
         """
         jumps to the definition of ref named keyword

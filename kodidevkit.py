@@ -196,7 +196,7 @@ class KodiDevKit(sublime_plugin.EventListener):
             INFOS.addon.update_xml_files()
             filename = os.path.basename(view.file_name())
             folder = view.file_name().split(os.sep)[-2]
-            INFOS.reload_skin_after_save(view.file_name())
+            INFOS.addon.reload_after_save(view.file_name())
             if folder in INFOS.addon.window_files and filename in INFOS.addon.window_files[folder]:
                 if self.settings.get("auto_reload_skin", True):
                     self.is_modified = False
