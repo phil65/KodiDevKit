@@ -121,6 +121,94 @@ WINDOW_FILENAMES = [item[4] for item in WINDOW_MAP]
 WINDOW_NAMES = [item[0] for item in WINDOW_MAP]
 WINDOW_IDS = [item[3] for item in WINDOW_MAP]
 
+COMMON = ["description", "camera", "depth", "posx", "posy", "top", "bottom", "left", "right", "centertop", "centerbottom", "centerleft", "centerright", "width", "height", "visible", "include", "animation"]
+# tags allowed for containers
+LIST_COMMON = ["defaultcontrol", "focusedlayout", "itemlayout", "offsetx", "offsety", "content", "onup", "ondown", "onleft", "onright", "oninfo", "onback", "onclick", "onfocus", "onunfocus", "orientation", "preloaditems", "scrolltime", "pagecontrol", "viewtype", "autoscroll", "hitrect"]
+LABEL_COMMON = ["font", "textcolor", "align", "aligny", "label"]
+# allowed child nodes for different control types (+ some other nodes)
+TAG_CHECKS = [[".//*[@type='button']/*", COMMON + LABEL_COMMON + ["colordiffuse", "texturefocus", "texturenofocus", "label2", "wrapmultiline", "disabledcolor", "selectedcolor", "shadowcolor", "textoffsetx",
+                                                                  "textoffsety", "pulseonselect", "onclick", "onfocus", "onunfocus", "onup", "onleft", "onright", "ondown", "onback", "textwidth",
+                                                                  "focusedcolor", "angle", "hitrect", "enable"]],
+              [".//*[@type='radiobutton']/*", COMMON + LABEL_COMMON + ["colordiffuse", "texturefocus", "texturenofocus", "selected", "disabledcolor", "selectedcolor", "shadowcolor", "textoffsetx",
+                                                                       "textoffsety", "pulseonselect", "onclick", "onfocus", "onunfocus", "onup", "onleft", "onright", "ondown", "onback", "textwidth",
+                                                                       "focusedcolor", "angle", "hitrect", "enable", "textureradioonfocus", "textureradioofffocus", "textureradioondisabled", "textureradiooffdisabled", "textureradioonnofocus",
+                                                                       "textureradiooffnofocus", "textureradioon", "textureradiooff", "radioposx", "radioposy", "radiowidth", "radioheight"]],
+              [".//*[@type='spincontrol']/*", COMMON + LABEL_COMMON + ["colordiffuse", "textureup", "textureupfocus", "textureupdisabled", "texturedown", "texturedownfocus", "texturedowndisabled", "spinwidth", "spinheight", "spinposx", "spinposy",
+                                                                       "subtype", "disabledcolor", "focusedcolor", "shadowcolor", "textoffsetx", "textoffsety", "pulseonselect", "onfocus", "onunfocus", "onup", "onleft",
+                                                                       "onright", "ondown", "onback", "hitrect", "enable", "showonepage", "reverse"]],
+              [".//*[@type='togglebutton']/*", COMMON + LABEL_COMMON + ["colordiffuse", "texturefocus", "alttexturefocus", "alttexturenofocus", "altclick", "texturenofocus", "altlabel", "usealttexture",
+                                                                        "disabledcolor", "shadowcolor", "textoffsetx", "textoffsety", "pulseonselect", "onclick", "onfocus", "onunfocus", "onup", "onleft",
+                                                                        "onright", "ondown", "onback", "textwidth", "focusedcolor", "subtype", "hitrect", "enable"]],
+              [".//*[@type='label']/*", COMMON + LABEL_COMMON + ["scroll", "scrollout", "info", "number", "angle", "haspath", "selectedcolor", "shadowcolor", "disabledcolor", "pauseatend", "wrapmultiline",
+                                                                 "scrollspeed", "scrollsuffix", "textoffsetx", "textoffsety"]],
+              [".//*[@type='textbox']/*", COMMON + LABEL_COMMON + ["autoscroll", "info", "selectedcolor", "shadowcolor", "pagecontrol"]],
+              [".//*[@type='edit']/*", COMMON + LABEL_COMMON + ["colordiffuse", "hinttext", "textoffsetx", "textoffsety", "pulseonselect", "disabledcolor", "invalidcolor", "focusedcolor", "shadowcolor",
+                                                                "texturefocus", "texturenofocus", "onclick", "onfocus", "onunfocus", "onup", "onleft", "onright", "ondown", "onback", "textwidth", "hitrect", "enable"]],
+              [".//*[@type='image']/*", COMMON + ["align", "aligny", "aspectratio", "fadetime", "colordiffuse", "texture", "bordertexture", "bordersize", "info"]],
+              [".//*[@type='multiimage']/*", COMMON + ["align", "aligny", "aspectratio", "fadetime", "colordiffuse", "imagepath", "timeperimage", "loop", "info", "randomize", "pauseatend"]],
+              [".//*[@type='scrollbar']/*", COMMON + ["texturesliderbackground", "texturesliderbar", "texturesliderbarfocus", "textureslidernib", "textureslidernibfocus", "pulseonselect", "orientation",
+                                                      "showonepage", "pagecontrol", "onclick", "onfocus", "onunfocus", "onup", "onleft", "onright", "ondown", "onback"]],
+              [".//*[@type='progress']/*", COMMON + ["texturebg", "lefttexture", "colordiffuse", "righttexture", "overlaytexture", "midtexture", "info", "reveal"]],
+              [".//*[@type='grouplist']/*", COMMON + ["control", "align", "itemgap", "orientation", "onfocus", "onunfocus", "onup", "onleft", "onright", "ondown", "onback", "scrolltime", "usecontrolcoords", "defaultcontrol", "pagecontrol"]],
+              [".//*[@type='videowindow']/*", COMMON],
+              [".//*[@type='visualisation']/*", COMMON],
+              [".//*[@type='list']/*", COMMON + LIST_COMMON],
+              [".//*[@type='wraplist']/*", COMMON + LIST_COMMON + ["focusposition"]],
+              [".//*[@type='panel']/*", COMMON + LIST_COMMON],
+              [".//*[@type='fixedlist']/*", COMMON + LIST_COMMON + ["movement", "focusposition"]],
+              [".//content/*", ["item", "include"]],
+              [".//itemlayout/* | .//focusedlayout/*", ["control", "include"]],
+              ["/includes/*", ["include", "default", "constant", "variable", "expression"]],
+              ["/window/*", ["include", "defaultcontrol", "depth", "menucontrol", "onload", "onunload", "controls", "allowoverlay", "views", "coordinates", "animation", "visible", "zorder", "fontset", "backgroundcolor"]],
+              ["/fonts/*", ["fontset"]],
+              [".//variable/*", ["value"]]]
+# allowed attributes for some specific nodes
+ATT_CHECKS = [[["aspectratio"], ["description", "align", "aligny", "scalediffuse"]],
+              [["texture"], ["description", "background", "flipx", "flipy", "fallback", "border", "diffuse", "colordiffuse"]],
+              [["label"], ["description", "fallback"]],
+              [["autoscroll"], ["time", "reverse", "delay", "repeat"]],
+              [["defaultcontrol"], ["description", "always"]],
+              [["visible"], ["description", "allowhiddenfocus"]],
+              [["align", "aligny", "posx", "posy", "textoffsetx", "textoffsety"], ["description"]],
+              [["height", "width"], ["description", "min", "max"]],
+              [["camera"], ["description", "x", "y"]],
+              [["hitrect"], ["description", "x", "y", "w", "h"]],
+              [["onload", "onunload", "onclick", "onleft", "onright", "onup", "ondown", "onback", "onfocus", "onunfocus", "value"], ["description", "condition"]],
+              [["property"], ["description", "name", "fallback"]],
+              [["focusedlayout", "itemlayout"], ["description", "height", "width", "condition"]],
+              [["item"], ["description", "id"]],
+              [["control"], ["description", "id", "type"]],
+              [["variable"], ["description", "name"]],
+              [["expression"], ["description", "name"]],
+              [["constant"], ["description", "name"]],
+              [["include"], ["description", "name", "condition", "file", "content"]],
+              [["animation"], ["description", "start", "end", "effect", "tween", "easing", "time", "condition", "reversible", "type", "center", "delay", "pulse", "loop", "acceleration"]],
+              [["effect"], ["description", "start", "end", "tween", "easing", "time", "condition", "type", "center", "delay", "pulse", "loop", "acceleration"]]]
+# all_tags = [d[0] for d in att_checks]
+# check correct parantheses for some nodes
+BRACKET_TAGS = ["visible", "enable", "usealttexture", "selected", "expression"]
+# check some nodes to use noop instead of "-" / empty
+NOOP_TAGS = ["onclick", "onfocus", "onunfocus", "onup", "onleft", "onright", "ondown", "onback"]
+# check that some nodes only exist once on each level
+# TODO: special cases: label for fadelabel
+DOUBLE_TAGS = ["camera", "posx", "posy", "top", "bottom", "left", "right", "centertop", "centerbottom", "centerleft", "centerright", "width", "height",
+               "colordiffuse", "texturefocus", "texturenofocus", "font", "selected", "textcolor", "disabledcolor", "selectedcolor",
+               "shadowcolor", "align", "aligny", "textoffsetx", "textoffsety", "pulseonselect", "textwidth", "focusedcolor", "invalidcolor", "angle", "hitrect"]
+# check that some nodes only contain specific text
+ALLOWED_TEXT = [[["align"], ["left", "center", "right", "justify"]],
+                [["aspectratio"], ["keep", "scale", "stretch", "center"]],
+                [["aligny"], ["top", "center", "bottom"]],
+                [["orientation"], ["horizontal", "vertical"]],
+                [["subtype"], ["page", "int", "float", "text"]],
+                [["action"], ["volume", "seek"]],
+                [["scroll", "randomize", "scrollout", "pulseonselect", "reverse", "usecontrolcoords"], ["false", "true", "yes", "no"]]]
+# check that some attributes may only contain specific values
+ALLOWED_ATTR = [["align", ["left", "center", "right", "justify"]],
+                ["aligny", ["top", "center", "bottom"]],
+                ["flipx", ["true", "false"]],
+                ["flipy", ["true", "false"]]]
+
+
 PARSER = ET.XMLParser(remove_blank_text=True, remove_comments=True)
 
 
@@ -611,99 +699,13 @@ class InfoProvider(object):
     def check_file(self, path):
         xml_file = os.path.basename(path)
         # tags allowed for all controls
-        common = ["description", "camera", "depth", "posx", "posy", "top", "bottom", "left", "right", "centertop", "centerbottom", "centerleft", "centerright", "width", "height", "visible", "include", "animation"]
-        # tags allowed for containers
-        list_common = ["defaultcontrol", "focusedlayout", "itemlayout", "offsetx", "offsety", "content", "onup", "ondown", "onleft", "onright", "oninfo", "onback", "onclick", "onfocus", "onunfocus", "orientation", "preloaditems", "scrolltime", "pagecontrol", "viewtype", "autoscroll", "hitrect"]
-        label_common = ["font", "textcolor", "align", "aligny", "label"]
-        # allowed child nodes for different control types (+ some other nodes)
-        tag_checks = [[".//*[@type='button']/*", common + label_common + ["colordiffuse", "texturefocus", "texturenofocus", "label2", "wrapmultiline", "disabledcolor", "selectedcolor", "shadowcolor", "textoffsetx",
-                                                                          "textoffsety", "pulseonselect", "onclick", "onfocus", "onunfocus", "onup", "onleft", "onright", "ondown", "onback", "textwidth",
-                                                                          "focusedcolor", "angle", "hitrect", "enable"]],
-                      [".//*[@type='radiobutton']/*", common + label_common + ["colordiffuse", "texturefocus", "texturenofocus", "selected", "disabledcolor", "selectedcolor", "shadowcolor", "textoffsetx",
-                                                                               "textoffsety", "pulseonselect", "onclick", "onfocus", "onunfocus", "onup", "onleft", "onright", "ondown", "onback", "textwidth",
-                                                                               "focusedcolor", "angle", "hitrect", "enable", "textureradioonfocus", "textureradioofffocus", "textureradioondisabled", "textureradiooffdisabled", "textureradioonnofocus",
-                                                                               "textureradiooffnofocus", "textureradioon", "textureradiooff", "radioposx", "radioposy", "radiowidth", "radioheight"]],
-                      [".//*[@type='spincontrol']/*", common + label_common + ["colordiffuse", "textureup", "textureupfocus", "textureupdisabled", "texturedown", "texturedownfocus", "texturedowndisabled", "spinwidth", "spinheight", "spinposx", "spinposy",
-                                                                               "subtype", "disabledcolor", "focusedcolor", "shadowcolor", "textoffsetx", "textoffsety", "pulseonselect", "onfocus", "onunfocus", "onup", "onleft",
-                                                                               "onright", "ondown", "onback", "hitrect", "enable", "showonepage", "reverse"]],
-                      [".//*[@type='togglebutton']/*", common + label_common + ["colordiffuse", "texturefocus", "alttexturefocus", "alttexturenofocus", "altclick", "texturenofocus", "altlabel", "usealttexture",
-                                                                                "disabledcolor", "shadowcolor", "textoffsetx", "textoffsety", "pulseonselect", "onclick", "onfocus", "onunfocus", "onup", "onleft",
-                                                                                "onright", "ondown", "onback", "textwidth", "focusedcolor", "subtype", "hitrect", "enable"]],
-                      [".//*[@type='label']/*", common + label_common + ["scroll", "scrollout", "info", "number", "angle", "haspath", "selectedcolor", "shadowcolor", "disabledcolor", "pauseatend", "wrapmultiline",
-                                                                         "scrollspeed", "scrollsuffix", "textoffsetx", "textoffsety"]],
-                      [".//*[@type='textbox']/*", common + label_common + ["autoscroll", "info", "selectedcolor", "shadowcolor", "pagecontrol"]],
-                      [".//*[@type='edit']/*", common + label_common + ["colordiffuse", "hinttext", "textoffsetx", "textoffsety", "pulseonselect", "disabledcolor", "invalidcolor", "focusedcolor", "shadowcolor",
-                                                                        "texturefocus", "texturenofocus", "onclick", "onfocus", "onunfocus", "onup", "onleft", "onright", "ondown", "onback", "textwidth", "hitrect", "enable"]],
-                      [".//*[@type='image']/*", common + ["align", "aligny", "aspectratio", "fadetime", "colordiffuse", "texture", "bordertexture", "bordersize", "info"]],
-                      [".//*[@type='multiimage']/*", common + ["align", "aligny", "aspectratio", "fadetime", "colordiffuse", "imagepath", "timeperimage", "loop", "info", "randomize", "pauseatend"]],
-                      [".//*[@type='scrollbar']/*", common + ["texturesliderbackground", "texturesliderbar", "texturesliderbarfocus", "textureslidernib", "textureslidernibfocus", "pulseonselect", "orientation",
-                                                              "showonepage", "pagecontrol", "onclick", "onfocus", "onunfocus", "onup", "onleft", "onright", "ondown", "onback"]],
-                      [".//*[@type='progress']/*", common + ["texturebg", "lefttexture", "colordiffuse", "righttexture", "overlaytexture", "midtexture", "info", "reveal"]],
-                      [".//*[@type='grouplist']/*", common + ["control", "align", "itemgap", "orientation", "onfocus", "onunfocus", "onup", "onleft", "onright", "ondown", "onback", "scrolltime", "usecontrolcoords", "defaultcontrol", "pagecontrol"]],
-                      [".//*[@type='videowindow']/*", common],
-                      [".//*[@type='visualisation']/*", common],
-                      [".//*[@type='list']/*", common + list_common],
-                      [".//*[@type='wraplist']/*", common + list_common + ["focusposition"]],
-                      [".//*[@type='panel']/*", common + list_common],
-                      [".//*[@type='fixedlist']/*", common + list_common + ["movement", "focusposition"]],
-                      [".//content/*", ["item", "include"]],
-                      [".//itemlayout/* | .//focusedlayout/*", ["control", "include"]],
-                      ["/includes/*", ["include", "default", "constant", "variable", "expression"]],
-                      ["/window/*", ["include", "defaultcontrol", "depth", "menucontrol", "onload", "onunload", "controls", "allowoverlay", "views", "coordinates", "animation", "visible", "zorder", "fontset", "backgroundcolor"]],
-                      ["/fonts/*", ["fontset"]],
-                      [".//variable/*", ["value"]]]
-        # allowed attributes for some specific nodes
-        att_checks = [[["aspectratio"], ["description", "align", "aligny", "scalediffuse"]],
-                      [["texture"], ["description", "background", "flipx", "flipy", "fallback", "border", "diffuse", "colordiffuse"]],
-                      [["label"], ["description", "fallback"]],
-                      [["autoscroll"], ["time", "reverse", "delay", "repeat"]],
-                      [["defaultcontrol"], ["description", "always"]],
-                      [["visible"], ["description", "allowhiddenfocus"]],
-                      [["align", "aligny", "posx", "posy", "textoffsetx", "textoffsety"], ["description"]],
-                      [["height", "width"], ["description", "min", "max"]],
-                      [["camera"], ["description", "x", "y"]],
-                      [["hitrect"], ["description", "x", "y", "w", "h"]],
-                      [["onload", "onunload", "onclick", "onleft", "onright", "onup", "ondown", "onback", "onfocus", "onunfocus", "value"], ["description", "condition"]],
-                      [["property"], ["description", "name", "fallback"]],
-                      [["focusedlayout", "itemlayout"], ["description", "height", "width", "condition"]],
-                      [["item"], ["description", "id"]],
-                      [["control"], ["description", "id", "type"]],
-                      [["variable"], ["description", "name"]],
-                      [["expression"], ["description", "name"]],
-                      [["constant"], ["description", "name"]],
-                      [["include"], ["description", "name", "condition", "file", "content"]],
-                      [["animation"], ["description", "start", "end", "effect", "tween", "easing", "time", "condition", "reversible", "type", "center", "delay", "pulse", "loop", "acceleration"]],
-                      [["effect"], ["description", "start", "end", "tween", "easing", "time", "condition", "type", "center", "delay", "pulse", "loop", "acceleration"]]]
-        # all_tags = [d[0] for d in att_checks]
-        # check correct parantheses for some nodes
-        bracket_tags = ["visible", "enable", "usealttexture", "selected", "expression"]
-        # check some nodes to use noop instead of "-" / empty
-        noop_tags = ["onclick", "onfocus", "onunfocus", "onup", "onleft", "onright", "ondown", "onback"]
-        # check that some nodes only exist once on each level
-        # TODO: special cases: label for fadelabel
-        double_tags = ["camera", "posx", "posy", "top", "bottom", "left", "right", "centertop", "centerbottom", "centerleft", "centerright", "width", "height",
-                       "colordiffuse", "texturefocus", "texturenofocus", "font", "selected", "textcolor", "disabledcolor", "selectedcolor",
-                       "shadowcolor", "align", "aligny", "textoffsetx", "textoffsety", "pulseonselect", "textwidth", "focusedcolor", "invalidcolor", "angle", "hitrect"]
-        # check that some nodes only contain specific text
-        allowed_text = [[["align"], ["left", "center", "right", "justify"]],
-                        [["aspectratio"], ["keep", "scale", "stretch", "center"]],
-                        [["aligny"], ["top", "center", "bottom"]],
-                        [["orientation"], ["horizontal", "vertical"]],
-                        [["subtype"], ["page", "int", "float", "text"]],
-                        [["action"], ["volume", "seek"]],
-                        [["scroll", "randomize", "scrollout", "pulseonselect", "reverse", "usecontrolcoords"], ["false", "true", "yes", "no"]]]
-        # check that some attributes may only contain specific values
-        allowed_attr = [["align", ["left", "center", "right", "justify"]],
-                        ["aligny", ["top", "center", "bottom"]],
-                        ["flipx", ["true", "false"]],
-                        ["flipy", ["true", "false"]]]
         root = Utils.get_root_from_file(path)
         if root is None:
             return []
         tree = ET.ElementTree(root)
         listitems = []
         # find invalid tags
-        for check in tag_checks:
+        for check in TAG_CHECKS:
             for node in root.xpath(check[0]):
                 if node.tag not in check[1]:
                     if "type" in node.getparent().attrib:
@@ -718,7 +720,7 @@ class InfoProvider(object):
                             "file": path}
                     listitems.append(item)
         # find invalid attributes
-        for check in att_checks:
+        for check in ATT_CHECKS:
             xpath = ".//" + " | .//".join(check[0])
             for node in root.xpath(xpath):
                 for attr in node.attrib:
@@ -731,7 +733,7 @@ class InfoProvider(object):
                                 "file": path}
                         listitems.append(item)
         # check conditions in element content
-        xpath = ".//" + " | .//".join(bracket_tags)
+        xpath = ".//" + " | .//".join(BRACKET_TAGS)
         for node in root.xpath(xpath):
             if not node.text:
                 message = "Empty condition: %s" % (node.tag)
@@ -760,7 +762,7 @@ class InfoProvider(object):
                         "file": path}
                 listitems.append(item)
         # check for noop as empty action
-        xpath = ".//" + " | .//".join(noop_tags)
+        xpath = ".//" + " | .//".join(NOOP_TAGS)
         for node in root.xpath(xpath):
             if node.text == "-" or not node.text:
                 item = {"line": node.sourceline,
@@ -771,7 +773,7 @@ class InfoProvider(object):
                         "file": path}
                 listitems.append(item)
         # check for not-allowed siblings for some tags
-        xpath = ".//" + " | .//".join(double_tags)
+        xpath = ".//" + " | .//".join(DOUBLE_TAGS)
         for node in root.xpath(xpath):
             if not node.getchildren():
                 xpath = tree.getpath(node)
@@ -784,7 +786,7 @@ class InfoProvider(object):
                             "file": path}
                     listitems.append(item)
         # Check tags which require specific values
-        for check in allowed_text:
+        for check in ALLOWED_TEXT:
             xpath = ".//" + " | .//".join(check[0])
             for node in root.xpath(xpath):
                 if node.text.startswith("$PARAM"):
@@ -798,7 +800,7 @@ class InfoProvider(object):
                             "file": path}
                     listitems.append(item)
         # Check attributes which require specific values
-        for check in allowed_attr:
+        for check in ALLOWED_ATTR:
             for node in root.xpath(".//*[(@%s)]" % check[0]):
                 if node.attrib[check[0]].startswith("$PARAM"):
                     continue
