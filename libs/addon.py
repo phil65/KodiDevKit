@@ -13,16 +13,18 @@ class Addon(object):
 
     def __init__(self, *args, **kwargs):
         self.type = "python"
-        self.project_path = kwargs.get("project_path")
+        self.window_files = {}
+        self.po_files = []
+        self.colors = []
+        self.xml_folders = []
         self.xml_file = os.path.join(self.project_path, "addon.xml")
-        self.root_path = kwargs.get("project_path")
-        root = Utils.get_root_from_file(self.xml_file)
-        for item in root.xpath("/addon[@id]"):
+        self.root = Utils.get_root_from_file(self.xml_file)
+        self.path = kwargs.get("project_path")
+        for item in self.root.xpath("/addon[@id]"):
             self.name = item.attrib["id"]
             break
-        self.xml_folders = []
-        paths = [os.path.join(self.root_path, "resources", "skins", "Default", "720p"),
-                 os.path.join(self.root_path, "resources", "skins", "Default", "1080i")]
+        paths = [os.path.join(self.path, "resources", "skins", "Default", "720p"),
+                 os.path.join(self.path, "resources", "skins", "Default", "1080i")]
         folder = Utils.check_paths(paths)
         self.xml_folders.append(folder)
 
@@ -31,12 +33,12 @@ class Addon(object):
         """
         returns the add-on language folder path
         """
-        return os.path.join(self.root_path, "resources", "language")
+        return os.path.join(self.path, "resources", "language")
 
     @property
     def primary_lang_folder(self):
         lang_folder = self.settings.get("language_folders")[0]
-        lang_path = os.path.join(self.root_path, "resources", "language", lang_folder)
+        lang_path = os.path.join(self.path, "resources", "language", lang_folder)
         if not os.path.exists(lang_path):
             os.makedirs(lang_path)
         return lang_path
@@ -46,7 +48,7 @@ class Addon(object):
         """
         returns the add-on media folder path
         """
-        return os.path.join(self.root_path, "resources", "skins", "Default", "media")
+        return os.path.join(self.path, "resources", "skins", "Default", "media")
 
     @staticmethod
     def by_project(project_path):

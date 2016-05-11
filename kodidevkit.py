@@ -59,7 +59,7 @@ class KodiDevKit(sublime_plugin.EventListener):
             return []
         if "text.xml" in scope_name:
             colors = []
-            for node in INFOS.color_list:
+            for node in INFOS.addon.colors:
                 if node["name"] not in colors:
                     colors.append(node["name"])
                     completions.append(["%s (%s)" % (node["name"], node["content"]), node["name"]])
@@ -108,7 +108,15 @@ class KodiDevKit(sublime_plugin.EventListener):
                 word = view.substr(view.word(region))
                 popup_label = INFOS.return_label(word)
         elif "text.xml" in scope_name:
-            if info_type in set(["INFO", "ESCINFO", "VAR", "ESCVAR", "LOCALIZE", "EXP"]):
+            if info_type in set(["INFO", "ESCINFO"]):
+                popup_label = INFOS.translate_square_bracket(info_type=info_type,
+                                                             info_id=info_id,
+                                                             folder=folder)
+            if info_type in set(["VAR", "ESCVAR", "LOCALIZE", "EXP"]):
+                node_content = INFOS.return_node_content(info_id, folder=folder)
+                root = ET.fromstring(node_content)
+                if root is None:
+                    return None
                 popup_label = INFOS.translate_square_bracket(info_type=info_type,
                                                              info_id=info_id,
                                                              folder=folder)

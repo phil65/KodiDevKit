@@ -134,7 +134,6 @@ class InfoProvider(object):
         self.include_list = {}
         self.include_files = {}
         self.window_files = {}
-        self.color_list = []
         self.po_files = []
         self.color_file = ""
         self.project_path = ""
@@ -189,8 +188,8 @@ class InfoProvider(object):
         if self.addon and self.addon.xml_folders:
             self.update_include_list()
             self.update_xml_files()
-            self.get_colors()
-            self.get_fonts()
+            self.addon.get_colors()
+            self.addon.get_fonts()
             # sublime.status_message("KodiDevKit: successfully loaded addon")
 
     def get_check_listitems(self, check_type):
@@ -214,26 +213,6 @@ class InfoProvider(object):
             for item in WINDOW_FILENAMES:
                 if item not in self.window_files[folder]:
                     logging.info("Skin does not include %s" % item)
-
-    def get_colors(self):
-        """
-        create color list by parsing all color files
-        """
-        self.color_list = []
-        color_path = os.path.join(self.project_path, "colors")
-        if not self.addon.xml_file or not os.path.exists(color_path):
-            return False
-        for path in os.listdir(color_path):
-            logging.info("found color file: " + path)
-            file_path = os.path.join(color_path, path)
-            root = Utils.get_root_from_file(file_path)
-            for node in root.findall("color"):
-                color_dict = {"name": node.attrib["name"],
-                              "line": node.sourceline,
-                              "content": node.text,
-                              "file": file_path}
-                self.color_list.append(color_dict)
-            logging.info("color list: %i colors found" % len(self.color_list))
 
     def get_fonts(self):
         """
@@ -268,7 +247,7 @@ class InfoProvider(object):
             if path in self.include_files[folder]:
                 self.update_include_list()
         if path.endswith("colors/defaults.xml"):
-            self.get_colors()
+            self.addon.get_colors()
         if path.endswith(("Font.xml", "font.xml")):
             self.get_fonts()
 
@@ -337,7 +316,7 @@ class InfoProvider(object):
                 if node["name"] == keyword:
                     path = os.path.join(self.project_path, folder, "Font.xml")
                     return "%s:%s" % (path, node["line"])
-            for node in self.color_list:
+            for node in self.addon.colors:
                 if node["name"] == keyword and node["file"].endswith("defaults.xml"):
                     return "%s:%s" % (node["file"], node["line"])
             logging.info("no node with name %s found" % keyword)
@@ -423,7 +402,7 @@ class InfoProvider(object):
 
     def get_color_info(self, color_string):
         color_info = ""
-        for item in self.color_list:
+        for item in self.addon.colors:
             if item["name"] == color_string:
                 color_hex = "#" + item["content"][2:]
                 cont_color = Utils.get_cont_col(color_hex)
