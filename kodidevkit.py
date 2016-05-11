@@ -15,7 +15,6 @@ import re
 import os
 import webbrowser
 import logging
-import subprocess
 from itertools import chain
 from xml.sax.saxutils import escape
 

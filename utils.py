@@ -20,6 +20,8 @@ import sublime_plugin
 from .libs import Utils
 from .libs.kodi import kodi
 
+import subprocess
+
 APP_NAME = "Kodi"
 SETTINGS_FILE = 'kodidevkit.sublime-settings'
 
