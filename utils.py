@@ -363,7 +363,7 @@ class OpenKodiAddonCommand(sublime_plugin.WindowCommand):
     """
 
     def run(self):
-        self.nodes = kodi.get_addons()
+        self.nodes = kodi.get_userdata_addons()
         self.window.show_quick_panel(items=self.nodes,
                                      on_select=self.on_done,
                                      selected_index=0)

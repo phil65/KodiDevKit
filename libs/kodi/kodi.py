@@ -72,19 +72,32 @@ class Kodi(object):
         elif platform.system() == "Darwin":
             return os.path.join(os.path.expanduser("~"), "Application Support", APP_NAME, "userdata")
 
-    def get_userdata_addon_folder(self):
+    @property
+    def user_addons_path(self):
+        """
+        get path to userdata addon dir
+        """
         return os.path.join(self.userdata_folder, "addons")
 
-    def get_core_addon_folder(self):
+    @property
+    def core_addons_path(self):
+        """
+        get path to core addon dir
+        """
         return os.path.join(self.kodi_path, "addons")
 
     def get_userdata_addons(self):
-        addon_path = self.get_userdata_addon_folder()
-        if not os.path.exists(addon_path):
+        """
+        get list of folders from userdata addon dir
+        """
+        if not os.path.exists(self.user_addons_path):
             return []
-        return [f for f in os.listdir(addon_path) if not os.path.isfile(f)]
+        return [f for f in os.listdir(self.user_addons_path) if not os.path.isfile(f)]
 
     def load_settings(self, settings):
+        """
+        init instance with *settings
+        """
         self.settings = settings
         self.kodi_path = settings.get("kodi_path")
         self.userdata_folder = self.get_userdata_folder()
@@ -109,9 +122,3 @@ class Kodi(object):
             if os.path.exists(path):
                 po_files.append(Utils.get_po_file(path))
         return po_files
-
-    def get_addons(self):
-        addon_path = os.path.join(self.userdata_folder, "addons")
-        if not os.path.exists(addon_path):
-            return []
-        return [f for f in os.listdir(addon_path) if not os.path.isfile(f)]
