@@ -308,7 +308,7 @@ class InfoProvider(object):
             logging.info("no node with name %s found" % keyword)
         return False
 
-    def get_settings(self, settings):
+    def load_settings(self, settings):
         """
         load settings file
         """
