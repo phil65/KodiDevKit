@@ -1,0 +1,11 @@
+{
+	"extensions":
+	[
+		"py"
+	],
+    "auto_complete_selector": "source",
+    "auto_complete_triggers":
+    [
+        {"selector": "source.python", "characters": "."},
+    ]
+}
