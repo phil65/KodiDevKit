@@ -104,7 +104,7 @@ if __name__ == "__main__":
         project_folder = sys.argv[1]
     else:
         project_folder = input("Enter Path to skin: ")
-    INFOS.get_settings(settings)
+    INFOS.load_settings(settings)
     INFOS.init_addon(project_folder)
     INFOS.check_xml_files()
     for path in INFOS.file_list_generator():

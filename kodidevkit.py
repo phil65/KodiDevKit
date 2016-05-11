@@ -36,6 +36,7 @@ sublimelogger.config()
 def plugin_loaded():
     settings = sublime.load_settings(SETTINGS_FILE)
     kodi.load_settings(settings)
+    INFOS.load_settings(settings)
     INFOS.load_data()
 
 
@@ -45,7 +46,6 @@ class KodiDevKit(sublime_plugin.EventListener):
         self.actual_project = None
         self.prev_selection = None
         self.is_modified = False
-        self.settings_loaded = False
 
     def on_query_completions(self, view, prefix, locations):
         completions = []
@@ -219,10 +219,6 @@ class KodiDevKit(sublime_plugin.EventListener):
             INFOS.addon.update_labels()
 
     def check_status(self):
-        if not self.settings_loaded:
-            self.settings = sublime.load_settings(SETTINGS_FILE)
-            INFOS.get_settings(self.settings)
-            self.settings_loaded = True
         view = sublime.active_window().active_view()
         filename = view.file_name()
         if INFOS.addon and filename and filename.endswith(".xml"):
@@ -246,7 +242,7 @@ class KodiDevKit(sublime_plugin.EventListener):
 class ReloadKodiLanguageFilesCommand(sublime_plugin.WindowCommand):
 
     def run(self):
-        INFOS.get_settings(sublime.load_settings(SETTINGS_FILE))
+        INFOS.load_settings(sublime.load_settings(SETTINGS_FILE))
         kodi.update_labels()
         INFOS.addon.update_labels()
 
@@ -516,7 +512,7 @@ class PreviewImageCommand(sublime_plugin.TextCommand):
             return None
         if os.path.isdir(imagepath):
             self.files = []
-            for (dirpath, _, filenames) in os.walk(imagepath):
+            for (_, __, filenames) in os.walk(imagepath):
                 self.files.extend(filenames)
                 break
             self.files = [imagepath + s for s in self.files]
@@ -550,7 +546,7 @@ class GoToTagCommand(sublime_plugin.WindowCommand):
 class SearchForImageCommand(sublime_plugin.TextCommand):
 
     def is_visible(self):
-        return INFOS.addon and INFOS.addon.media_path
+        return bool(INFOS.addon and INFOS.addon.media_path)
 
     def run(self, edit):
         self.files = [i for i in INFOS.addon.get_media_files()]
@@ -584,7 +580,7 @@ class SearchForImageCommand(sublime_plugin.TextCommand):
 class SearchForFontCommand(sublime_plugin.TextCommand):
 
     def is_visible(self):
-        return INFOS.addon and INFOS.addon.fonts
+        return bool(INFOS.addon and INFOS.addon.fonts)
 
     def run(self, edit):
         self.fonts = []
@@ -655,7 +651,7 @@ class ReplaceTextCommand(sublime_plugin.TextCommand):
 class SwitchXmlFolderCommand(QuickPanelCommand):
 
     def is_visible(self):
-        return INFOS.addon and len(INFOS.addon.xml_folders) > 1
+        return bool(INFOS.addon) and len(INFOS.addon.xml_folders) > 1
 
     def run(self):
         view = self.window.active_view()
