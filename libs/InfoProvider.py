@@ -130,13 +130,11 @@ PARSER = ET.XMLParser(remove_blank_text=True, remove_comments=True)
 class InfoProvider(object):
 
     def __init__(self):
-        self.include_list = {}
+        self.includes = {}
         self.include_files = {}
         self.window_files = {}
         self.project_path = ""
         self.addon = None
-        self.po_files = []
-        self.addon_po_files = []
 
     def load_data(self):
         """
@@ -178,7 +176,6 @@ class InfoProvider(object):
         addon_xml = Utils.check_paths([os.path.join(self.project_path, "addon.xml")])
         if addon_xml:
             self.addon = Addon.by_project(path)
-            self.update_addon_labels()
             logging.info("Kodi project detected: " + path)
         if self.addon and self.addon.xml_folders:
             self.update_include_list()
@@ -224,16 +221,16 @@ class InfoProvider(object):
         """
         create include list by parsing all include files starting with includes.xml
         """
-        self.include_list = {}
+        self.includes = {}
         for folder in self.addon.xml_folders:
             xml_folder = os.path.join(self.project_path, folder)
             paths = [os.path.join(xml_folder, "Includes.xml"),
                      os.path.join(xml_folder, "includes.xml")]
             self.include_files[folder] = []
-            self.include_list[folder] = []
+            self.includes[folder] = []
             include_file = Utils.check_paths(paths)
             self.update_includes(include_file)
-            logging.info("Include List: %i nodes found in '%s' folder." % (len(self.include_list[folder]), folder))
+            logging.info("Include List: %i nodes found in '%s' folder." % (len(self.includes[folder]), folder))
 
     def update_includes(self, xml_file):
         """
@@ -246,8 +243,8 @@ class InfoProvider(object):
         logging.info("found include file: " + xml_file)
         self.include_files[folder].append(xml_file)
         tags = ["include", "variable", "constant", "expression"]
-        self.include_list[folder] += Utils.get_tags_from_file(xml_file,
-                                                              tags)
+        self.includes[folder] += Utils.get_tags_from_file(path=xml_file,
+                                                          node_tags=tags)
         root = Utils.get_root_from_file(xml_file)
         for node in root.findall("include"):
             if "file" in node.attrib and node.attrib["file"] != "script-skinshortcuts-includes.xml":
@@ -272,13 +269,13 @@ class InfoProvider(object):
         if not keyword:
             return False
         if keyword.isdigit():
-            for po_file in self.po_files:
+            for po_file in self.get_po_files():
                 for entry in po_file:
                     if entry.msgctxt == "#" + keyword:
                         return "%s:%s" % (po_file.fpath, entry.linenum)
         else:
             # TODO: need to check for include file attribute
-            for node in self.include_list[folder]:
+            for node in self.includes[folder]:
                 if node["name"] == keyword:
                     return "%s:%s" % (node["file"], node["line"])
             for node in self.addon.fonts[folder]:
@@ -301,8 +298,8 @@ class InfoProvider(object):
             for node in self.addon.fonts[folder]:
                 if node["name"] == keyword:
                     return node[return_entry]
-        if folder in self.include_list:
-            for node in self.include_list[folder]:
+        if folder in self.includes:
+            for node in self.includes[folder]:
                 if node["name"] == keyword:
                     return node[return_entry]
         return ""
@@ -328,7 +325,7 @@ class InfoProvider(object):
         tooltips = ""
         if not selection.isdigit():
             return ""
-        for po_file in self.po_files:
+        for po_file in self.get_po_files():
             hit = po_file.find("#" + selection, by="msgctxt")
             if not hit:
                 continue
@@ -341,33 +338,11 @@ class InfoProvider(object):
                 tooltips += "<b>%s:</b> %s<br>" % (folder, hit.msgid)
         return tooltips
 
-    def update_core_labels(self):
-        """
-        get core po files
-        """
-        po_files = self.get_po_files(kodi.get_userdata_addon_folder())
-        if not po_files:
-            po_files = self.get_po_files(kodi.get_core_addon_folder())
-        self.kodi_po_files = po_files
-
-    def update_addon_labels(self):
+    def get_po_files(self):
         """
         get addon po files and update po files list
         """
-        self.addon_po_files = self.get_po_files(self.addon.lang_path)
-        self.po_files = self.kodi_po_files + self.addon_po_files
-
-    def get_po_files(self, lang_folder_root):
-        """
-        get list with pofile objects
-        """
-        po_files = []
-        for item in self.settings.get("language_folders"):
-            path = Utils.check_paths([os.path.join(lang_folder_root, item, "strings.po"),
-                                      os.path.join(lang_folder_root, item, "resources", "strings.po")])
-            if os.path.exists(path):
-                po_files.append(Utils.get_po_file(path))
-        return po_files
+        return kodi.po_files + self.addon.po_files
 
     def get_color_info(self, color_string):
         color_info = ""
@@ -442,14 +417,14 @@ class InfoProvider(object):
                                     "name": match.group(1).split(",")[0]}
                             var_refs.append(item)
             for ref in var_refs:
-                for node in self.include_list[folder]:
+                for node in self.includes[folder]:
                     if node["type"] == "variable" and node["name"] == ref["name"]:
                         break
                 else:
                     ref["message"] = "Variable not defined: %s" % ref["name"]
                     listitems.append(ref)
             ref_list = [d['name'] for d in var_refs]
-            for node in self.include_list[folder]:
+            for node in self.includes[folder]:
                 if node["type"] == "variable" and node["name"] not in ref_list:
                     node["message"] = "Unused variable: %s" % node["name"]
                     listitems.append(node)
@@ -487,7 +462,7 @@ class InfoProvider(object):
                     var_refs.append(item)
             # find undefined include refs
             for ref in var_refs:
-                for node in self.include_list[folder]:
+                for node in self.includes[folder]:
                     if node["type"] == "include" and node["name"] == ref["name"]:
                         break
                 else:
@@ -497,7 +472,7 @@ class InfoProvider(object):
                     listitems.append(ref)
             # find unused include defs
             ref_list = [d['name'] for d in var_refs]
-            for node in self.include_list[folder]:
+            for node in self.includes[folder]:
                 if node["type"] == "include" and node["name"] not in ref_list:
                     node["message"] = "Unused include: %s" % node["name"]
                     listitems.append(node)
@@ -658,11 +633,11 @@ class InfoProvider(object):
     def resolve_include(self, ref, folder):
         if not ref.text:
             return None
-        include_names = [item["name"] for item in self.include_list[folder]]
+        include_names = [item["name"] for item in self.includes[folder]]
         if ref.text not in include_names:
             return None
         index = include_names.index(ref.text)
-        node = self.include_list[folder][index]
+        node = self.includes[folder][index]
         root = ET.fromstring(node["content"])
         return self.resolve_includes(root, folder)
 
@@ -719,7 +694,7 @@ class InfoProvider(object):
         """
         adds a label to the first pofile from settings (or creates new one if non-existing)
         """
-        if not self.addon_po_files:
+        if not self.addon.po_files:
             po = self.create_new_po_file()
             lang_folder = self.settings.get("language_folders")[0]
             if self.addon.type == "skin":
@@ -729,10 +704,10 @@ class InfoProvider(object):
             if not os.path.exists(lang_path):
                 os.makedirs(lang_path)
             po.save(os.path.join(lang_path, "strings.po"))
-            self.addon_po_files.append(po)
+            self.addon.po_files.append(po)
             logging.critical("New language file created")
         else:
-            po = self.addon_po_files[0]
+            po = self.addon.po_files[0]
         string_ids = []
         for entry in po:
             try:
@@ -749,8 +724,8 @@ class InfoProvider(object):
                               occurrences=[(filepath, None)])
         po.insert(index=int(label_id) - self.addon.LANG_START_ID + self.addon.LANG_OFFSET,
                   entry=entry)
-        po.save(self.addon_po_files[0].fpath)
-        self.update_addon_labels()
+        po.save(self.addon.po_files[0].fpath)
+        self.addon.update_labels()
         return label_id
 
     def check_labels(self):
@@ -818,7 +793,7 @@ class InfoProvider(object):
                             listitems.append(item)
         # check if refs are defined in po files
         label_ids = []
-        for po_file in self.po_files:
+        for po_file in self.get_po_files():
             label_ids += [entry.msgctxt for entry in po_file]
         for ref in refs:
             if "#" + ref["name"] not in label_ids:

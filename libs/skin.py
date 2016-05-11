@@ -55,16 +55,15 @@ class Skin(addon.Addon):
         if not self.xml_file or not os.path.exists(color_path):
             return False
         for path in os.listdir(color_path):
-            logging.info("found color file: " + path)
             file_path = os.path.join(color_path, path)
             root = Utils.get_root_from_file(file_path)
             for node in root.findall("color"):
-                color_dict = {"name": node.attrib["name"],
-                              "line": node.sourceline,
-                              "content": node.text,
-                              "file": file_path}
-                self.colors.append(color_dict)
-            logging.info("color list: %i colors found" % len(self.colors))
+                color = {"name": node.attrib["name"],
+                         "line": node.sourceline,
+                         "content": node.text,
+                         "file": file_path}
+                self.colors.append(color)
+            logging.info("found color file %s including %i colors" % (path, len(self.colors)))
 
     def get_fonts(self):
         """

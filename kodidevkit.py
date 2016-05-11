@@ -17,7 +17,6 @@ import webbrowser
 import logging
 from itertools import chain
 from xml.sax.saxutils import escape
-from lxml import etree as ET
 
 import mdpopups
 
@@ -56,7 +55,7 @@ class KodiDevKit(sublime_plugin.EventListener):
         if not filename:
             return []
         folder = filename.split(os.sep)[-2]
-        if folder not in INFOS.include_list:
+        if folder not in INFOS.includes:
             return []
         if "text.xml" in scope_name:
             colors = []
@@ -64,7 +63,7 @@ class KodiDevKit(sublime_plugin.EventListener):
                 if node["name"] not in colors:
                     colors.append(node["name"])
                     completions.append(["%s (%s)" % (node["name"], node["content"]), node["name"]])
-            for node in chain(INFOS.include_list[folder], INFOS.addon.fonts[folder]):
+            for node in chain(INFOS.includes[folder], INFOS.addon.fonts[folder]):
                 completions.append([node["name"], node["name"]])
             for node in chain(INFOS.builtins, INFOS.conditions):
                 completions.append([node[0], node[0]])
@@ -205,13 +204,12 @@ class KodiDevKit(sublime_plugin.EventListener):
                     view.window().run_command("check_variables",
                                               {"check_type": "file"})
         if view.file_name().endswith(".po"):
-            INFOS.update_addon_labels()
+            INFOS.addon.update_labels()
 
     def check_status(self):
         if not self.settings_loaded:
             self.settings = sublime.load_settings(SETTINGS_FILE)
             INFOS.get_settings(self.settings)
-            INFOS.update_core_labels()
             self.settings_loaded = True
         view = sublime.active_window().active_view()
         filename = view.file_name()
@@ -237,8 +235,8 @@ class ReloadKodiLanguageFilesCommand(sublime_plugin.WindowCommand):
 
     def run(self):
         INFOS.get_settings(sublime.load_settings(SETTINGS_FILE))
-        INFOS.update_core_labels()
-        INFOS.update_addon_labels()
+        kodi.update_labels()
+        INFOS.addon.update_labels()
 
 
 class QuickPanelCommand(sublime_plugin.WindowCommand):
@@ -345,7 +343,7 @@ class SearchFileForLabelsCommand(QuickPanelCommand):
                   r"\$ADDON\[.*?([0-9].*?)\]",
                   r"(?:label|property|altlabel|label2)>([0-9].*?)<"]
         path = self.window.active_view().file_name()
-        for po_file in INFOS.po_files:
+        for po_file in INFOS.get_po_files():
             labels += [s.msgid for s in po_file]
             label_ids += [s.msgctxt for s in po_file]
         with open(path, encoding="utf8") as f:
@@ -408,12 +406,12 @@ class OpenActiveWindowXmlFromRemoteCommand(sublime_plugin.WindowCommand):
 class SearchForLabelCommand(sublime_plugin.WindowCommand):
 
     def is_visible(self):
-        return bool(INFOS.po_files)
+        return bool(INFOS.get_po_files())
 
     def run(self):
         listitems = []
         self.ids = []
-        for po_file in INFOS.po_files:
+        for po_file in INFOS.get_po_files():
             for entry in po_file:
                 if entry.msgctxt not in self.ids:
                     self.ids.append(entry.msgctxt)
@@ -608,7 +606,7 @@ class MoveToLanguageFile(sublime_plugin.TextCommand):
 
     def is_visible(self):
         scope_name = self.view.scope_name(self.view.sel()[0].b)
-        if INFOS.project_path and INFOS.addon_po_files:
+        if INFOS.project_path and INFOS.addon and INFOS.addon.po_files:
             if "text.xml" in scope_name or "source.python" in scope_name:
                 return self.view.sel()[0].b != self.view.sel()[0].a
         return False
@@ -621,7 +619,7 @@ class MoveToLanguageFile(sublime_plugin.TextCommand):
             logging.critical("Please select the complete label")
             return False
         word = self.view.substr(region)
-        for po_file in INFOS.po_files:
+        for po_file in INFOS.get_po_files():
             for label in po_file:
                 if label.msgid.lower() == word.lower() and label.msgctxt not in self.label_ids:
                     self.label_ids.append(label.msgctxt)
@@ -642,9 +640,9 @@ class MoveToLanguageFile(sublime_plugin.TextCommand):
         else:
             label_id = self.label_ids[index][1:]
             if 31000 <= int(label_id) < 33000:
-                entry = INFOS.addon_po_files[0].find(self.label_ids[index], by="msgctxt")
+                entry = INFOS.addon.po_files[0].find(self.label_ids[index], by="msgctxt")
                 entry.occurrences.append((rel_path, None))
-                INFOS.addon_po_files[0].save(INFOS.addon_po_files[0].fpath)
+                INFOS.addon.po_files[0].save(INFOS.addon_po_files[0].fpath)
         self.view.run_command("replace_text", {"label_id": label_id})
 
 

@@ -9,6 +9,7 @@ from .. import Utils
 from urllib.request import Request, urlopen
 import json
 import base64
+import logging
 
 APP_NAME = "kodi"
 
@@ -86,6 +87,7 @@ class Kodi(object):
     def load_settings(self, settings):
         self.settings = settings
         self.kodi_path = settings.get("kodi_path")
+        self.update_labels()
 
     def update_labels(self):
         """

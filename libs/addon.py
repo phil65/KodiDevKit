@@ -5,6 +5,9 @@
 
 import os
 from . import Utils
+import sublime
+
+SETTINGS_FILE = 'kodidevkit.sublime-settings'
 
 
 class Addon(object):
@@ -18,6 +21,7 @@ class Addon(object):
         self.colors = []
         self.fonts = {}
         self.xml_folders = []
+        self.settings = sublime.load_settings(SETTINGS_FILE)
         self.path = kwargs.get("project_path")
         self.xml_file = os.path.join(self.path, "addon.xml")
         self.root = Utils.get_root_from_file(self.xml_file)
@@ -25,6 +29,7 @@ class Addon(object):
             self.name = item.attrib["id"]
             break
         self.load_xml_folders()
+        self.update_labels()
 
     def load_xml_folders(self):
         paths = [os.path.join(self.path, "resources", "skins", "Default", "720p"),
@@ -64,3 +69,21 @@ class Addon(object):
         else:
             return Addon(project_path=project_path)
             # TODO: parse all python skin folders correctly
+
+    def update_labels(self):
+        """
+        get addon po files and update po files list
+        """
+        self.po_files = self.get_po_files(self.lang_path)
+
+    def get_po_files(self, lang_folder_root):
+        """
+        get list with pofile objects
+        """
+        po_files = []
+        for item in self.settings.get("language_folders"):
+            path = Utils.check_paths([os.path.join(lang_folder_root, item, "strings.po"),
+                                      os.path.join(lang_folder_root, item, "resources", "strings.po")])
+            if os.path.exists(path):
+                po_files.append(Utils.get_po_file(path))
+        return po_files
