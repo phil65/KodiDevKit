@@ -500,7 +500,7 @@ class PreviewImageCommand(sublime_plugin.TextCommand):
     def run(self, edit):
         flags = sublime.CLASS_WORD_START | sublime.CLASS_WORD_END
         path = Utils.get_node_content(self.view, flags)
-        imagepath = INFOS.translate_path(path)
+        imagepath = INFOS.addon.translate_path(path)
         if not os.path.exists(imagepath):
             return None
         if os.path.isdir(imagepath):

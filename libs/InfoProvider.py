@@ -464,17 +464,8 @@ class InfoProvider(object):
         else:
             return str(label_id)
 
-    def translate_path(self, path):
-        """
-        return translated path for textures
-        """
-        if path.startswith("special://skin/"):
-            return os.path.join(self.project_path, path.replace("special://skin/", ""))
-        else:
-            return os.path.join(self.addon.media_path, path)
-
     def get_image_info(self, path):
-        imagepath = self.translate_path(path)
+        imagepath = self.addon.translate_path(path)
         if not os.path.exists(imagepath) or os.path.isdir(imagepath):
             return ""
         width, height = get_image_size(imagepath)

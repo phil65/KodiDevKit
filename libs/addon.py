@@ -168,3 +168,12 @@ class Addon(object):
         po.save(self.po_files[0].fpath)
         self.update_labels()
         return label_id
+
+    def translate_path(self, path):
+        """
+        return translated path for textures
+        """
+        if path.startswith("special://skin/"):
+            return os.path.join(self.path, path.replace("special://skin/", ""))
+        else:
+            return os.path.join(self.media_path, path)
