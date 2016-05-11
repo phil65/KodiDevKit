@@ -115,7 +115,8 @@ class KodiDevKit(sublime_plugin.EventListener):
             if not popup_label:
                 if "<include>" in line_contents or "<include content=" in line_contents:
                     content = Utils.get_node_content(view, flags)
-                    node_content = str(INFOS.return_node_content(content, folder=folder))
+                    node = INFOS.addon.return_node(content, folder=folder)
+                    node_content = str(node["content"])
                     if not node_content:
                         popup_label = ""
                     elif len(node_content) < 3000:
@@ -132,7 +133,8 @@ class KodiDevKit(sublime_plugin.EventListener):
                     popup_label = INFOS.return_label(selected_content)
                 elif "<fadetime" in line_contents:
                     content = Utils.get_node_content(view, flags)
-                    node_content = str(INFOS.return_node_content(content, folder=folder))[2:-3]
+                    node = INFOS.addon.return_node(content, folder=folder)
+                    node_content = str(node["content"])[2:-3]
                 elif "<texture" in line_contents or "<alttexture" in line_contents or "<bordertexture" in line_contents or "<icon" in line_contents or "<thumb" in line_contents:
                     popup_label = INFOS.get_image_info(selected_content)
                 elif "<control " in line_contents:

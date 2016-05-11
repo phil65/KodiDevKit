@@ -177,3 +177,19 @@ class Addon(object):
             return os.path.join(self.path, path.replace("special://skin/", ""))
         else:
             return os.path.join(self.media_path, path)
+
+    def return_node(self, keyword=None, folder=False):
+        """
+        get value from include list
+        """
+        if not keyword or not folder:
+            return ""
+        if folder in self.addon.fonts:
+            for node in self.addon.fonts[folder]:
+                if node["name"] == keyword:
+                    return node
+        if folder in self.addon.includes:
+            for node in self.addon.includes[folder]:
+                if node["name"] == keyword:
+                    return node
+        return ""

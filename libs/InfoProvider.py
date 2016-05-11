@@ -235,22 +235,6 @@ class InfoProvider(object):
             logging.info("no node with name %s found" % keyword)
         return False
 
-    def return_node_content(self, keyword=None, return_entry="content", folder=False):
-        """
-        get value from include list
-        """
-        if not keyword or not folder:
-            return ""
-        if folder in self.addon.fonts:
-            for node in self.addon.fonts[folder]:
-                if node["name"] == keyword:
-                    return node[return_entry]
-        if folder in self.addon.includes:
-            for node in self.addon.includes[folder]:
-                if node["name"] == keyword:
-                    return node[return_entry]
-        return ""
-
     def get_settings(self, settings):
         """
         load settings file
@@ -314,10 +298,10 @@ class InfoProvider(object):
         """
         return formatted string containing font info
         """
-        node_content = self.return_node_content(font_name, folder=folder)
-        if not node_content:
+        node = self.addon.return_node(font_name, folder=folder)
+        if not node:
             return ""
-        root = ET.fromstring(node_content)
+        root = ET.fromstring(node["content"])
         label = ""
         for e in root.iterchildren():
             label += "<b>%s:</b> %s<br>" % (e.tag, e.text)
@@ -567,8 +551,8 @@ class InfoProvider(object):
 
     def translate_square_bracket(self, info_type, info_id, folder):
         if info_type in ["VAR", "ESCVAR", "EXP"]:
-            node_content = self.return_node_content(info_id, folder=folder)
-            root = ET.fromstring(node_content)
+            node = self.addon.return_node(info_id, folder=folder)
+            root = ET.fromstring(node["content"])
             if root is None:
                 return None
             label = ""
