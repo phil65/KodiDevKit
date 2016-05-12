@@ -26,6 +26,9 @@ class Skin(addon.Addon):
         self.get_fonts()
 
     def load_xml_folders(self):
+        """
+        get all xml folders from addon.xml
+        """
         for node in self.root.findall('.//res'):
             self.xml_folders.append(node.attrib["folder"])
 
@@ -45,6 +48,9 @@ class Skin(addon.Addon):
 
     @property
     def primary_lang_folder(self):
+        """
+        returns the primary lang folder, as chosen in settings
+        """
         lang_folder = self.settings.get("language_folders")[0]
         lang_path = os.path.join(self.path, "language", lang_folder)
         if not os.path.exists(lang_path):
@@ -121,6 +127,9 @@ class Skin(addon.Addon):
             return '<a href="test" style="background-color:%s;color:%s">%d %% alpha</a>' % (color_hex, cont_color, alpha_percent)
 
     def get_media_files(self):
+        """
+        yields relative paths of all files in "media" directory
+        """
         for path, _, files in os.walk(self.media_path):
             if "studio" in path or "recordlabel" in path:
                 continue
@@ -179,6 +188,9 @@ class Skin(addon.Addon):
             self.get_fonts()
 
     def get_font_refs(self):
+        """
+        get font references from all window files
+        """
         font_refs = {}
         for folder in self.xml_folders:
             font_refs[folder] = []
