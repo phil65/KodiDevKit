@@ -1,0 +1,11 @@
+  Changes in 2.2.0
+  =================
+
+ - new context menu command: open skin image
+ - add syntax highlighting for several tooltips
+ - extended metadata info for image tooltips, and cache that info
+ - several bugfixes
+ - improved autocompletion
+ - polib upstream fixes
+ - fix running tool from command line
+ - reworked lot of code
