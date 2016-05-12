@@ -39,7 +39,7 @@ def get_image_info(fname):
                 height, width = struct.unpack('>HH', fhandle.read(4))
                 info = [("Type", "jpeg"),
                         ("Dimensions", "%sx%s" % (width, height)),
-                        ("is_progressive", is_progressive(fname))]
+                        ("Progressive", is_progressive(fname))]
             except Exception:  # IGNORE:W0703
                 return
         elif imghdr.what(fname) == 'pgm':

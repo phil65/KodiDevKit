@@ -85,12 +85,21 @@ class KodiDevKit(sublime_plugin.EventListener):
             return None
         if region == self.prev_selection:
             return None
-        flags = sublime.CLASS_WORD_START | sublime.CLASS_WORD_END
-        popup_label = ""
-        info_type = ""
-        info_id = ""
         self.prev_selection = region
         view.hide_popup()
+        tooltip = self.get_tooltip(view, region, folder)
+
+        # node = INFOS.template_root.find(".//control[@type='label']")
+        # logging.info(node)
+        # popup_label = node.find(".//available_tags").text.replace("\\n", "<br>")
+        if tooltip and self.settings.get("tooltip_delay", 0) > -1:
+            sublime.set_timeout_async(lambda: self.show_tooltip(view, tooltip),
+                                      self.settings.get("tooltip_delay", 0))
+
+    def get_tooltip(self, view, region, folder):
+        flags = sublime.CLASS_WORD_START | sublime.CLASS_WORD_END
+        info_type = ""
+        info_id = ""
         scope_name = view.scope_name(region.b)
         scope_content = view.substr(view.extract_scope(region.b))
         line = view.line(region)
@@ -106,14 +115,16 @@ class KodiDevKit(sublime_plugin.EventListener):
         if "source.python" in scope_name:
             if "lang" in line_contents or "label" in line_contents or "string" in line_contents:
                 word = view.substr(view.word(region))
-                popup_label = INFOS.return_label(word)
+                text = INFOS.return_label(word)
+                if text:
+                    return text
         elif "text.xml" in scope_name:
             if info_type in ["VAR", "ESCVAR", "EXP"]:
                 node = INFOS.addon.return_node(info_id, folder=folder)
                 if node["content"]:
-                    popup_label = mdpopups.syntax_highlight(view=view,
-                                                            src=node["content"],
-                                                            language="xml")
+                    return mdpopups.syntax_highlight(view=view,
+                                                     src=node["content"],
+                                                     language="xml")
             elif info_type in ["INFO", "ESCINFO"]:
                 result = kodi.request(method="XBMC.GetInfoLabels",
                                       params={"labels": [info_id]})
@@ -122,48 +133,44 @@ class KodiDevKit(sublime_plugin.EventListener):
                     if value:
                         return str(value)
             elif info_type == "LOCALIZE":
-                popup_label = INFOS.return_label(info_id)
-            if not popup_label:
-                if "<include>" in line_contents or "<include content=" in line_contents or "<font" in line_contents:
-                    content = Utils.get_node_content(view, flags)
-                    node = INFOS.addon.return_node(content, folder=folder)
-                    if node:
-                        node_content = str(node["content"])
-                        if not node_content:
-                            popup_label = ""
-                        elif len(node_content) < 10000:
-                            popup_label = mdpopups.syntax_highlight(view=view,
-                                                                    src=node_content,
-                                                                    language="xml")
-                        else:
-                            popup_label = "include too big for preview"
-                elif "<visible" in line_contents or "<enable" in line_contents:
-                    self.boolean_popup(selected_content, view)
-                elif "label" in line_contents or "<property" in line_contents or "localize" in line_contents:
-                    popup_label = INFOS.return_label(selected_content)
-                elif "<fadetime" in line_contents:
-                    content = Utils.get_node_content(view, flags)
-                    node = INFOS.addon.return_node(content, folder=folder)
-                    node_content = str(node["content"])[2:-3]
-                elif "<texture" in line_contents or "<alttexture" in line_contents or "<bordertexture" in line_contents or "<icon" in line_contents or "<thumb" in line_contents:
-                    popup_label = INFOS.get_image_info(selected_content)
-                elif "<control " in line_contents:
-                    # TODO: add positioning based on parent nodes
-                    line, _ = view.rowcol(view.sel()[0].b)
-                    popup_label = INFOS.get_ancestor_info(view.file_name(), line)
-                if not popup_label:
-                    popup_label = INFOS.addon.get_color_info(selected_content)
-            if not popup_label and "constant.other.allcaps" in scope_name:
+                return INFOS.return_label(info_id)
+            if "<include>" in line_contents or "<include content=" in line_contents or "<font" in line_contents:
+                content = Utils.get_node_content(view, flags)
+                node = INFOS.addon.return_node(content, folder=folder)
+                if node:
+                    node_content = str(node["content"])
+                    if not node_content:
+                        pass
+                    elif len(node_content) < 10000:
+                        return mdpopups.syntax_highlight(view=view,
+                                                         src=node_content,
+                                                         language="xml")
+                    else:
+                        return "include too big for preview"
+            elif "<visible" in line_contents or "<enable" in line_contents:
+                self.boolean_popup(selected_content, view)
+            elif "label" in line_contents or "<property" in line_contents or "localize" in line_contents:
+                label = INFOS.return_label(selected_content)
+                if label:
+                    return label
+            elif "<fadetime" in line_contents:
+                content = Utils.get_node_content(view, flags)
+                node = INFOS.addon.return_node(content, folder=folder)
+                node_content = str(node["content"])[2:-3]
+            elif "<texture" in line_contents or "<alttexture" in line_contents or "<bordertexture" in line_contents or "<icon" in line_contents or "<thumb" in line_contents:
+                return INFOS.get_image_info(selected_content)
+            elif "<control " in line_contents:
+                # TODO: add positioning based on parent nodes
+                line, _ = view.rowcol(view.sel()[0].b)
+                return INFOS.get_ancestor_info(view.file_name(), line)
+            color = INFOS.addon.get_color_info(selected_content)
+            if color:
+                return color
+            if "constant.other.allcaps" in scope_name:
                 window_name = scope_content.lower()[1:-1]
                 if window_name in infoprovider.WINDOW_NAMES:
                     window_index = infoprovider.WINDOW_NAMES.index(window_name)
-                    popup_label = infoprovider.WINDOW_FILENAMES[window_index]
-        # node = INFOS.template_root.find(".//control[@type='label']")
-        # logging.info(node)
-        # popup_label = node.find(".//available_tags").text.replace("\\n", "<br>")
-        if popup_label and self.settings.get("tooltip_delay", 0) > -1:
-            sublime.set_timeout_async(lambda: self.show_tooltip(view, popup_label),
-                                      self.settings.get("tooltip_delay", 0))
+                    return infoprovider.WINDOW_FILENAMES[window_index]
 
     @Utils.run_async
     def boolean_popup(self, selected_content, view):
@@ -180,8 +187,8 @@ class KodiDevKit(sublime_plugin.EventListener):
                             content=tooltip_label,
                             flags=sublime.COOPERATE_WITH_AUTO_COMPLETE,
                             max_width=self.settings.get("tooltip_width", 1000),
-                            max_height=self.settings.get("height", 300),
-                            on_navigate=lambda label_id, view=view: Utils.jump_to_label_declaration(view, label_id))
+                            max_height=self.settings.get("height", 400),
+                            on_navigate=lambda label_id, view=view: Utils.jump_to_label_declaration(view, tooltip_label))
 
     def on_modified_async(self, view):
         if INFOS.addon and INFOS.addon.path:
