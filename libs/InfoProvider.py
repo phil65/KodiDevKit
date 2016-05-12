@@ -255,7 +255,7 @@ class InfoProvider(object):
         self.addon = None
         addon_xml = Utils.check_paths([os.path.join(path, "addon.xml")])
         if addon_xml:
-            self.addon = Addon.by_project(path)
+            self.addon = Addon.by_project(path, self.settings)
             logging.info("Kodi project detected: " + path)
             # sublime.status_message("KodiDevKit: successfully loaded addon")
 
