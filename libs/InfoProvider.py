@@ -683,15 +683,9 @@ class InfoProvider(object):
                 listitems.append(ref)
         return listitems
 
-    def file_list_generator(self):
-        if self.addon.xml_folders:
-            for folder in self.addon.xml_folders:
-                for xml_file in self.addon.window_files[folder]:
-                    yield os.path.join(self.addon.path, folder, xml_file)
-
     def check_values(self):
         listitems = []
-        for path in self.file_list_generator():
+        for path in self.addon.get_xml_files():
             new_items = self.check_file(path)
             listitems.extend(new_items)
         return listitems

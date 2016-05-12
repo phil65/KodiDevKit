@@ -203,3 +203,9 @@ class Addon(object):
                 if node["name"] == keyword:
                     return node
         return ""
+
+    def get_xml_files(self):
+        if self.xml_folders:
+            for folder in self.xml_folders:
+                for xml_file in self.window_files[folder]:
+                    yield os.path.join(self.path, folder, xml_file)

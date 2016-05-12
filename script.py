@@ -107,7 +107,7 @@ if __name__ == "__main__":
         project_folder = input("Enter Path to skin: ")
     INFOS.init_addon(project_folder)
     INFOS.check_xml_files()
-    for path in INFOS.file_list_generator():
+    for path in INFOS.addon.get_xml_files():
         if Utils.check_bom(path):
             logging.info("found BOM. File: " + path)
         try:
