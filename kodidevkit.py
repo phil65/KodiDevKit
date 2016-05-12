@@ -127,15 +127,16 @@ class KodiDevKit(sublime_plugin.EventListener):
                 if "<include>" in line_contents or "<include content=" in line_contents or "<font" in line_contents:
                     content = Utils.get_node_content(view, flags)
                     node = INFOS.addon.return_node(content, folder=folder)
-                    node_content = str(node["content"])
-                    if not node_content:
-                        popup_label = ""
-                    elif len(node_content) < 10000:
-                        popup_label = mdpopups.syntax_highlight(view=view,
-                                                                src=node_content,
-                                                                language="xml")
-                    else:
-                        popup_label = "include too big for preview"
+                    if node:
+                        node_content = str(node["content"])
+                        if not node_content:
+                            popup_label = ""
+                        elif len(node_content) < 10000:
+                            popup_label = mdpopups.syntax_highlight(view=view,
+                                                                    src=node_content,
+                                                                    language="xml")
+                        else:
+                            popup_label = "include too big for preview"
                 elif "<visible" in line_contents or "<enable" in line_contents:
                     self.boolean_popup(selected_content, view)
                 elif "label" in line_contents or "<property" in line_contents or "localize" in line_contents:
