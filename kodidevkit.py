@@ -124,7 +124,7 @@ class KodiDevKit(sublime_plugin.EventListener):
             elif info_type == "LOCALIZE":
                 popup_label = INFOS.return_label(info_id)
             if not popup_label:
-                if "<include>" in line_contents or "<include content=" in line_contents:
+                if "<include>" in line_contents or "<include content=" in line_contents or "<font" in line_contents:
                     content = Utils.get_node_content(view, flags)
                     node = INFOS.addon.return_node(content, folder=folder)
                     node_content = str(node["content"])
@@ -138,8 +138,6 @@ class KodiDevKit(sublime_plugin.EventListener):
                         popup_label = "include too big for preview"
                 elif "<visible" in line_contents or "<enable" in line_contents:
                     self.boolean_popup(selected_content, view)
-                elif "<font" in line_contents and "</font" in line_contents:
-                    popup_label = INFOS.get_font_info(selected_content, folder)
                 elif "label" in line_contents or "<property" in line_contents or "localize" in line_contents:
                     popup_label = INFOS.return_label(selected_content)
                 elif "<fadetime" in line_contents:
