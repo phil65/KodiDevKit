@@ -193,7 +193,7 @@ class Addon(object):
         get value from include list
         """
         if not keyword or not folder:
-            return ""
+            return None
         if folder in self.fonts:
             for node in self.fonts[folder]:
                 if node["name"] == keyword:
@@ -202,7 +202,7 @@ class Addon(object):
             for node in self.includes[folder]:
                 if node["name"] == keyword:
                     return node
-        return ""
+        return None
 
     def get_xml_files(self):
         if self.xml_folders:
