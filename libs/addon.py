@@ -205,6 +205,9 @@ class Addon(object):
         return None
 
     def get_xml_files(self):
+        """
+        yields absolute paths of all window files
+        """
         if self.xml_folders:
             for folder in self.xml_folders:
                 for xml_file in self.window_files[folder]:
