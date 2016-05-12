@@ -9,7 +9,6 @@ from time import gmtime, strftime
 
 from . import Utils
 from .polib import polib
-import sublime
 
 SETTINGS_FILE = 'kodidevkit.sublime-settings'
 
@@ -25,7 +24,7 @@ class Addon(object):
         self.fonts = {}
         self.xml_folders = []
         self.window_files = {}
-        self.settings = sublime.load_settings(SETTINGS_FILE)
+        self.settings = kwargs.get("settings")
         self.path = kwargs.get("project_path")
         self.xml_file = os.path.join(self.path, "addon.xml")
         self.root = Utils.get_root_from_file(self.xml_file)
@@ -71,7 +70,7 @@ class Addon(object):
         return os.path.join(self.path, "resources", "skins", "Default", "media")
 
     @staticmethod
-    def by_project(project_path):
+    def by_project(project_path, settings):
         """
         factory, return proper instance based on addon.xml
         """
@@ -79,9 +78,11 @@ class Addon(object):
         root = Utils.get_root_from_file(xml_file)
         if root.find(".//import[@addon='xbmc.python']") is None:
             from . import skin
-            return skin.Skin(project_path=project_path)
+            return skin.Skin(project_path=project_path,
+                             settings=settings)
         else:
-            return Addon(project_path=project_path)
+            return Addon(project_path=project_path,
+                         settings=settings)
             # TODO: parse all python skin folders correctly
 
     def update_labels(self):
