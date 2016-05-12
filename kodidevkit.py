@@ -286,7 +286,7 @@ class QuickPanelCommand(sublime_plugin.WindowCommand):
 class BuildAddonCommand(sublime_plugin.WindowCommand):
 
     def is_visible(self):
-        return INFOS.addon and INFOS.addon.type == "skin"
+        return bool(INFOS.addon) and INFOS.addon.type == "skin"
 
     @Utils.run_async
     def run(self, pack_textures=True):
@@ -302,7 +302,7 @@ class BuildAddonCommand(sublime_plugin.WindowCommand):
 class BuildThemeCommand(sublime_plugin.WindowCommand):
 
     def is_visible(self):
-        return INFOS.addon and os.path.exists(os.path.join(INFOS.addon.path, "themes"))
+        return bool(INFOS.addon) and os.path.exists(os.path.join(INFOS.addon.path, "themes"))
 
     def run(self, pack_textures=True):
         self.themes = INFOS.addon.get_themes()
