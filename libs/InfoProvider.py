@@ -16,7 +16,7 @@ import logging
 from . import Utils
 from .addon import Addon
 from .kodi import kodi
-from .ImageParser import get_image_size
+from .ImageParser import get_image_info
 
 
 # c&p from wiki
@@ -476,9 +476,9 @@ class InfoProvider(object):
         imagepath = self.addon.translate_path(path)
         if not os.path.exists(imagepath) or os.path.isdir(imagepath):
             return ""
-        width, height = get_image_size(imagepath)
-        file_size = os.path.getsize(imagepath) / 1024
-        return "<b>Dimensions:</b> %sx%s <br><b>File size:</b> %.2f kb" % (width, height, file_size)
+        info = get_image_info(imagepath)
+        text = ["<b>%s</b>: %s" % (k, v) for k, v in info]
+        return "<br>".join(text)
 
     def check_fonts(self):
         listitems = []
