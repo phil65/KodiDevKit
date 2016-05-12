@@ -270,7 +270,7 @@ def get_po_file(po_file_path):
         return polib.pofile(po_file_path)
     except Exception as e:
         logging.warning("Error in %s:\n %s" % (po_file_path, e))
-        return []
+        return None
 
 
 def get_root_from_file(xml_file):

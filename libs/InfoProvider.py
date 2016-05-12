@@ -342,9 +342,9 @@ class InfoProvider(object):
         """
         po_files = []
         if kodi.po_files:
-            po_files.append(kodi.po_files)
+            po_files.extend(kodi.po_files)
         if self.addon.po_files:
-            po_files.append(self.addon.po_files)
+            po_files.extend(self.addon.po_files)
         return po_files
 
     def get_ancestor_info(self, path, line):
