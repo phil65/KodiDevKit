@@ -1,8 +1,10 @@
 import struct
 import imghdr
 import re
+import functools
 
 
+@functools.lru_cache(maxsize=128)
 def get_image_size(fname):
     '''Determine the image type of fhandle and return its size.
     from draco'''
