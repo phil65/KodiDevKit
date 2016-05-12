@@ -289,6 +289,22 @@ class QuickPanelCommand(sublime_plugin.WindowCommand):
             view.sel().add(sublime.Region(text_point + line_start, text_point + line_end))
 
 
+class OpenSkinImageCommand(sublime_plugin.WindowCommand):
+
+    def is_visible(self):
+        return bool(INFOS.addon) and os.path.exists(INFOS.addon.media_path)
+
+    @Utils.run_async
+    def run(self, pack_textures=True):
+        view = self.window.active_view()
+        flags = sublime.CLASS_WORD_START | sublime.CLASS_WORD_END
+        path = Utils.get_node_content(view, flags)
+        imagepath = INFOS.addon.translate_path(path)
+        if not os.path.exists(imagepath):
+            return None
+        webbrowser.open(imagepath)
+
+
 class BuildAddonCommand(sublime_plugin.WindowCommand):
 
     def is_visible(self):

@@ -16,7 +16,7 @@ import logging
 from . import Utils
 from .addon import Addon
 from .kodi import kodi
-from .ImageParser import get_image_info
+from . import ImageParser
 
 
 # c&p from wiki
@@ -476,7 +476,7 @@ class InfoProvider(object):
         imagepath = self.addon.translate_path(path)
         if not os.path.exists(imagepath) or os.path.isdir(imagepath):
             return ""
-        info = get_image_info(imagepath)
+        info = ImageParser.get_image_info(imagepath)
         text = ["<b>%s</b>: %s" % (k, v) for k, v in info]
         return "<br>".join(text)
 
