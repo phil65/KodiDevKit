@@ -338,7 +338,7 @@ class InfoProvider(object):
 
     def get_po_files(self):
         """
-        get addon po files and update po files list
+        get list of all active po files
         """
         po_files = []
         if kodi.po_files:
@@ -470,6 +470,9 @@ class InfoProvider(object):
             return str(label_id)
 
     def get_image_info(self, path):
+        """
+        return correctly formatted translate label based on context
+        """
         imagepath = self.addon.translate_path(path)
         if not os.path.exists(imagepath) or os.path.isdir(imagepath):
             return ""
