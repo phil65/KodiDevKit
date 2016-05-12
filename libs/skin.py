@@ -32,9 +32,16 @@ class Skin(addon.Addon):
     @property
     def lang_path(self):
         """
-        returns the add-on language folder path
+        returns the skin language folder path
         """
         return os.path.join(self.path, "language")
+
+    @property
+    def theme_path(self):
+        """
+        returns the skin theme folder path
+        """
+        return os.path.join(self.path, "themes")
 
     @property
     def primary_lang_folder(self):
@@ -47,7 +54,7 @@ class Skin(addon.Addon):
     @property
     def media_path(self):
         """
-        returns the add-on media folder path
+        returns the skin media folder path
         """
         return os.path.join(self.path, "media")
 

@@ -314,7 +314,7 @@ class BuildThemeCommand(sublime_plugin.WindowCommand):
     def on_done(self, index):
         if index == -1:
             return None
-        media_path = os.path.join(INFOS.addon.path, "themes", self.themes[index])
+        media_path = os.path.join(INFOS.addon.theme_path, self.themes[index])
         Utils.texturepacker(media_path=media_path,
                             settings=sublime.load_settings(SETTINGS_FILE),
                             xbt_filename=self.themes[index] + ".xbt")
