@@ -367,16 +367,6 @@ class InfoProvider(object):
         anc_info = "<br>".join(anc_info)
         return "<b>Absolute position</b><br>{}".format(anc_info)
 
-    def get_font_info(self, font_name, folder):
-        """
-        return formatted string containing font info
-        """
-        node = self.addon.return_node(font_name, folder=folder)
-        if not node:
-            return ""
-        root = ET.fromstring(node["content"])
-        return ["<b>%s:</b> %s<br>" % (e.tag, e.text) for e in root.iterchildren()]
-
     def check_variables(self):
         """
         return message listitems containing non-existing / unused variables
