@@ -99,12 +99,12 @@ if __name__ == "__main__":
     from libs.eol import eol
     INFOS = InfoProvider()
     open(RESULTS_FILE, 'w').close()
+    INFOS.load_settings(settings)
+    INFOS.load_data()
     if len(sys.argv) == 2:
         project_folder = sys.argv[1]
     else:
         project_folder = input("Enter Path to skin: ")
-    INFOS.load_settings(settings)
-    INFOS.load_data()
     INFOS.init_addon(project_folder)
     INFOS.check_xml_files()
     for path in INFOS.file_list_generator():

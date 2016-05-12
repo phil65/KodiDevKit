@@ -235,8 +235,8 @@ class InfoProvider(object):
             # fallback to old method so that class still can get used without sublime import
             path = os.path.normpath(os.path.abspath(__file__))
             folder = os.path.split(path)[0]
-            self.template_root = Utils.get_root_from_file(os.path.join(folder, "controls.xml"))
-            root = Utils.get_root_from_file(os.path.join(folder, "data.xml"))
+            self.template_root = Utils.get_root_from_file(os.path.join(folder, "..", "data", "controls.xml"))
+            root = Utils.get_root_from_file(os.path.join(folder, "..", "data", "data.xml"))
         self.builtins = []
         self.conditions = []
         for item in root.find("builtins"):
