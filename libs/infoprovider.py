@@ -766,7 +766,7 @@ class InfoProvider(object):
                             "identifier": node.attrib[check[0]],
                             "message": "invalid value for %s attribute: %s" % (check[0], node.attrib[check[0]])}
                     listitems.append(item)
-        for item in  listitems:
+        for item in listitems:
             item["filename"] = xml_file
             item["file"] = path
         return listitems
