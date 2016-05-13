@@ -88,10 +88,12 @@
         <texturenofocus colordiffuse="color" flipx="bool" flipy="bool" border="int">path</texturenofocus>
         <focusedcolor>color</focusedcolor>
         <shadowcolor>color</shadowcolor>
+        <selectedcolor>color</selectedcolor>
         <disabledcolor>color</disabledcolor>
         <invalidcolor>color</invalidcolor>
         <textoffsetx>int</textoffsetx>
         <textoffsety>int</textoffsety>
+        <textwidth>int</textwidth>
         <pulseonselect>bool</pulseonselect>
         <onclick condition="bool">builtin</onclick>
         <onfocus condition="bool">builtin</onfocus>
@@ -232,6 +234,8 @@
     </control>
     <control type="sliderex" id="int">
         <include>common</include>
+        <align>align</align>
+        <aligny>aligny</aligny>
         <texturesliderbar colordiffuse="color">path</texturesliderbar>
         <textureslidernib colordiffuse="color">path</textureslidernib>
         <textureslidernibfocus colordiffuse="color">path</textureslidernibfocus>
