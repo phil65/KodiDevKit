@@ -261,8 +261,8 @@
     </control>
     <control type="resize" id="int">
         <include>common</include>
-        <texturefocus>path</texturefocus>
-        <texturenofocus>path</texturenofocus>
+        <texturefocus colordiffuse="color" flipx="bool" flipy="bool">path</texturefocus>
+        <texturenofocus colordiffuse="color" flipx="bool" flipy="bool">path</texturenofocus>
         <pulseonselect>bool</pulseonselect>
     </control>
     <control type="edit" id="int">
@@ -275,8 +275,8 @@
         <textcolor>color</textcolor>
         <disabledcolor>color</disabledcolor>
         <invalidcolor>color</invalidcolor>
-        <texturefocus>path</texturefocus>
-        <texturenofocus>path</texturenofocus>
+        <texturefocus colordiffuse="color" flipx="bool" flipy="bool">path</texturefocus>
+        <texturenofocus colordiffuse="color" flipx="bool" flipy="bool">path</texturenofocus>
         <pulseonselect>no</pulseonselect>
     </control>
     <control type="epggrid" id="int">
