@@ -66,6 +66,12 @@
     </control>
     <control type="scrollbar" id="int">
         <include>common</include>
+        <onup>builtin</onup>
+        <ondown>builtin</ondown>
+        <onleft>builtin</onleft>
+        <onright>builtin</onright>
+        <onback>builtin</onback>
+        <texturesliderbackground>path</texturesliderbackground>
         <orientation>orientation</orientation>
     </control>
     <control type="button" id="int">
@@ -134,6 +140,7 @@
         <radioposx>int</radioposx>
         <radioposy>int</radioposy>
         <radiowidth>int</radiowidth>
+        <radioheight>int</radioheight>
         <pulseonselect>bool</pulseonselect>
         <onfocus>builtin</onfocus>
         <onunfocus>builtin</onunfocus>
@@ -321,6 +328,7 @@
         <movement>int</movement>
     </control>
     <control type="panel" id="int">
+        <include>common</include>
         <include>list_common</include>
     </control>
     <include name="common">
