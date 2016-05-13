@@ -227,6 +227,9 @@
         <textureslidernibfocus colordiffuse="color">path</textureslidernibfocus>
         <include>nav_common</include>
     </control>
+    <control type="mover" id="int">
+        <include>common</include>
+    </control>
     <control type="progress" id="int">
         <include>common</include>
         <reveal>bool</reveal>
@@ -329,14 +332,14 @@
         <left>int</left>
         <right>int</right>
         <top>int</top>
-        <animation effect="effect" type="xxx" start="int" end="int" time="int" tween="tween" easing="easing" condition="bool" center="xxx" delay="int" reversible="bool">xxx</animation>
+        <animation effect="effect" type="xxx" start="int" end="int" time="int" tween="tween" easing="easing" condition="bool" center="xxx" delay="int" reversible="bool" loop="bool" pulse="bool">xxx</animation>
         <centertop>int</centertop>
         <centerbottom>int</centerbottom>
         <centerleft>int</centerleft>
         <centerright>int</centerright>
         <bottom>int</bottom>
-        <width>int</width>
-        <height>int</height>
+        <width min="int" max="int">int</width>
+        <height min="int" max="int">int</height>
         <visible allowhiddenfocus="bool">bool</visible>
         <include content="include" file="path" condition="bool">include</include>
     </include>
