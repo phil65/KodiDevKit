@@ -14,11 +14,6 @@ settings = {"kodi_path": "C:/Kodi",
 logger = logging.getLogger()
 logging.basicConfig(level=logging.INFO,
                     format="")
-filehandler = logging.FileHandler("result.txt", mode="w")
-formatter = logging.Formatter('%(asctime)s - %(message)s',
-                              datefmt='%Y-%m-%d %H:%M:%S')
-filehandler.setFormatter(formatter)
-logger.addHandler(filehandler)
 
 
 def check_tags(check_type):
@@ -101,6 +96,11 @@ if __name__ == "__main__":
     open(RESULTS_FILE, 'w').close()
     INFOS.load_settings(settings)
     INFOS.load_data()
+    filehandler = logging.FileHandler("result.txt", mode="w")
+    formatter = logging.Formatter('%(asctime)s - %(message)s',
+                                  datefmt='%Y-%m-%d %H:%M:%S')
+    filehandler.setFormatter(formatter)
+    logger.addHandler(filehandler)
     if len(sys.argv) == 2:
         project_folder = sys.argv[1]
     else:
