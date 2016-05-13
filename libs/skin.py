@@ -12,6 +12,11 @@ import string
 
 
 class Skin(addon.Addon):
+
+    """
+    Class representing a Kodi skin.
+    """
+
     LANG_START_ID = 31000
     LANG_OFFSET = 0
 
