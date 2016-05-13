@@ -223,6 +223,7 @@
         <include>common</include>
         <reveal>bool</reveal>
         <texturebg>path</texturebg>
+        <colordiffuse>color</colordiffuse>
         <lefttexture border="int" colordiffuse="color">path</lefttexture>
         <midtexture border="int" colordiffuse="color">path</midtexture>
         <righttexture border="int" colordiffuse="color">path</righttexture>

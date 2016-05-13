@@ -686,6 +686,7 @@ class InfoProvider(object):
                                 "identifier": subnode.tag,
                                 "message": "invalid tag for <%s>: <%s>" % (node.tag, subnode.tag)}
                         listitems.append(item)
+                        continue
                     for k, v in subnode.attrib.items():
                         if k not in tpl_values[subnode.tag]:
                             item = {"line": subnode.sourceline,
