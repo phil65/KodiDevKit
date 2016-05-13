@@ -437,7 +437,7 @@ class OpenActiveWindowXmlFromRemoteCommand(sublime_plugin.WindowCommand):
 class SearchForLabelCommand(sublime_plugin.WindowCommand):
 
     def is_visible(self):
-        return bool(INFOS.get_po_files())
+        return bool(INFOS.addon) and bool(INFOS.get_po_files())
 
     def run(self):
         listitems = []
