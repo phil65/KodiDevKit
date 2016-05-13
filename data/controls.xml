@@ -1,21 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <root>
-    <!--depracated: mover, select, multiselect-->
+    <!--deprecated: mover, select, multiselect-->
     <!-- available types:
-    - condition
-    - bool
-    - int
-    - float
-    - font
-    - color
-    - label
-    - builtin
-    - path
-    - aspect
-    - align
-    - aligny
-    - xpos
-    - ypos
+    - bool [true,false,yes,no, or a visible condition]
+    - int [some number]
+    - float [float number, 0.0 - 1.0]
+    - font [font from font file]
+    - color [color from color file, or hex value]
+    - label [some string]
+    - builtin [kodi builtin]
+    - path [file path]
+    - aspect [scale, stretch, center, keep]
+    - align [left, center, right]
+    - aligny [top, center, bottom]
     -->
     <control type="group" id="int">
         <include>common</include>
@@ -116,7 +113,7 @@
         <textureradioofffocus colordiffuse="color">path</textureradioofffocus>
         <textureradiooffnofocus colordiffuse="color">path</textureradiooffnofocus>
         <textureradiooffdisabled colordiffuse="color">path</textureradiooffdisabled>
-        <selected>condition</selected>
+        <selected>bool</selected>
         <onclick>builtin</onclick>
         <label>label</label>
         <font>font</font>
@@ -145,7 +142,7 @@
         <texturenofocus>path</texturenofocus>
         <alttexturefocus>path</alttexturefocus>
         <alttexturenofocus>path</alttexturenofocus>
-        <usealttexture>condition</usealttexture>
+        <usealttexture>bool</usealttexture>
         <label>label</label>
         <altlabel>label</altlabel>
         <font>font</font>
@@ -248,7 +245,7 @@
         <scrolltime>int</scrolltime>
         <align>align</align>
         <aligny>aligny</aligny>
-        <autoscroll delay="int" time="int" repeat="int">condition</autoscroll>
+        <autoscroll delay="int" time="int" repeat="int">bool</autoscroll>
         <label>label</label>
     </control>
     <control type="rss" id="int">
@@ -352,7 +349,7 @@
         <scrolltime>int</scrolltime>
         <pagecontrol>int</pagecontrol>
         <viewtype label="label">viewtype</viewtype>
-        <autoscroll delay="int" time="int" repeat="int" reverse="bool">condition</autoscroll>
+        <autoscroll delay="int" time="int" repeat="int" reverse="bool">bool</autoscroll>
         <hitrect></hitrect>
         <itemlayout width="int" height="int"></itemlayout>
         <focusedlayout height="int" width="int"></focusedlayout>
