@@ -822,16 +822,17 @@ class InfoProvider(object):
         # find invalid tags
         all_controls = set([t.attrib.get("type") for t in self.template_root])
         xpath = " or ".join(["@type='{}'".format(c) for c in all_controls])
-        xpath = ".//*[not({}) and @type[string()]]".format(xpath)
+        xpath = ".//control[not({}) and @type[string()]]".format(xpath)
         logging.warning(xpath)
         for node in root.xpath(xpath):
             logging.warning(str(node.attrib))
         for template in self.template_root:
             tpl_tags = [child.tag for child in template.iterchildren()]
-            logging.info(template.attrib.get("type"))
-            for node in root.xpath(".//*[@type='%s']" % template.attrib.get("type")):
+            # logging.info(template.attrib.get("type"))
+            for node in root.xpath(".//control[@type='%s']" % template.attrib.get("type")):
                 for subnode in node.iterchildren():
                     if subnode.tag not in tpl_tags:
-                        logging.info(subnode.tag)
+                        logging.warning(subnode.tag)
+                        logging.warning(subnode.getparent().attrib.get("type"))
                 pass
         return listitems
