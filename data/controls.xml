@@ -258,6 +258,7 @@
         <colordiffuse>color</colordiffuse>
         <font>font</font>
         <textcolor>color</textcolor>
+        <shadowcolor>color</shadowcolor>
         <pulseonselect>bool</pulseonselect>
         <pagecontrol>13</pagecontrol>
         <scrolltime>int</scrolltime>
@@ -366,6 +367,7 @@
         <offsetx>int</offsetx>
         <offsety>int</offsety>
         <onfocus>builtin</onfocus>
+        <onunfocus>builtin</onunfocus>
         <orientation>orientation</orientation>
         <preloaditems>bool</preloaditems>
         <scrolltime>int</scrolltime>
