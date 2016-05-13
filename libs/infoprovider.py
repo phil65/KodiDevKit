@@ -677,27 +677,22 @@ class InfoProvider(object):
                     "message": "invalid control type: %s" % (node.attrib.get("type"))}
             listitems.append(item)
         for template in self.template_root:
-            tpl_tags = set([child.tag for child in template.iterchildren()])
-            # logging.info(template.attrib.get("type"))
+            tpl_values = {i.tag: i.attrib for i in template.iterchildren()}
             for node in root.xpath(".//control[@type='%s']" % template.attrib.get("type")):
                 for subnode in node.iterchildren():
-                    if subnode.tag not in tpl_tags:
+                    if subnode.tag not in tpl_values:
                         item = {"line": subnode.sourceline,
                                 "type": subnode.tag,
                                 "identifier": subnode.tag,
                                 "message": "invalid tag for <%s>: <%s>" % (node.tag, subnode.tag)}
                         listitems.append(item)
-        # find invalid attributes
-        for check in ATT_CHECKS:
-            xpath = ".//" + " | .//".join(check[0])
-            for node in root.xpath(xpath):
-                for attr in node.attrib:
-                    if attr not in check[1]:
-                        item = {"line": node.sourceline,
-                                "type": node.tag,
-                                "identifier": attr,
-                                "message": "invalid attribute for <%s>: %s" % (node.tag, attr)}
-                        listitems.append(item)
+                    for k, v in subnode.attrib.items():
+                        if k not in tpl_values[subnode.tag]:
+                            item = {"line": subnode.sourceline,
+                                    "type": subnode.tag,
+                                    "identifier": k,
+                                    "message": "invalid attribute for <%s>: %s" % (subnode.tag, k)}
+                            listitems.append(item)
         # check conditions in element content
         xpath = ".//" + " | .//".join(BRACKET_TAGS)
         for node in root.xpath(xpath):
