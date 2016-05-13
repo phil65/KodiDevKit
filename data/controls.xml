@@ -84,9 +84,9 @@
         <textoffsetx>int</textoffsetx>
         <textoffsety>int</textoffsety>
         <pulseonselect></pulseonselect>
-        <onclick>builtin</onclick>
-        <onfocus>builtin</onfocus>
-        <onunfocus>builtin</onunfocus>
+        <onclick condition="bool">builtin</onclick>
+        <onfocus condition="bool">builtin</onfocus>
+        <onunfocus condition="bool">builtin</onunfocus>
     </control>
     <control type="image" id="int">
         <include>common</include>
@@ -120,7 +120,7 @@
         <textureradiooffnofocus colordiffuse="color">path</textureradiooffnofocus>
         <textureradiooffdisabled colordiffuse="color">path</textureradiooffdisabled>
         <selected>bool</selected>
-        <onclick>builtin</onclick>
+        <onclick condition="bool">builtin</onclick>
         <label>label</label>
         <textwidth>int</textwidth>
         <font>font</font>
@@ -136,8 +136,8 @@
         <radiowidth>int</radiowidth>
         <radioheight>int</radioheight>
         <pulseonselect>bool</pulseonselect>
-        <onfocus>builtin</onfocus>
-        <onunfocus>builtin</onunfocus>
+        <onfocus condition="bool">builtin</onfocus>
+        <onunfocus condition="bool">builtin</onunfocus>
         <include>nav_common</include>
     </control>
     <control type="togglebutton" id="int">
@@ -189,8 +189,8 @@
         <spinheight>int</spinheight>
         <visible>bool</visible>
         <colordiffuse>color</colordiffuse>
-        <texturefocus>path</texturefocus>
-        <texturenofocus>path</texturenofocus>
+        <texturefocus colordiffuse="color" flipx="bool" flipy="bool">path</texturefocus>
+        <texturenofocus colordiffuse="color" flipx="bool" flipy="bool">path</texturenofocus>
         <textureup>path</textureup>
         <textureupfocus>path</textureupfocus>
         <texturedown>path</texturedown>
@@ -338,8 +338,8 @@
         <onback condition="condition">builtin</onback>
         <offsetx>int</offsetx>
         <offsety>int</offsety>
-        <onfocus>builtin</onfocus>
-        <onunfocus>builtin</onunfocus>
+        <onfocus condition="bool">builtin</onfocus>
+        <onunfocus condition="bool">builtin</onunfocus>
         <orientation>orientation</orientation>
         <preloaditems>bool</preloaditems>
         <scrolltime tween="tween" easing="easing">int</scrolltime>
