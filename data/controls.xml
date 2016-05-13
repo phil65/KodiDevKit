@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <root>
     <!--deprecated: mover, select, multiselect-->
+
     <!-- available types:
+
     - bool [true,false,yes,no, or a visible condition]
     - int [some number]
     - float [float number, 0.0 - 1.0]
@@ -13,6 +15,11 @@
     - aspect [scale, stretch, center, keep]
     - align [left, center, right]
     - aligny [top, center, bottom]
+
+
+    always allowed tags: description, include
+    always allowed attributes: description
+
     -->
     <control type="group" id="int">
         <include>common</include>
