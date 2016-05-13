@@ -121,10 +121,6 @@ WINDOW_FILENAMES = [item[4] for item in WINDOW_MAP]
 WINDOW_NAMES = [item[0] for item in WINDOW_MAP]
 WINDOW_IDS = [item[3] for item in WINDOW_MAP]
 
-COMMON = ["description", "camera", "depth", "posx", "posy", "top", "bottom", "left", "right", "centertop", "centerbottom", "centerleft", "centerright", "width", "height", "visible", "include", "animation"]
-# tags allowed for containers
-LIST_COMMON = ["defaultcontrol", "focusedlayout", "itemlayout", "offsetx", "offsety", "content", "onup", "ondown", "onleft", "onright", "oninfo", "onback", "onclick", "onfocus", "onunfocus", "orientation", "preloaditems", "scrolltime", "pagecontrol", "viewtype", "autoscroll", "hitrect"]
-LABEL_COMMON = ["font", "textcolor", "align", "aligny", "label"]
 # allowed child nodes for different control types (+ some other nodes)
 TAG_CHECKS = [[".//content/*", ["item", "include"]],
               [".//itemlayout/* | .//focusedlayout/*", ["control", "include"]],
@@ -683,7 +679,7 @@ class InfoProvider(object):
                     "file": path}
             listitems.append(item)
         for template in self.template_root:
-            tpl_tags = [child.tag for child in template.iterchildren()]
+            tpl_tags = set([child.tag for child in template.iterchildren()])
             # logging.info(template.attrib.get("type"))
             for node in root.xpath(".//control[@type='%s']" % template.attrib.get("type")):
                 for subnode in node.iterchildren():
@@ -695,7 +691,6 @@ class InfoProvider(object):
                                 "message": "invalid tag for <%s>: <%s>" % (node.tag, subnode.tag),
                                 "file": path}
                         listitems.append(item)
-
         # find invalid attributes
         for check in ATT_CHECKS:
             xpath = ".//" + " | .//".join(check[0])
