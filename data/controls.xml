@@ -26,7 +26,7 @@
     <control type="group" id="int">
         <include>common</include>
         <defaultcontrol>int</defaultcontrol>
-        <control/>
+        <control type="controltype" id="int">xxx</control>
     </control>
     <control type="grouplist" id="int">
         <include>common</include>
@@ -81,8 +81,8 @@
         <include>common</include>
         <include>label_common</include>
         <colordiffuse>color</colordiffuse>
-        <texturefocus colordiffuse="color">path</texturefocus>
-        <texturenofocus colordiffuse="color">path</texturenofocus>
+        <texturefocus colordiffuse="color" flipx="bool" flipy="bool">path</texturefocus>
+        <texturenofocus colordiffuse="color" flipx="bool" flipy="bool">path</texturenofocus>
         <focusedcolor>color</focusedcolor>
         <disabledcolor>color</disabledcolor>
         <invalidcolor>color</invalidcolor>
@@ -356,7 +356,7 @@
         <width>int</width>
         <height>int</height>
         <visible>bool</visible>
-        <include>include</include>
+        <include content="include" file="path" condition="bool">include</include>
     </include>
     <include name="list_common">
         <onup>builtin</onup>
