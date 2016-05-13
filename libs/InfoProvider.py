@@ -243,10 +243,13 @@ class InfoProvider(object):
             self.builtins.append([item.find("code").text, item.find("help").text])
         for item in root.find("conditions"):
             self.conditions.append([item.find("code").text, item.find("help").text])
-        # TODO: resolve includes
-
-        # for node in self.template.iterchildren():
-        #     logging.info(node.tag)
+        list_common = self.template_root.xpath(".//include[@name='list_common']")[0]
+        common = self.template_root.xpath(".//include[@name='common']")[0]
+        for node in self.template_root.xpath(".//include"):
+            if node.text == "list_common":
+                node.getparent().replace(node, list_common)
+            if node.text == "common":
+                node.getparent().replace(node, common)
 
     def init_addon(self, path):
         """
