@@ -12,7 +12,7 @@ import os
 import re
 from lxml import etree as ET
 import logging
-
+import copy
 from . import Utils
 from .addon import Addon
 from .kodi import kodi
@@ -243,13 +243,27 @@ class InfoProvider(object):
             self.builtins.append([item.find("code").text, item.find("help").text])
         for item in root.find("conditions"):
             self.conditions.append([item.find("code").text, item.find("help").text])
-        list_common = self.template_root.xpath(".//include[@name='list_common']")[0]
-        common = self.template_root.xpath(".//include[@name='common']")[0]
-        for node in self.template_root.xpath(".//include"):
+        list_common = self.template_root.find(".//include[@name='list_common']")
+        label_common = self.template_root.find(".//include[@name='label_common']")
+        common = self.template_root.find(".//include[@name='common']")
+        self.template_root.remove(list_common)
+        self.template_root.remove(common)
+        self.template_root.remove(label_common)
+        for node in self.template_root.xpath("//include[not(@*)]"):
+            # logging.info(ET.tostring(node.getparent(), pretty_print=True, encoding="unicode"))
             if node.text == "list_common":
-                node.getparent().replace(node, list_common)
+                for child in list_common.getchildren():
+                    child = copy.deepcopy(child)
+                    node.getparent().append(child)
             if node.text == "common":
-                node.getparent().replace(node, common)
+                for child in common.getchildren():
+                    child = copy.deepcopy(child)
+                    node.getparent().append(child)
+            if node.text == "label_common":
+                for child in label_common.getchildren():
+                    child = copy.deepcopy(child)
+                    node.getparent().append(child)
+            node.getparent().remove(node)
 
     def init_addon(self, path):
         """
