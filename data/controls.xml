@@ -74,6 +74,7 @@
         <onback condition="bool">builtin</onback>
         <texturesliderbackground colordiffuse="color">path</texturesliderbackground>
         <orientation>orientation</orientation>
+        <showonepage>bool</showonepage>
     </control>
     <control type="button" id="int">
         <include>common</include>
@@ -172,6 +173,7 @@
     </control>
     <control type="spincontrol" id="int">
         <include>common</include>
+        <include>nav_common</include>
         <colordiffuse>color</colordiffuse>
         <textureup colordiffuse="color">path</textureup>
         <textureupfocus colordiffuse="color">path</textureupfocus>
@@ -186,7 +188,7 @@
         <textoffsetx>int</textoffsetx>
         <textoffsety>int</textoffsety>
         <pulseonselect></pulseonselect>
-        <include>nav_common</include>
+        <showonepage>bool</showonepage>
     </control>
     <control type="spincontrolex" id="int">
         <include>common</include>
@@ -259,7 +261,7 @@
         <shadowcolor>color</shadowcolor>
         <pulseonselect>bool</pulseonselect>
         <pagecontrol>int</pagecontrol>
-        <scrolltime>int</scrolltime>
+        <scrolltime tween="tween" easing="easing">int</scrolltime>
         <align>align</align>
         <aligny>aligny</aligny>
         <autoscroll delay="int" time="int" repeat="int">bool</autoscroll>
@@ -306,10 +308,11 @@
         <include>common</include>
         <include>nav_common</include>
         <pagecontrol>int</pagecontrol>
-        <scrolltime>int</scrolltime>
+        <scrolltime tween="tween" easing="easing">int</scrolltime>
         <timeblocks>int</timeblocks>
         <rulerunit>int</rulerunit>
-        <progresstexture border="5">PVR-EpgProgressIndicator.png</progresstexture>
+        <viewtype label="label">viewtype</viewtype>
+        <progresstexture colordiffuse="color" border="int">path</progresstexture>
         <rulerlayout height="int" width="int" condition="condition"></rulerlayout>
         <channellayout height="int" width="int" condition="condition"></channellayout>
         <focusedchannellayout height="int" width="int" condition="condition"></focusedchannellayout>
@@ -371,7 +374,7 @@
         <pagecontrol>int</pagecontrol>
         <viewtype label="label">viewtype</viewtype>
         <autoscroll delay="int" time="int" repeat="int" reverse="bool">bool</autoscroll>
-        <hitrect></hitrect>
+        <hitrect x="int" y="int" w="int" h="int"></hitrect>
         <itemlayout width="int" height="int" condition="bool"></itemlayout>
         <focusedlayout height="int" width="int" condition="bool"></focusedlayout>
         <content sortby="xxx" sortorder="xxx" target="xxx" limit="int"></content>
