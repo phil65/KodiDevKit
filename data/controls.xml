@@ -12,14 +12,28 @@
     - builtin
     - path
     - aspect
+    - align
+    - aligny
     - xpos
     - ypos
     -->
     <control type="group" id="int">
         <include>common</include>
+        <defaultcontrol>int</defaultcontrol>
+        <control/>
     </control>
     <control type="grouplist" id="int">
         <include>common</include>
+        <itemgap>int</itemgap>
+        <align>align</align>
+        <orientation>int</orientation>
+        <defaultcontrol>int</defaultcontrol>
+        <onup>builtin</onup>
+        <ondown>builtin</ondown>
+        <onleft>builtin</onleft>
+        <onright>builtin</onright>
+        <usecontrolcoords>bool</usecontrolcoords>
+        <control/>
     </control>
     <control type="label" id="int">
         <include>common</include>
@@ -27,12 +41,14 @@
         <scroll>bool</scroll>
         <info>label</info>
         <number></number>
-        <angle>30</angle>
+        <angle>int</angle>
+        <textoffsetx>int</textoffsetx>
+        <textoffsety>int</textoffsety>
         <haspath>bool</haspath>
         <shadowcolor>color</shadowcolor>
         <wrapmultiline>bool</wrapmultiline>
         <scrollspeed>int</scrollspeed>
-        <scrollsuffix>-</scrollsuffix>
+        <scrollsuffix>label</scrollsuffix>
     </control>
     <control type="fadelabel" id="int">
         <include>common</include>
@@ -42,7 +58,11 @@
         <info>label</info>
         <font>font</font>
         <textcolor>color</textcolor>
-        <textoffsetx>20</textoffsetx>
+        <textoffsetx>int</textoffsetx>
+    </control>
+    <control type="scrollbar" id="int">
+        <include>common</include>
+        <orientation>orientation</orientation>
     </control>
     <control type="button" id="int">
         <include>common</include>
@@ -103,10 +123,13 @@
         <textcolor>color</textcolor>
         <focusedcolor>color</focusedcolor>
         <disabledcolor>color</disabledcolor>
-        <align>left</align>
-        <aligny>ypos</aligny>
+        <align>align</align>
+        <aligny>aligny</aligny>
         <textoffsetx>int</textoffsetx>
         <textoffsety>int</textoffsety>
+        <radioposx>int</radioposx>
+        <radioposy>int</radioposy>
+        <radiowidth>int</radiowidth>
         <pulseonselect>bool</pulseonselect>
         <onfocus>builtin</onfocus>
         <onunfocus>builtin</onunfocus>
@@ -128,8 +151,8 @@
         <font>font</font>
         <textcolor>color</textcolor>
         <disabledcolor>color</disabledcolor>
-        <align>left</align>
-        <aligny>ypos</aligny>
+        <align>align</align>
+        <aligny>aligny</aligny>
         <textoffsetx>int</textoffsetx>
         <textoffsety>int</textoffsety>
         <pulseonselect>bool</pulseonselect>
@@ -152,8 +175,8 @@
         <font>font</font>
         <textcolor>color</textcolor>
         <disabledcolor>color</disabledcolor>
-        <align>xpos</align>
-        <aligny>ypos</aligny>
+        <align>align</align>
+        <aligny>aligny</aligny>
         <textoffsetx>int</textoffsetx>
         <textoffsety>int</textoffsety>
         <pulseonselect></pulseonselect>
@@ -180,8 +203,8 @@
         <font>font</font>
         <textcolor>color</textcolor>
         <disabledcolor>color</disabledcolor>
-        <align>xpos</align>
-        <aligny>ypos</aligny>
+        <align>align</align>
+        <aligny>aligny</aligny>
         <textoffsetx>int</textoffsetx>
         <textoffsety>int</textoffsety>
         <pulseonselect></pulseonselect>
@@ -223,6 +246,8 @@
         <pulseonselect>bool</pulseonselect>
         <pagecontrol>13</pagecontrol>
         <scrolltime>int</scrolltime>
+        <align>align</align>
+        <aligny>aligny</aligny>
         <autoscroll delay="int" time="int" repeat="int">condition</autoscroll>
         <label>label</label>
     </control>
@@ -292,7 +317,6 @@
         <movement>int</movement>
     </control>
     <control type="panel" id="int">
-        <include>common</include>
         <include>list_common</include>
     </control>
     <include name="common">
@@ -337,8 +361,8 @@
     <include name="label_common">
         <font>font</font>
         <textcolor>color</textcolor>
-        <align>xpos</align>
-        <aligny>ypos</aligny>
+        <align>align</align>
+        <aligny>aligny</aligny>
         <label>label</label>
     </include>
 </root>
