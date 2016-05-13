@@ -15,6 +15,8 @@
     - aspect [scale, stretch, center, keep]
     - align [left, center, right]
     - aligny [top, center, bottom]
+    - tween [quadratic, sine, ...]
+    - easing [in, out, inout]
 
 
     always allowed tags: description, include
@@ -36,6 +38,7 @@
         <ondown>builtin</ondown>
         <onleft>builtin</onleft>
         <onright>builtin</onright>
+        <scrolltime tween="tween" easing="easing">int</scrolltime>
         <usecontrolcoords>bool</usecontrolcoords>
         <control/>
     </control>
@@ -129,6 +132,7 @@
         <selected>bool</selected>
         <onclick>builtin</onclick>
         <label>label</label>
+        <textwidth>int</textwidth>
         <font>font</font>
         <textcolor>color</textcolor>
         <focusedcolor>color</focusedcolor>
@@ -268,6 +272,8 @@
         <textcolor>color</textcolor>
         <headlinecolor>color</headlinecolor>
         <titlecolor>color</titlecolor>
+        <shadowcolor>color</shadowcolor>
+        <urlset>xxx</urlset>
     </control>
     <control type="visualisation" id="int">
         <include>common</include>
@@ -359,6 +365,7 @@
         <onback>builtin</onback>
         <offsetx>int</offsetx>
         <offsety>int</offsety>
+        <onfocus>builtin</onfocus>
         <orientation>orientation</orientation>
         <preloaditems>bool</preloaditems>
         <scrolltime>int</scrolltime>
