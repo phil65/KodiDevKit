@@ -126,37 +126,7 @@ COMMON = ["description", "camera", "depth", "posx", "posy", "top", "bottom", "le
 LIST_COMMON = ["defaultcontrol", "focusedlayout", "itemlayout", "offsetx", "offsety", "content", "onup", "ondown", "onleft", "onright", "oninfo", "onback", "onclick", "onfocus", "onunfocus", "orientation", "preloaditems", "scrolltime", "pagecontrol", "viewtype", "autoscroll", "hitrect"]
 LABEL_COMMON = ["font", "textcolor", "align", "aligny", "label"]
 # allowed child nodes for different control types (+ some other nodes)
-TAG_CHECKS = [[".//*[@type='button']/*", COMMON + LABEL_COMMON + ["colordiffuse", "texturefocus", "texturenofocus", "label2", "wrapmultiline", "disabledcolor", "selectedcolor", "shadowcolor", "textoffsetx",
-                                                                  "textoffsety", "pulseonselect", "onclick", "onfocus", "onunfocus", "onup", "onleft", "onright", "ondown", "onback", "textwidth",
-                                                                  "focusedcolor", "angle", "hitrect", "enable"]],
-              [".//*[@type='radiobutton']/*", COMMON + LABEL_COMMON + ["colordiffuse", "texturefocus", "texturenofocus", "selected", "disabledcolor", "selectedcolor", "shadowcolor", "textoffsetx",
-                                                                       "textoffsety", "pulseonselect", "onclick", "onfocus", "onunfocus", "onup", "onleft", "onright", "ondown", "onback", "textwidth",
-                                                                       "focusedcolor", "angle", "hitrect", "enable", "textureradioonfocus", "textureradioofffocus", "textureradioondisabled", "textureradiooffdisabled", "textureradioonnofocus",
-                                                                       "textureradiooffnofocus", "textureradioon", "textureradiooff", "radioposx", "radioposy", "radiowidth", "radioheight"]],
-              [".//*[@type='spincontrol']/*", COMMON + LABEL_COMMON + ["colordiffuse", "textureup", "textureupfocus", "textureupdisabled", "texturedown", "texturedownfocus", "texturedowndisabled", "spinwidth", "spinheight", "spinposx", "spinposy",
-                                                                       "subtype", "disabledcolor", "focusedcolor", "shadowcolor", "textoffsetx", "textoffsety", "pulseonselect", "onfocus", "onunfocus", "onup", "onleft",
-                                                                       "onright", "ondown", "onback", "hitrect", "enable", "showonepage", "reverse"]],
-              [".//*[@type='togglebutton']/*", COMMON + LABEL_COMMON + ["colordiffuse", "texturefocus", "alttexturefocus", "alttexturenofocus", "altclick", "texturenofocus", "altlabel", "usealttexture",
-                                                                        "disabledcolor", "shadowcolor", "textoffsetx", "textoffsety", "pulseonselect", "onclick", "onfocus", "onunfocus", "onup", "onleft",
-                                                                        "onright", "ondown", "onback", "textwidth", "focusedcolor", "subtype", "hitrect", "enable"]],
-              [".//*[@type='label']/*", COMMON + LABEL_COMMON + ["scroll", "scrollout", "info", "number", "angle", "haspath", "selectedcolor", "shadowcolor", "disabledcolor", "pauseatend", "wrapmultiline",
-                                                                 "scrollspeed", "scrollsuffix", "textoffsetx", "textoffsety"]],
-              [".//*[@type='textbox']/*", COMMON + LABEL_COMMON + ["autoscroll", "info", "selectedcolor", "shadowcolor", "pagecontrol"]],
-              [".//*[@type='edit']/*", COMMON + LABEL_COMMON + ["colordiffuse", "hinttext", "textoffsetx", "textoffsety", "pulseonselect", "disabledcolor", "invalidcolor", "focusedcolor", "shadowcolor",
-                                                                "texturefocus", "texturenofocus", "onclick", "onfocus", "onunfocus", "onup", "onleft", "onright", "ondown", "onback", "textwidth", "hitrect", "enable"]],
-              [".//*[@type='image']/*", COMMON + ["align", "aligny", "aspectratio", "fadetime", "colordiffuse", "texture", "bordertexture", "bordersize", "info"]],
-              [".//*[@type='multiimage']/*", COMMON + ["align", "aligny", "aspectratio", "fadetime", "colordiffuse", "imagepath", "timeperimage", "loop", "info", "randomize", "pauseatend"]],
-              [".//*[@type='scrollbar']/*", COMMON + ["texturesliderbackground", "texturesliderbar", "texturesliderbarfocus", "textureslidernib", "textureslidernibfocus", "pulseonselect", "orientation",
-                                                      "showonepage", "pagecontrol", "onclick", "onfocus", "onunfocus", "onup", "onleft", "onright", "ondown", "onback"]],
-              [".//*[@type='progress']/*", COMMON + ["texturebg", "lefttexture", "colordiffuse", "righttexture", "overlaytexture", "midtexture", "info", "reveal"]],
-              [".//*[@type='grouplist']/*", COMMON + ["control", "align", "itemgap", "orientation", "onfocus", "onunfocus", "onup", "onleft", "onright", "ondown", "onback", "scrolltime", "usecontrolcoords", "defaultcontrol", "pagecontrol"]],
-              [".//*[@type='videowindow']/*", COMMON],
-              [".//*[@type='visualisation']/*", COMMON],
-              [".//*[@type='list']/*", COMMON + LIST_COMMON],
-              [".//*[@type='wraplist']/*", COMMON + LIST_COMMON + ["focusposition"]],
-              [".//*[@type='panel']/*", COMMON + LIST_COMMON],
-              [".//*[@type='fixedlist']/*", COMMON + LIST_COMMON + ["movement", "focusposition"]],
-              [".//content/*", ["item", "include"]],
+TAG_CHECKS = [[".//content/*", ["item", "include"]],
               [".//itemlayout/* | .//focusedlayout/*", ["control", "include"]],
               ["/includes/*", ["include", "default", "constant", "variable", "expression"]],
               ["/window/*", ["include", "defaultcontrol", "depth", "menucontrol", "onload", "onunload", "controls", "allowoverlay", "views", "coordinates", "animation", "visible", "zorder", "fontset", "backgroundcolor"]],
@@ -701,21 +671,31 @@ class InfoProvider(object):
             return []
         tree = ET.ElementTree(root)
         listitems = []
-        # find invalid tags
-        for check in TAG_CHECKS:
-            for node in root.xpath(check[0]):
-                if node.tag not in check[1]:
-                    if "type" in node.getparent().attrib:
-                        text = '%s type="%s"' % (node.getparent().tag, node.getparent().attrib["type"])
-                    else:
-                        text = node.getparent().tag
-                    item = {"line": node.sourceline,
-                            "type": node.tag,
-                            "filename": xml_file,
-                            "identifier": node.tag,
-                            "message": "invalid tag for <%s>: <%s>" % (text, node.tag),
-                            "file": path}
-                    listitems.append(item)
+        all_controls = set([t.attrib.get("type") for t in self.template_root])
+        xpath = " or ".join(["@type='{}'".format(c) for c in all_controls])
+        xpath = ".//control[not({}) and @type[string()]]".format(xpath)
+        for node in root.xpath(xpath):
+            item = {"line": node.sourceline,
+                    "type": node.tag,
+                    "filename": xml_file,
+                    "identifier": node.attrib.get("type"),
+                    "message": "invalid control type: %s" % (node.attrib.get("type")),
+                    "file": path}
+            listitems.append(item)
+        for template in self.template_root:
+            tpl_tags = [child.tag for child in template.iterchildren()]
+            # logging.info(template.attrib.get("type"))
+            for node in root.xpath(".//control[@type='%s']" % template.attrib.get("type")):
+                for subnode in node.iterchildren():
+                    if subnode.tag not in tpl_tags:
+                        item = {"line": subnode.sourceline,
+                                "type": subnode.tag,
+                                "filename": xml_file,
+                                "identifier": subnode.tag,
+                                "message": "invalid tag for <%s>: <%s>" % (node.tag, subnode.tag),
+                                "file": path}
+                        listitems.append(item)
+
         # find invalid attributes
         for check in ATT_CHECKS:
             xpath = ".//" + " | .//".join(check[0])
@@ -809,30 +789,4 @@ class InfoProvider(object):
                             "message": "invalid value for %s attribute: %s" % (check[0], node.attrib[check[0]]),
                             "file": path}
                     listitems.append(item)
-        return listitems
-
-    def check_file2(self, path):
-        root = Utils.get_root_from_file(path)
-        logging.info(path)
-        if root is None:
-            return []
-        # tree = ET.ElementTree(root)
-        listitems = []
-        logging.info(self.template_root.tag)
-        # find invalid tags
-        all_controls = set([t.attrib.get("type") for t in self.template_root])
-        xpath = " or ".join(["@type='{}'".format(c) for c in all_controls])
-        xpath = ".//control[not({}) and @type[string()]]".format(xpath)
-        logging.warning(xpath)
-        for node in root.xpath(xpath):
-            logging.warning(str(node.attrib))
-        for template in self.template_root:
-            tpl_tags = [child.tag for child in template.iterchildren()]
-            # logging.info(template.attrib.get("type"))
-            for node in root.xpath(".//control[@type='%s']" % template.attrib.get("type")):
-                for subnode in node.iterchildren():
-                    if subnode.tag not in tpl_tags:
-                        logging.warning(subnode.tag)
-                        logging.warning(subnode.getparent().attrib.get("type"))
-                pass
         return listitems
