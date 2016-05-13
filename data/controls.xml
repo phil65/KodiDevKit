@@ -105,7 +105,7 @@
     </control>
     <control type="multiimage" id="int">
         <include>common</include>
-        <imagepath background="true">path</imagepath>
+        <imagepath background="true" colordiffuse="color">path</imagepath>
         <info></info>
         <timeperimage>int</timeperimage>
         <fadetime>int</fadetime>
@@ -126,6 +126,7 @@
         <textureradiooffnofocus colordiffuse="color">path</textureradiooffnofocus>
         <textureradiooffdisabled colordiffuse="color">path</textureradiooffdisabled>
         <selected>bool</selected>
+        <enable>bool</enable>
         <onclick condition="bool">builtin</onclick>
         <label fallback="label">label</label>
         <textwidth>int</textwidth>

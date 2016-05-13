@@ -681,10 +681,11 @@ class InfoProvider(object):
             for node in root.xpath(".//control[@type='%s']" % template.attrib.get("type")):
                 for subnode in node.iterchildren():
                     if subnode.tag not in tpl_values:
+                        label = node.tag if "type" not in node.attrib else "%s type=%s" % (node.tag, node.attrib.get("type"))
                         item = {"line": subnode.sourceline,
                                 "type": subnode.tag,
                                 "identifier": subnode.tag,
-                                "message": "invalid tag for <%s>: <%s>" % (node.tag, subnode.tag)}
+                                "message": "invalid tag for <%s>: <%s>" % (label, subnode.tag)}
                         listitems.append(item)
                         continue
                     for k, v in subnode.attrib.items():
