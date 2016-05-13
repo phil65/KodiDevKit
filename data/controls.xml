@@ -81,6 +81,7 @@
         <include>nav_common</include>
         <label2>label</label2>
         <colordiffuse>color</colordiffuse>
+        <enable>bool</enable>
         <texturefocus colordiffuse="color" flipx="bool" flipy="bool" border="int">path</texturefocus>
         <texturenofocus colordiffuse="color" flipx="bool" flipy="bool" border="int">path</texturenofocus>
         <focusedcolor>color</focusedcolor>
@@ -235,6 +236,9 @@
         <texturefocus colordiffuse="color" flipx="bool" flipy="bool" border="int">path</texturefocus>
         <texturenofocus colordiffuse="color" flipx="bool" flipy="bool" border="int">path</texturenofocus>
     </control>
+    <control type="gamecontroller" id="int">
+        <include>common</include>
+    </control>
     <control type="progress" id="int">
         <include>common</include>
         <reveal>bool</reveal>
@@ -283,11 +287,13 @@
     </control>
     <control type="edit" id="int">
         <include>common</include>
+        <include>nav_common</include>
         <aligny>center</aligny>
         <label fallback="label">label</label>
         <hinttext>label</hinttext>
         <font>font</font>
-        <textoffsetx>10</textoffsetx>
+        <textoffsetx>int</textoffsetx>
+        <textwidth>int</textwidth>
         <textcolor>color</textcolor>
         <disabledcolor>color</disabledcolor>
         <invalidcolor>color</invalidcolor>
