@@ -294,13 +294,15 @@
     <control type="edit" id="int">
         <include>common</include>
         <include>nav_common</include>
-        <aligny>center</aligny>
+        <align>align</align>
+        <aligny>aligny</aligny>
         <label fallback="label">label</label>
         <hinttext>label</hinttext>
         <font>font</font>
         <textoffsetx>int</textoffsetx>
         <textwidth>int</textwidth>
         <textcolor>color</textcolor>
+        <shadowcolor>color</shadowcolor>
         <disabledcolor>color</disabledcolor>
         <invalidcolor>color</invalidcolor>
         <texturefocus colordiffuse="color" flipx="bool" flipy="bool" border="int">path</texturefocus>
