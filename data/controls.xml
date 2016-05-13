@@ -192,10 +192,10 @@
         <colordiffuse>color</colordiffuse>
         <texturefocus colordiffuse="color" flipx="bool" flipy="bool">path</texturefocus>
         <texturenofocus colordiffuse="color" flipx="bool" flipy="bool">path</texturenofocus>
-        <textureup>path</textureup>
-        <textureupfocus>path</textureupfocus>
-        <texturedown>path</texturedown>
-        <texturedownfocus>path</texturedownfocus>
+        <textureup colordiffuse="color">path</textureup>
+        <textureupfocus colordiffuse="color">path</textureupfocus>
+        <texturedown colordiffuse="color">path</texturedown>
+        <texturedownfocus colordiffuse="color">path</texturedownfocus>
         <label>label</label>
         <font>font</font>
         <textcolor>color</textcolor>
@@ -209,9 +209,9 @@
     </control>
     <control type="slider" id="int">
         <include>common</include>
-        <texturesliderbar>path</texturesliderbar>
-        <textureslidernib>path</textureslidernib>
-        <textureslidernibfocus>path</textureslidernibfocus>
+        <texturesliderbar colordiffuse="color">path</texturesliderbar>
+        <textureslidernib colordiffuse="color">path</textureslidernib>
+        <textureslidernibfocus colordiffuse="color">path</textureslidernibfocus>
         <info></info>
         <action></action>
         <controloffsetx></controloffsetx>
@@ -222,7 +222,7 @@
     <control type="progress" id="int">
         <include>common</include>
         <reveal>bool</reveal>
-        <texturebg>path</texturebg>
+        <texturebg colordiffuse="color">path</texturebg>
         <colordiffuse>color</colordiffuse>
         <lefttexture border="int" colordiffuse="color">path</lefttexture>
         <midtexture border="int" colordiffuse="color">path</midtexture>
@@ -349,8 +349,8 @@
         <viewtype label="label">viewtype</viewtype>
         <autoscroll delay="int" time="int" repeat="int" reverse="bool">bool</autoscroll>
         <hitrect></hitrect>
-        <itemlayout width="int" height="int"></itemlayout>
-        <focusedlayout height="int" width="int"></focusedlayout>
+        <itemlayout width="int" height="int" condition="bool"></itemlayout>
+        <focusedlayout height="int" width="int" condition="bool"></focusedlayout>
         <content></content>
     </include>
     <include name="label_common">
