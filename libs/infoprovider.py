@@ -673,10 +673,8 @@ class InfoProvider(object):
         for node in root.xpath(xpath):
             item = {"line": node.sourceline,
                     "type": node.tag,
-                    "filename": xml_file,
                     "identifier": node.attrib.get("type"),
-                    "message": "invalid control type: %s" % (node.attrib.get("type")),
-                    "file": path}
+                    "message": "invalid control type: %s" % (node.attrib.get("type"))}
             listitems.append(item)
         for template in self.template_root:
             tpl_tags = set([child.tag for child in template.iterchildren()])
@@ -686,10 +684,8 @@ class InfoProvider(object):
                     if subnode.tag not in tpl_tags:
                         item = {"line": subnode.sourceline,
                                 "type": subnode.tag,
-                                "filename": xml_file,
                                 "identifier": subnode.tag,
-                                "message": "invalid tag for <%s>: <%s>" % (node.tag, subnode.tag),
-                                "file": path}
+                                "message": "invalid tag for <%s>: <%s>" % (node.tag, subnode.tag)}
                         listitems.append(item)
         # find invalid attributes
         for check in ATT_CHECKS:
@@ -699,10 +695,8 @@ class InfoProvider(object):
                     if attr not in check[1]:
                         item = {"line": node.sourceline,
                                 "type": node.tag,
-                                "filename": xml_file,
                                 "identifier": attr,
-                                "message": "invalid attribute for <%s>: %s" % (node.tag, attr),
-                                "file": path}
+                                "message": "invalid attribute for <%s>: %s" % (node.tag, attr)}
                         listitems.append(item)
         # check conditions in element content
         xpath = ".//" + " | .//".join(BRACKET_TAGS)
@@ -717,10 +711,8 @@ class InfoProvider(object):
                 continue
             item = {"line": node.sourceline,
                     "type": node.tag,
-                    "filename": xml_file,
                     "identifier": condition,
-                    "message": message,
-                    "file": path}
+                    "message": message}
             listitems.append(item)
         # check conditions in attribute values
         for node in root.xpath(".//*[@condition]"):
@@ -728,10 +720,8 @@ class InfoProvider(object):
                 condition = str(node.attrib["condition"]).replace("  ", "").replace("\t", "")
                 item = {"line": node.sourceline,
                         "type": node.tag,
-                        "filename": xml_file,
                         "identifier": condition,
-                        "message": "Brackets do not match: %s" % (condition),
-                        "file": path}
+                        "message": "Brackets do not match: %s" % (condition)}
                 listitems.append(item)
         # check for noop as empty action
         xpath = ".//" + " | .//".join(NOOP_TAGS)
@@ -740,9 +730,7 @@ class InfoProvider(object):
                 item = {"line": node.sourceline,
                         "type": node.tag,
                         "identifier": node.tag,
-                        "filename": xml_file,
-                        "message": "Use 'noop' for empty calls <%s>" % (node.tag),
-                        "file": path}
+                        "message": "Use 'noop' for empty calls <%s>" % (node.tag)}
                 listitems.append(item)
         # check for not-allowed siblings for some tags
         xpath = ".//" + " | .//".join(DOUBLE_TAGS)
@@ -752,10 +740,8 @@ class InfoProvider(object):
                 if xpath.endswith("]") and not xpath.endswith("[1]"):
                     item = {"line": node.sourceline,
                             "type": node.tag,
-                            "filename": xml_file,
                             "identifier": node.tag,
-                            "message": "Invalid multiple tags for %s: <%s>" % (node.getparent().tag, node.tag),
-                            "file": path}
+                            "message": "Invalid multiple tags for %s: <%s>" % (node.getparent().tag, node.tag)}
                     listitems.append(item)
         # Check tags which require specific values
         for check in ALLOWED_TEXT:
@@ -767,9 +753,7 @@ class InfoProvider(object):
                     item = {"line": node.sourceline,
                             "type": node.tag,
                             "identifier": node.text,
-                            "filename": xml_file,
-                            "message": "invalid value for %s: %s" % (node.tag, node.text),
-                            "file": path}
+                            "message": "invalid value for %s: %s" % (node.tag, node.text)}
                     listitems.append(item)
         # Check attributes which require specific values
         for check in ALLOWED_ATTR:
@@ -780,8 +764,9 @@ class InfoProvider(object):
                     item = {"line": node.sourceline,
                             "type": node.tag,
                             "identifier": node.attrib[check[0]],
-                            "filename": xml_file,
-                            "message": "invalid value for %s attribute: %s" % (check[0], node.attrib[check[0]]),
-                            "file": path}
+                            "message": "invalid value for %s attribute: %s" % (check[0], node.attrib[check[0]])}
                     listitems.append(item)
+        for item in  listitems:
+            item["filename"] = xml_file
+            item["file"] = path
         return listitems
