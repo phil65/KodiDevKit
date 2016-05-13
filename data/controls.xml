@@ -30,14 +30,11 @@
     </control>
     <control type="grouplist" id="int">
         <include>common</include>
+        <include>nav_common</include>
         <itemgap>int</itemgap>
         <align>align</align>
         <orientation>int</orientation>
         <defaultcontrol>int</defaultcontrol>
-        <onup>builtin</onup>
-        <ondown>builtin</ondown>
-        <onleft>builtin</onleft>
-        <onright>builtin</onright>
         <scrolltime tween="tween" easing="easing">int</scrolltime>
         <usecontrolcoords>bool</usecontrolcoords>
         <control type="controltype" id="int">xxx</control>
@@ -69,10 +66,7 @@
     </control>
     <control type="scrollbar" id="int">
         <include>common</include>
-        <onup>builtin</onup>
-        <ondown>builtin</ondown>
-        <onleft>builtin</onleft>
-        <onright>builtin</onright>
+        <include>nav_common</include>
         <onback>builtin</onback>
         <texturesliderbackground>path</texturesliderbackground>
         <orientation>orientation</orientation>
@@ -80,6 +74,7 @@
     <control type="button" id="int">
         <include>common</include>
         <include>label_common</include>
+        <include>nav_common</include>
         <colordiffuse>color</colordiffuse>
         <texturefocus colordiffuse="color" flipx="bool" flipy="bool">path</texturefocus>
         <texturenofocus colordiffuse="color" flipx="bool" flipy="bool">path</texturenofocus>
@@ -92,10 +87,6 @@
         <onclick>builtin</onclick>
         <onfocus>builtin</onfocus>
         <onunfocus>builtin</onunfocus>
-        <onup>builtin</onup>
-        <ondown>builtin</ondown>
-        <onleft>builtin</onleft>
-        <onright>builtin</onright>
     </control>
     <control type="image" id="int">
         <include>common</include>
@@ -120,8 +111,8 @@
     <control type="radiobutton" id="int">
         <include>common</include>
         <colordiffuse>color</colordiffuse>
-        <texturefocus>path</texturefocus>
-        <texturenofocus>path</texturenofocus>
+        <texturefocus colordiffuse="color" flipx="bool" flipy="bool">path</texturefocus>
+        <texturenofocus colordiffuse="color" flipx="bool" flipy="bool">path</texturenofocus>
         <textureradioonfocus colordiffuse="color">path</textureradioonfocus>
         <textureradioonnofocus colordiffuse="color">path</textureradioonnofocus>
         <textureradioondisabled colordiffuse="color">path</textureradioondisabled>
@@ -147,18 +138,15 @@
         <pulseonselect>bool</pulseonselect>
         <onfocus>builtin</onfocus>
         <onunfocus>builtin</onunfocus>
-        <onup>builtin</onup>
-        <ondown>builtin</ondown>
-        <onleft>builtin</onleft>
-        <onright>builtin</onright>
+        <include>nav_common</include>
     </control>
     <control type="togglebutton" id="int">
         <include>common</include>
         <colordiffuse>color</colordiffuse>
-        <texturefocus>path</texturefocus>
-        <texturenofocus>path</texturenofocus>
-        <alttexturefocus>path</alttexturefocus>
-        <alttexturenofocus>path</alttexturenofocus>
+        <texturefocus colordiffuse="color" flipx="bool" flipy="bool">path</texturefocus>
+        <texturenofocus colordiffuse="color" flipx="bool" flipy="bool">path</texturenofocus>
+        <alttexturefocus colordiffuse="color" flipx="bool" flipy="bool">path</alttexturefocus>
+        <alttexturenofocus colordiffuse="color" flipx="bool" flipy="bool">path</alttexturenofocus>
         <usealttexture>bool</usealttexture>
         <label>label</label>
         <altlabel>label</altlabel>
@@ -170,13 +158,10 @@
         <textoffsetx>int</textoffsetx>
         <textoffsety>int</textoffsety>
         <pulseonselect>bool</pulseonselect>
-        <onclick>Player.Pause</onclick>
-        <onfocus>builtin</onfocus>
-        <onunfocus>builtin</onunfocus>
-        <onup>builtin</onup>
-        <ondown>builtin</ondown>
-        <onleft>builtin</onleft>
-        <onright>builtin</onright>
+        <onclick condition="bool">condition</onclick>
+        <onfocus condition="bool">builtin</onfocus>
+        <onunfocus condition="bool">builtin</onunfocus>
+        <include>nav_common</include>
     </control>
     <control type="spincontrol" id="int">
         <include>common</include>
@@ -194,10 +179,7 @@
         <textoffsetx>int</textoffsetx>
         <textoffsety>int</textoffsety>
         <pulseonselect></pulseonselect>
-        <onup>builtin</onup>
-        <ondown>builtin</ondown>
-        <onleft>builtin</onleft>
-        <onright>builtin</onright>
+        <include>nav_common</include>
     </control>
     <control type="spincontrolex" id="int">
         <include>common</include>
@@ -222,10 +204,7 @@
         <textoffsetx>int</textoffsetx>
         <textoffsety>int</textoffsety>
         <pulseonselect></pulseonselect>
-        <onup>builtin</onup>
-        <ondown>builtin</ondown>
-        <onleft>builtin</onleft>
-        <onright>builtin</onright>
+        <include>nav_common</include>
     </control>
     <control type="slider" id="int">
         <include>common</include>
@@ -237,10 +216,7 @@
         <controloffsetx></controloffsetx>
         <controloffsety></controloffsety>
         <pulseonselect></pulseonselect>
-        <onup>builtin</onup>
-        <ondown>builtin</ondown>
-        <onleft>builtin</onleft>
-        <onright>builtin</onright>
+        <include>nav_common</include>
     </control>
     <control type="progress" id="int">
         <include>common</include>
@@ -303,15 +279,12 @@
     </control>
     <control type="epggrid" id="int">
         <include>common</include>
+        <include>nav_common</include>
         <pagecontrol>int</pagecontrol>
         <scrolltime>int</scrolltime>
         <timeblocks>int</timeblocks>
         <rulerunit>int</rulerunit>
         <progresstexture border="5">PVR-EpgProgressIndicator.png</progresstexture>
-        <onleft>31</onleft>
-        <onright>31</onright>
-        <onup>10</onup>
-        <ondown>10</ondown>
         <rulerlayout height="int" width="int" condition="condition"></rulerlayout>
         <channellayout height="int" width="int" condition="condition"></channellayout>
         <focusedchannellayout height="int" width="int" condition="condition"></focusedchannellayout>
@@ -384,5 +357,11 @@
         <align>align</align>
         <aligny>aligny</aligny>
         <label>label</label>
+    </include>
+    <include name="nav_common">
+        <onup condition="bool">builtin</onup>
+        <ondown condition="bool">builtin</ondown>
+        <onleft condition="bool">builtin</onleft>
+        <onright condition="bool">builtin</onright>
     </include>
 </root>
