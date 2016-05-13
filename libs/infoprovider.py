@@ -252,7 +252,6 @@ class InfoProvider(object):
                         node.getparent().append(child)
                     node.getparent().remove(node)
             self.template_root.remove(include)
-        logging.info(ET.tostring(self.template_root, pretty_print=True, encoding="unicode"))
 
     def init_addon(self, path):
         """
