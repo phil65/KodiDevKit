@@ -34,6 +34,7 @@
         <onback condition="bool">builtin</onback>
         <itemgap>int</itemgap>
         <align>align</align>
+        <pagecontrol>int</pagecontrol>
         <orientation>int</orientation>
         <defaultcontrol>int</defaultcontrol>
         <scrolltime tween="tween" easing="easing">int</scrolltime>
@@ -59,7 +60,7 @@
         <include>common</include>
         <scrollout>bool</scrollout>
         <pauseatend>int</pauseatend>
-        <label>label</label>
+        <label fallback="label">label</label>
         <info>label</info>
         <font>font</font>
         <textcolor>color</textcolor>
@@ -68,8 +69,8 @@
     <control type="scrollbar" id="int">
         <include>common</include>
         <include>nav_common</include>
-        <onback>builtin</onback>
-        <texturesliderbackground>path</texturesliderbackground>
+        <onback condition="bool">builtin</onback>
+        <texturesliderbackground colordiffuse="color">path</texturesliderbackground>
         <orientation>orientation</orientation>
     </control>
     <control type="button" id="int">
@@ -77,8 +78,8 @@
         <include>label_common</include>
         <include>nav_common</include>
         <colordiffuse>color</colordiffuse>
-        <texturefocus colordiffuse="color" flipx="bool" flipy="bool">path</texturefocus>
-        <texturenofocus colordiffuse="color" flipx="bool" flipy="bool">path</texturenofocus>
+        <texturefocus colordiffuse="color" flipx="bool" flipy="bool" border="int">path</texturefocus>
+        <texturenofocus colordiffuse="color" flipx="bool" flipy="bool" border="int">path</texturenofocus>
         <focusedcolor>color</focusedcolor>
         <disabledcolor>color</disabledcolor>
         <invalidcolor>color</invalidcolor>
@@ -93,8 +94,8 @@
         <include>common</include>
         <colordiffuse>color</colordiffuse>
         <fadetime>int</fadetime>
-        <texture border="int" flipy="bool" flipx="bool" background="bool" diffuse="path" colordiffuse="color">path</texture>
-        <bordertexture border="int">path</bordertexture>
+        <texture border="int" flipy="bool" flipx="bool" background="bool" diffuse="path" colordiffuse="color" fallback="path">path</texture>
+        <bordertexture border="int" colordiffuse="color">path</bordertexture>
         <bordersize>int</bordersize>
         <aspectratio align="align" aligny="aligny" scalediffuse="bool">aspect</aspectratio>
     </control>
@@ -112,8 +113,8 @@
     <control type="radiobutton" id="int">
         <include>common</include>
         <colordiffuse>color</colordiffuse>
-        <texturefocus colordiffuse="color" flipx="bool" flipy="bool">path</texturefocus>
-        <texturenofocus colordiffuse="color" flipx="bool" flipy="bool">path</texturenofocus>
+        <texturefocus colordiffuse="color" flipx="bool" flipy="bool" border="int">path</texturefocus>
+        <texturenofocus colordiffuse="color" flipx="bool" flipy="bool" border="int">path</texturenofocus>
         <textureradioonfocus colordiffuse="color">path</textureradioonfocus>
         <textureradioonnofocus colordiffuse="color">path</textureradioonnofocus>
         <textureradioondisabled colordiffuse="color">path</textureradioondisabled>
@@ -122,7 +123,7 @@
         <textureradiooffdisabled colordiffuse="color">path</textureradiooffdisabled>
         <selected>bool</selected>
         <onclick condition="bool">builtin</onclick>
-        <label>label</label>
+        <label fallback="label">label</label>
         <textwidth>int</textwidth>
         <font>font</font>
         <textcolor>color</textcolor>
@@ -144,12 +145,12 @@
     <control type="togglebutton" id="int">
         <include>common</include>
         <colordiffuse>color</colordiffuse>
-        <texturefocus colordiffuse="color" flipx="bool" flipy="bool">path</texturefocus>
-        <texturenofocus colordiffuse="color" flipx="bool" flipy="bool">path</texturenofocus>
+        <texturefocus colordiffuse="color" flipx="bool" flipy="bool" border="int">path</texturefocus>
+        <texturenofocus colordiffuse="color" flipx="bool" flipy="bool" border="int">path</texturenofocus>
         <alttexturefocus colordiffuse="color" flipx="bool" flipy="bool">path</alttexturefocus>
         <alttexturenofocus colordiffuse="color" flipx="bool" flipy="bool">path</alttexturenofocus>
         <usealttexture>bool</usealttexture>
-        <label>label</label>
+        <label fallback="label">label</label>
         <altlabel>label</altlabel>
         <font>font</font>
         <textcolor>color</textcolor>
@@ -190,13 +191,13 @@
         <spinheight>int</spinheight>
         <visible>bool</visible>
         <colordiffuse>color</colordiffuse>
-        <texturefocus colordiffuse="color" flipx="bool" flipy="bool">path</texturefocus>
-        <texturenofocus colordiffuse="color" flipx="bool" flipy="bool">path</texturenofocus>
+        <texturefocus colordiffuse="color" flipx="bool" flipy="bool" border="int">path</texturefocus>
+        <texturenofocus colordiffuse="color" flipx="bool" flipy="bool" border="int">path</texturenofocus>
         <textureup colordiffuse="color">path</textureup>
         <textureupfocus colordiffuse="color">path</textureupfocus>
         <texturedown colordiffuse="color">path</texturedown>
         <texturedownfocus colordiffuse="color">path</texturedownfocus>
-        <label>label</label>
+        <label fallback="label">label</label>
         <font>font</font>
         <textcolor>color</textcolor>
         <disabledcolor>color</disabledcolor>
@@ -219,10 +220,17 @@
         <pulseonselect></pulseonselect>
         <include>nav_common</include>
     </control>
+    <control type="sliderex" id="int">
+        <include>common</include>
+        <texturesliderbar colordiffuse="color">path</texturesliderbar>
+        <textureslidernib colordiffuse="color">path</textureslidernib>
+        <textureslidernibfocus colordiffuse="color">path</textureslidernibfocus>
+        <include>nav_common</include>
+    </control>
     <control type="progress" id="int">
         <include>common</include>
         <reveal>bool</reveal>
-        <texturebg colordiffuse="color">path</texturebg>
+        <texturebg colordiffuse="color" border="int">path</texturebg>
         <colordiffuse>color</colordiffuse>
         <lefttexture border="int" colordiffuse="color">path</lefttexture>
         <midtexture border="int" colordiffuse="color">path</midtexture>
@@ -237,12 +245,12 @@
         <textcolor>color</textcolor>
         <shadowcolor>color</shadowcolor>
         <pulseonselect>bool</pulseonselect>
-        <pagecontrol>13</pagecontrol>
+        <pagecontrol>int</pagecontrol>
         <scrolltime>int</scrolltime>
         <align>align</align>
         <aligny>aligny</aligny>
         <autoscroll delay="int" time="int" repeat="int">bool</autoscroll>
-        <label>label</label>
+        <label fallback="label">label</label>
     </control>
     <control type="rss" id="int">
         <include>common</include>
@@ -261,22 +269,22 @@
     </control>
     <control type="resize" id="int">
         <include>common</include>
-        <texturefocus colordiffuse="color" flipx="bool" flipy="bool">path</texturefocus>
-        <texturenofocus colordiffuse="color" flipx="bool" flipy="bool">path</texturenofocus>
+        <texturefocus colordiffuse="color" flipx="bool" flipy="bool" border="int">path</texturefocus>
+        <texturenofocus colordiffuse="color" flipx="bool" flipy="bool" border="int">path</texturenofocus>
         <pulseonselect>bool</pulseonselect>
     </control>
     <control type="edit" id="int">
         <include>common</include>
         <aligny>center</aligny>
-        <label>label</label>
+        <label fallback="label">label</label>
         <hinttext>label</hinttext>
         <font>font</font>
         <textoffsetx>10</textoffsetx>
         <textcolor>color</textcolor>
         <disabledcolor>color</disabledcolor>
         <invalidcolor>color</invalidcolor>
-        <texturefocus colordiffuse="color" flipx="bool" flipy="bool">path</texturefocus>
-        <texturenofocus colordiffuse="color" flipx="bool" flipy="bool">path</texturenofocus>
+        <texturefocus colordiffuse="color" flipx="bool" flipy="bool" border="int">path</texturefocus>
+        <texturenofocus colordiffuse="color" flipx="bool" flipy="bool" border="int">path</texturenofocus>
         <pulseonselect>no</pulseonselect>
     </control>
     <control type="epggrid" id="int">
@@ -358,7 +366,7 @@
         <textcolor>color</textcolor>
         <align>align</align>
         <aligny>aligny</aligny>
-        <label>label</label>
+        <label fallback="label">label</label>
     </include>
     <include name="nav_common">
         <onup condition="bool">builtin</onup>
