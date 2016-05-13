@@ -31,6 +31,7 @@
     <control type="grouplist" id="int">
         <include>common</include>
         <include>nav_common</include>
+        <onback condition="bool">builtin</onback>
         <itemgap>int</itemgap>
         <align>align</align>
         <orientation>int</orientation>
@@ -222,11 +223,11 @@
         <include>common</include>
         <reveal>bool</reveal>
         <texturebg>path</texturebg>
-        <lefttexture>path</lefttexture>
-        <midtexture>path</midtexture>
-        <righttexture>path</righttexture>
-        <overlaytexture>path</overlaytexture>
-        <info></info>
+        <lefttexture border="int" colordiffuse="color">path</lefttexture>
+        <midtexture border="int" colordiffuse="color">path</midtexture>
+        <righttexture border="int" colordiffuse="color">path</righttexture>
+        <overlaytexture colordiffuse="color">path</overlaytexture>
+        <info>info</info>
     </control>
     <control type="textbox" id="int">
         <include>common</include>
@@ -319,7 +320,7 @@
         <left>int</left>
         <right>int</right>
         <top>int</top>
-        <animation effect="effect" type="xxx" start="int" end="int" time="int" tween="tween" easing="easing" condition="bool" center="xxx" delay="int">xxx</animation>
+        <animation effect="effect" type="xxx" start="int" end="int" time="int" tween="tween" easing="easing" condition="bool" center="xxx" delay="int" reversible="bool">xxx</animation>
         <centertop>int</centertop>
         <centerbottom>int</centerbottom>
         <centerleft>int</centerleft>
