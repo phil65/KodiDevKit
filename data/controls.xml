@@ -60,6 +60,8 @@
         <include>common</include>
         <scrollout>bool</scrollout>
         <pauseatend>int</pauseatend>
+        <align>align</align>
+        <aligny>aligny</aligny>
         <label fallback="label">label</label>
         <info>label</info>
         <font>font</font>
@@ -77,6 +79,7 @@
         <include>common</include>
         <include>label_common</include>
         <include>nav_common</include>
+        <label2>label</label2>
         <colordiffuse>color</colordiffuse>
         <texturefocus colordiffuse="color" flipx="bool" flipy="bool" border="int">path</texturefocus>
         <texturenofocus colordiffuse="color" flipx="bool" flipy="bool" border="int">path</texturenofocus>
@@ -101,7 +104,7 @@
     </control>
     <control type="multiimage" id="int">
         <include>common</include>
-        <imagepath>path</imagepath>
+        <imagepath background="true">path</imagepath>
         <info></info>
         <timeperimage>int</timeperimage>
         <fadetime>int</fadetime>
@@ -229,6 +232,8 @@
     </control>
     <control type="mover" id="int">
         <include>common</include>
+        <texturefocus colordiffuse="color" flipx="bool" flipy="bool" border="int">path</texturefocus>
+        <texturenofocus colordiffuse="color" flipx="bool" flipy="bool" border="int">path</texturenofocus>
     </control>
     <control type="progress" id="int">
         <include>common</include>
@@ -362,7 +367,7 @@
         <hitrect></hitrect>
         <itemlayout width="int" height="int" condition="bool"></itemlayout>
         <focusedlayout height="int" width="int" condition="bool"></focusedlayout>
-        <content></content>
+        <content sortby="xxx" sortorder="xxx" target="xxx" limit="int"></content>
     </include>
     <include name="label_common">
         <font>font</font>
