@@ -107,6 +107,8 @@
         <include>common</include>
         <colordiffuse>color</colordiffuse>
         <fadetime>int</fadetime>
+        <align>align</align>
+        <aligny>aligny</aligny>
         <texture border="int" flipy="bool" flipx="bool" background="bool" diffuse="path" colordiffuse="color" fallback="path">path</texture>
         <bordertexture border="int" colordiffuse="color">path</bordertexture>
         <bordersize>int</bordersize>
@@ -115,6 +117,7 @@
     <control type="multiimage" id="int">
         <include>common</include>
         <imagepath background="true" colordiffuse="color">path</imagepath>
+        <colordiffuse>color</colordiffuse>
         <info></info>
         <timeperimage>int</timeperimage>
         <fadetime>int</fadetime>
