@@ -161,18 +161,18 @@ DOUBLE_TAGS = ["camera", "posx", "posy", "top", "bottom", "left", "right", "cent
                "colordiffuse", "texturefocus", "texturenofocus", "font", "selected", "textcolor", "disabledcolor", "selectedcolor",
                "shadowcolor", "align", "aligny", "textoffsetx", "textoffsety", "pulseonselect", "textwidth", "focusedcolor", "invalidcolor", "angle", "hitrect"]
 # check that some nodes only contain specific text
-ALLOWED_TEXT = [[["align"], ["left", "center", "right", "justify"]],
-                [["aspectratio"], ["keep", "scale", "stretch", "center"]],
-                [["aligny"], ["top", "center", "bottom"]],
-                [["orientation"], ["horizontal", "vertical"]],
-                [["subtype"], ["page", "int", "float", "text"]],
-                [["action"], ["volume", "seek"]],
-                [["scroll", "randomize", "scrollout", "pulseonselect", "reverse", "usecontrolcoords"], ["false", "true", "yes", "no"]]]
+ALLOWED_TEXT = [[["align"], set(["left", "center", "right", "justify"])],
+                [["aspectratio"], set(["keep", "scale", "stretch", "center"])],
+                [["aligny"], set(["top", "center", "bottom"])],
+                [["orientation"], set(["horizontal", "vertical"])],
+                [["subtype"], set(["page", "int", "float", "text"])],
+                [["action"], set(["volume", "seek"])],
+                [["scroll", "randomize", "scrollout", "pulseonselect", "reverse", "usecontrolcoords"], set(["false", "true", "yes", "no"])]]
 # check that some attributes may only contain specific values
-ALLOWED_ATTR = [["align", ["left", "center", "right", "justify"]],
-                ["aligny", ["top", "center", "bottom"]],
-                ["flipx", ["true", "false"]],
-                ["flipy", ["true", "false"]]]
+ALLOWED_ATTR = [["align", set(["left", "center", "right", "justify"])],
+                ["aligny", set(["top", "center", "bottom"])],
+                ["flipx", set(["true", "false"])],
+                ["flipy", set(["true", "false"])]]
 
 
 PARSER = ET.XMLParser(remove_blank_text=True, remove_comments=True)
