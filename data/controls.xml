@@ -112,6 +112,7 @@
         <texture border="int" flipy="bool" flipx="bool" background="bool" diffuse="path" colordiffuse="color" fallback="path">path</texture>
         <bordertexture border="int" colordiffuse="color">path</bordertexture>
         <bordersize>int</bordersize>
+        <info>info</info>
         <aspectratio align="align" aligny="aligny" scalediffuse="bool">aspect</aspectratio>
     </control>
     <control type="multiimage" id="int">
@@ -128,6 +129,7 @@
     </control>
     <control type="radiobutton" id="int">
         <include>common</include>
+        <include>nav_common</include>
         <colordiffuse>color</colordiffuse>
         <texturefocus colordiffuse="color" flipx="bool" flipy="bool" border="int">path</texturefocus>
         <texturenofocus colordiffuse="color" flipx="bool" flipy="bool" border="int">path</texturenofocus>
@@ -157,16 +159,17 @@
         <pulseonselect>bool</pulseonselect>
         <onfocus condition="bool">builtin</onfocus>
         <onunfocus condition="bool">builtin</onunfocus>
-        <include>nav_common</include>
     </control>
     <control type="togglebutton" id="int">
         <include>common</include>
+        <include>nav_common</include>
         <colordiffuse>color</colordiffuse>
         <texturefocus colordiffuse="color" flipx="bool" flipy="bool" border="int">path</texturefocus>
         <texturenofocus colordiffuse="color" flipx="bool" flipy="bool" border="int">path</texturenofocus>
         <alttexturefocus colordiffuse="color" flipx="bool" flipy="bool" border="int">path</alttexturefocus>
         <alttexturenofocus colordiffuse="color" flipx="bool" flipy="bool" border="int">path</alttexturenofocus>
         <usealttexture>bool</usealttexture>
+        <altclick condition="condition">builtin</altclick>
         <label fallback="label">label</label>
         <altlabel>label</altlabel>
         <font>font</font>
@@ -180,7 +183,6 @@
         <onclick condition="bool">builtin</onclick>
         <onfocus condition="bool">builtin</onfocus>
         <onunfocus condition="bool">builtin</onunfocus>
-        <include>nav_common</include>
     </control>
     <control type="spincontrol" id="int">
         <include>common</include>
@@ -221,6 +223,7 @@
         <font>font</font>
         <textcolor>color</textcolor>
         <disabledcolor>color</disabledcolor>
+        <focusedcolor>color</focusedcolor>
         <align>align</align>
         <aligny>aligny</aligny>
         <textoffsetx>int</textoffsetx>
@@ -229,28 +232,30 @@
     </control>
     <control type="slider" id="int">
         <include>common</include>
+        <include>nav_common</include>
         <texturesliderbar colordiffuse="color">path</texturesliderbar>
         <textureslidernib colordiffuse="color">path</textureslidernib>
         <textureslidernibfocus colordiffuse="color">path</textureslidernibfocus>
-        <info></info>
+        <info>info</info>
         <action></action>
         <controloffsetx></controloffsetx>
         <controloffsety></controloffsety>
         <pulseonselect>bool</pulseonselect>
-        <include>nav_common</include>
     </control>
     <control type="sliderex" id="int">
         <include>common</include>
+        <include>nav_common</include>
         <align>align</align>
         <aligny>aligny</aligny>
         <label>label</label>
         <font>font</font>
+        <texturefocus colordiffuse="color" flipx="bool" flipy="bool" border="int">path</texturefocus>
+        <texturenofocus colordiffuse="color" flipx="bool" flipy="bool" border="int">path</texturenofocus>
         <sliderwidth>int</sliderwidth>
         <sliderheight>int</sliderheight>
         <texturesliderbar colordiffuse="color">path</texturesliderbar>
         <textureslidernib colordiffuse="color">path</textureslidernib>
         <textureslidernibfocus colordiffuse="color">path</textureslidernibfocus>
-        <include>nav_common</include>
     </control>
     <control type="mover" id="int">
         <include>common</include>
