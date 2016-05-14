@@ -164,8 +164,8 @@
         <colordiffuse>color</colordiffuse>
         <texturefocus colordiffuse="color" flipx="bool" flipy="bool" border="int">path</texturefocus>
         <texturenofocus colordiffuse="color" flipx="bool" flipy="bool" border="int">path</texturenofocus>
-        <alttexturefocus colordiffuse="color" flipx="bool" flipy="bool">path</alttexturefocus>
-        <alttexturenofocus colordiffuse="color" flipx="bool" flipy="bool">path</alttexturenofocus>
+        <alttexturefocus colordiffuse="color" flipx="bool" flipy="bool" border="int">path</alttexturefocus>
+        <alttexturenofocus colordiffuse="color" flipx="bool" flipy="bool" border="int">path</alttexturenofocus>
         <usealttexture>bool</usealttexture>
         <label fallback="label">label</label>
         <altlabel>label</altlabel>
@@ -177,7 +177,7 @@
         <textoffsetx>int</textoffsetx>
         <textoffsety>int</textoffsety>
         <pulseonselect>bool</pulseonselect>
-        <onclick condition="bool">condition</onclick>
+        <onclick condition="bool">builtin</onclick>
         <onfocus condition="bool">builtin</onfocus>
         <onunfocus condition="bool">builtin</onunfocus>
         <include>nav_common</include>
@@ -243,6 +243,10 @@
         <include>common</include>
         <align>align</align>
         <aligny>aligny</aligny>
+        <label>label</label>
+        <font>font</font>
+        <sliderwidth>int</sliderwidth>
+        <sliderheight>int</sliderheight>
         <texturesliderbar colordiffuse="color">path</texturesliderbar>
         <textureslidernib colordiffuse="color">path</textureslidernib>
         <textureslidernibfocus colordiffuse="color">path</textureslidernibfocus>
@@ -356,7 +360,7 @@
     </control>
     <include name="common">
         <description>label</description>
-        <camera>int</camera>
+        <camera x="int" y="int">int</camera>
         <depth>float</depth>
         <posx>int</posx>
         <posy>int</posy>
@@ -382,6 +386,7 @@
         <onback condition="condition">builtin</onback>
         <offsetx>int</offsetx>
         <offsety>int</offsety>
+        <enable>condition</enable>
         <onfocus condition="bool">builtin</onfocus>
         <onunfocus condition="bool">builtin</onunfocus>
         <orientation>orientation</orientation>
