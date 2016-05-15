@@ -131,14 +131,14 @@ TAG_CHECKS = [[".//content/*", ["item", "include"]],
 # allowed attributes for some specific nodes
 # all_tags = [d[0] for d in att_checks]
 # check correct parantheses for some nodes
-BRACKET_TAGS = ["visible", "enable", "usealttexture", "selected", "expression"]
+BRACKET_TAGS = set(["visible", "enable", "usealttexture", "selected", "expression"])
 # check some nodes to use noop instead of "-" / empty
-NOOP_TAGS = ["onclick", "onfocus", "onunfocus", "onup", "onleft", "onright", "ondown", "onback"]
+NOOP_TAGS = set(["onclick", "onfocus", "onunfocus", "onup", "onleft", "onright", "ondown", "onback"])
 # check that some nodes only exist once on each level
 # TODO: special cases: label for fadelabel
-DOUBLE_TAGS = ["camera", "posx", "posy", "top", "bottom", "left", "right", "centertop", "centerbottom", "centerleft", "centerright", "width", "height",
-               "colordiffuse", "texturefocus", "texturenofocus", "font", "selected", "textcolor", "disabledcolor", "selectedcolor",
-               "shadowcolor", "align", "aligny", "textoffsetx", "textoffsety", "pulseonselect", "textwidth", "focusedcolor", "invalidcolor", "angle", "hitrect"]
+DOUBLE_TAGS = set(["camera", "posx", "posy", "top", "bottom", "left", "right", "centertop", "centerbottom", "centerleft", "centerright", "width", "height",
+                   "colordiffuse", "texturefocus", "texturenofocus", "font", "selected", "textcolor", "disabledcolor", "selectedcolor",
+                   "shadowcolor", "align", "aligny", "textoffsetx", "textoffsety", "pulseonselect", "textwidth", "focusedcolor", "invalidcolor", "angle", "hitrect"])
 # check that some nodes only contain specific text
 ALLOWED_TEXT = {"align": set(["left", "center", "right", "justify"]),
                 "aligny": set(["top", "center", "bottom"]),
@@ -700,22 +700,20 @@ class InfoProvider(object):
                                 "identifier": subnode.text,
                                 "message": "invalid value for %s: %s" % (subnode.tag, subnode.text)}
                         listitems.append(item)
-        # check conditions in element content
-        xpath = ".//" + " | .//".join(BRACKET_TAGS)
-        for node in root.xpath(xpath):
-            if not node.text:
-                message = "Empty condition: %s" % (node.tag)
-                condition = ""
-            elif not Utils.check_brackets(node.text):
-                condition = str(node.text).replace("  ", "").replace("\t", "")
-                message = "Brackets do not match: %s" % (condition)
-            else:
-                continue
-            item = {"line": node.sourceline,
-                    "type": node.tag,
-                    "identifier": condition,
-                    "message": message}
-            listitems.append(item)
+                    if subnode.tag in BRACKET_TAGS:
+                        if not subnode.text:
+                            message = "Empty condition: %s" % (subnode.tag)
+                            condition = ""
+                        elif not Utils.check_brackets(subnode.text):
+                            condition = str(subnode.text).replace("  ", "").replace("\t", "")
+                            message = "Brackets do not match: %s" % (condition)
+                        else:
+                            continue
+                        item = {"line": subnode.sourceline,
+                                "type": subnode.tag,
+                                "identifier": condition,
+                                "message": message}
+                        listitems.append(item)
         # check conditions in attribute values
         for node in root.xpath(".//*[@condition]"):
             if not Utils.check_brackets(node.attrib["condition"]):
