@@ -169,10 +169,12 @@ ALLOWED_TEXT = [[["align"], set(["left", "center", "right", "justify"])],
                 [["action"], set(["volume", "seek"])],
                 [["scroll", "randomize", "scrollout", "pulseonselect", "reverse", "usecontrolcoords"], set(["false", "true", "yes", "no"])]]
 # check that some attributes may only contain specific values
-ALLOWED_ATTR = [["align", set(["left", "center", "right", "justify"])],
-                ["aligny", set(["top", "center", "bottom"])],
-                ["flipx", set(["true", "false"])],
-                ["flipy", set(["true", "false"])]]
+ALLOWED_ATTR = {"align": set(["left", "center", "right", "justify"]),
+                "aligny": set(["top", "center", "bottom"]),
+                "background": set(["true", "false"]),
+                "scalediffuse": set(["true", "false"]),
+                "flipx": set(["true", "false"]),
+                "flipy": set(["true", "false"])}
 
 
 PARSER = ET.XMLParser(remove_blank_text=True, remove_comments=True)
@@ -218,6 +220,9 @@ class InfoProvider(object):
                         node.getparent().append(child)
                     node.getparent().remove(node)
             self.template_root.remove(include)
+        self.template_attribs = {}
+        for template in self.template_root:
+            self.template_attribs[template.attrib.get("type")] = {i.tag: i.attrib for i in template.iterchildren()}
 
     def init_addon(self, path):
         """
@@ -667,7 +672,7 @@ class InfoProvider(object):
             return []
         tree = ET.ElementTree(root)
         listitems = []
-        all_controls = set([t.attrib.get("type") for t in self.template_root])
+        all_controls = set(self.template_attribs.keys())
         xpath = " or ".join(["@type='{}'".format(c) for c in all_controls])
         xpath = ".//control[not({}) and @type[string()]]".format(xpath)
         for node in root.xpath(xpath):
@@ -676,11 +681,10 @@ class InfoProvider(object):
                     "identifier": node.attrib.get("type"),
                     "message": "invalid control type: %s" % (node.attrib.get("type"))}
             listitems.append(item)
-        for template in self.template_root:
-            tpl_values = {i.tag: i.attrib for i in template.iterchildren()}
-            for node in root.xpath(".//control[@type='%s']" % template.attrib.get("type")):
+        for c_type, subnodes in self.template_attribs.items():
+            for node in root.xpath(".//control[@type='%s']" % c_type):
                 for subnode in node.iterchildren():
-                    if subnode.tag not in tpl_values:
+                    if subnode.tag not in subnodes:
                         label = node.tag if "type" not in node.attrib else "%s type=%s" % (node.tag, node.attrib.get("type"))
                         item = {"line": subnode.sourceline,
                                 "type": subnode.tag,
@@ -689,11 +693,20 @@ class InfoProvider(object):
                         listitems.append(item)
                         continue
                     for k, v in subnode.attrib.items():
-                        if k not in tpl_values[subnode.tag]:
+                        tpl_control = subnodes[subnode.tag]
+                        if k not in tpl_control:
                             item = {"line": subnode.sourceline,
                                     "type": subnode.tag,
                                     "identifier": k,
                                     "message": "invalid attribute for <%s>: %s" % (subnode.tag, k)}
+                            listitems.append(item)
+                        elif k in ATT_CHECKS:
+                            if v not in ATT_CHECKS[k] or v.startswith("$PARAM["):
+                                continue
+                            item = {"line": node.sourceline,
+                                    "type": node.tag,
+                                    "identifier": v,
+                                    "message": "invalid value for %s attribute: %s" % (k, v)}
                             listitems.append(item)
         # check conditions in element content
         xpath = ".//" + " | .//".join(BRACKET_TAGS)
@@ -751,17 +764,6 @@ class InfoProvider(object):
                             "type": node.tag,
                             "identifier": node.text,
                             "message": "invalid value for %s: %s" % (node.tag, node.text)}
-                    listitems.append(item)
-        # Check attributes which require specific values
-        for check in ALLOWED_ATTR:
-            for node in root.xpath(".//*[(@%s)]" % check[0]):
-                if node.attrib[check[0]].startswith("$PARAM"):
-                    continue
-                if node.attrib[check[0]] not in check[1]:
-                    item = {"line": node.sourceline,
-                            "type": node.tag,
-                            "identifier": node.attrib[check[0]],
-                            "message": "invalid value for %s attribute: %s" % (check[0], node.attrib[check[0]])}
                     listitems.append(item)
         for item in listitems:
             item["filename"] = xml_file
