@@ -25,12 +25,16 @@
 
     -->
     <control type="group" id="int">
+        <width>int</width>
+        <height>int</height>
         <include>common</include>
         <defaultcontrol always="bool">int</defaultcontrol>
         <renderfocusedlast>true</renderfocusedlast>
         <control type="controltype" id="int">controls</control>
     </control>
     <control type="grouplist" id="int">
+        <width>int</width>
+        <height>int</height>
         <include>common</include>
         <include>nav_common</include>
         <onback condition="bool">builtin</onback>
@@ -44,6 +48,8 @@
         <control type="controltype" id="int">controls</control>
     </control>
     <control type="label" id="int">
+        <width min="int" max="int">int</width>
+        <height>int</height>
         <include>common</include>
         <font>font</font>
         <textcolor>color</textcolor>
@@ -64,6 +70,8 @@
         <scrollsuffix>label</scrollsuffix>
     </control>
     <control type="fadelabel" id="int">
+        <width>int</width>
+        <height>int</height>
         <include>common</include>
         <scrollout>bool</scrollout>
         <pauseatend>int</pauseatend>
@@ -80,8 +88,11 @@
         <textoffsety>int</textoffsety>
     </control>
     <control type="scrollbar" id="int">
+        <width>int</width>
+        <height>int</height>
         <include>common</include>
         <include>nav_common</include>
+        <hitrect x="int" y="int" w="int" h="int"></hitrect>
         <onback condition="bool">builtin</onback>
         <texturesliderbackground colordiffuse="color" border="int">path</texturesliderbackground>
         <texturesliderbar colordiffuse="color" border="int">path</texturesliderbar>
@@ -92,6 +103,8 @@
         <showonepage>bool</showonepage>
     </control>
     <control type="button" id="int">
+        <width min="int" max="int">int</width>
+        <height>int</height>
         <include>common</include>
         <include>button_common</include>
         <include>nav_common</include>
@@ -103,6 +116,8 @@
         <onunfocus condition="bool">builtin</onunfocus>
     </control>
     <control type="image" id="int">
+        <width>int</width>
+        <height>int</height>
         <include>common</include>
         <colordiffuse>color</colordiffuse>
         <fadetime>int</fadetime>
@@ -115,6 +130,8 @@
         <aspectratio align="align" aligny="aligny" scalediffuse="bool">aspect</aspectratio>
     </control>
     <control type="multiimage" id="int">
+        <width>int</width>
+        <height>int</height>
         <include>common</include>
         <imagepath background="true" colordiffuse="color">path</imagepath>
         <colordiffuse>color</colordiffuse>
@@ -124,9 +141,11 @@
         <pauseatend>int</pauseatend>
         <randomize>bool</randomize>
         <loop>bool</loop>
-        <aspectratio>aspect</aspectratio>
+        <aspectratio align="align" aligny="aligny">aspect</aspectratio>
     </control>
     <control type="radiobutton" id="int">
+        <width>int</width>
+        <height>int</height>
         <include>common</include>
         <include>nav_common</include>
         <include>button_common</include>
@@ -147,6 +166,8 @@
         <radioheight>int</radioheight>
     </control>
     <control type="togglebutton" id="int">
+        <width>int</width>
+        <height>int</height>
         <include>common</include>
         <include>nav_common</include>
         <include>button_common</include>
@@ -161,6 +182,8 @@
         <onunfocus condition="bool">builtin</onunfocus>
     </control>
     <control type="spincontrol" id="int">
+        <width>int</width>
+        <height>int</height>
         <include>common</include>
         <include>nav_common</include>
         <colordiffuse>color</colordiffuse>
@@ -181,6 +204,8 @@
         <showonepage>bool</showonepage>
     </control>
     <control type="spincontrolex" id="int">
+        <width>int</width>
+        <height>int</height>
         <include>common</include>
         <include>nav_common</include>
         <include>button_common</include>
@@ -198,6 +223,8 @@
         <onunfocus condition="bool">builtin</onunfocus>
     </control>
     <control type="slider" id="int">
+        <width>int</width>
+        <height>int</height>
         <include>common</include>
         <include>nav_common</include>
         <texturesliderbar colordiffuse="color">path</texturesliderbar>
@@ -208,6 +235,8 @@
         <pulseonselect>bool</pulseonselect>
     </control>
     <control type="sliderex" id="int">
+        <width>int</width>
+        <height>int</height>
         <include>common</include>
         <include>nav_common</include>
         <include>button_common</include>
@@ -221,14 +250,20 @@
         <onunfocus condition="bool">builtin</onunfocus>
     </control>
     <control type="mover" id="int">
+        <width>int</width>
+        <height>int</height>
         <include>common</include>
         <texturefocus colordiffuse="color" flipx="bool" flipy="bool" border="int">path</texturefocus>
         <texturenofocus colordiffuse="color" flipx="bool" flipy="bool" border="int">path</texturenofocus>
     </control>
     <control type="gamecontroller" id="int">
+        <width>int</width>
+        <height>int</height>
         <include>common</include>
     </control>
     <control type="progress" id="int">
+        <width>int</width>
+        <height>int</height>
         <include>common</include>
         <reveal>bool</reveal>
         <texturebg colordiffuse="color" border="int">path</texturebg>
@@ -240,6 +275,8 @@
         <info>info</info>
     </control>
     <control type="textbox" id="int">
+        <width>int</width>
+        <height min="int" max="int">int</height>
         <include>common</include>
         <colordiffuse>color</colordiffuse>
         <font>font</font>
@@ -255,6 +292,8 @@
         <label fallback="label">label</label>
     </control>
     <control type="rss" id="int">
+        <width>int</width>
+        <height>int</height>
         <include>common</include>
         <font>font</font>
         <textcolor>color</textcolor>
@@ -264,24 +303,34 @@
         <urlset>xxx</urlset>
     </control>
     <control type="visualisation" id="int">
+        <width>int</width>
+        <height>int</height>
         <include>common</include>
     </control>
     <control type="videowindow" id="int">
+        <width>int</width>
+        <height>int</height>
         <include>common</include>
     </control>
     <control type="resize" id="int">
+        <width>int</width>
+        <height>int</height>
         <include>common</include>
         <texturefocus colordiffuse="color" flipx="bool" flipy="bool" border="int">path</texturefocus>
         <texturenofocus colordiffuse="color" flipx="bool" flipy="bool" border="int">path</texturenofocus>
         <pulseonselect>bool</pulseonselect>
     </control>
     <control type="edit" id="int">
+        <width>int</width>
+        <height>int</height>
         <include>common</include>
         <include>nav_common</include>
         <include>button_common</include>
         <hinttext>label</hinttext>
     </control>
     <control type="epggrid" id="int">
+        <width>int</width>
+        <height>int</height>
         <include>common</include>
         <include>nav_common</include>
         <pagecontrol>int</pagecontrol>
@@ -324,18 +373,18 @@
         <left>int</left>
         <right>int</right>
         <top>int</top>
-        <animation effect="effect" type="xxx" start="int" end="int" time="int" tween="tween" easing="easing" condition="bool" center="xxx" delay="int" reversible="bool" loop="bool" pulse="bool">xxx</animation>
+        <animation effect="effect" type="xxx" start="int" end="int" time="int" tween="tween" easing="easing" condition="bool" center="xxx" delay="int" reversible="bool" loop="bool" pulse="bool" acceleration="int">xxx</animation>
         <centertop>int</centertop>
         <centerbottom>int</centerbottom>
         <centerleft>int</centerleft>
         <centerright>int</centerright>
         <bottom>int</bottom>
-        <width min="int" max="int">int</width>
-        <height min="int" max="int">int</height>
         <visible allowhiddenfocus="bool">bool</visible>
         <include content="include" file="path" condition="bool">include</include>
     </include>
     <include name="list_common">
+        <width>int</width>
+        <height>int</height>
         <onup condition="condition">builtin</onup>
         <ondown condition="condition">builtin</ondown>
         <onleft condition="condition">builtin</onleft>
@@ -368,6 +417,7 @@
         <colordiffuse>color</colordiffuse>
         <texturefocus colordiffuse="color" flipx="bool" flipy="bool" border="int">path</texturefocus>
         <texturenofocus colordiffuse="color" flipx="bool" flipy="bool" border="int">path</texturenofocus>
+        <hitrect x="int" y="int" w="int" h="int"></hitrect>
         <angle>int</angle>
         <font>font</font>
         <textcolor>color</textcolor>
