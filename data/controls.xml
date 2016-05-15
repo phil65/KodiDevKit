@@ -43,7 +43,11 @@
     </control>
     <control type="label" id="int">
         <include>common</include>
-        <include>label_common</include>
+        <font>font</font>
+        <textcolor>color</textcolor>
+        <align>align</align>
+        <aligny>aligny</aligny>
+        <label fallback="label">label</label>
         <scroll>bool</scroll>
         <info>label</info>
         <number></number>
@@ -76,32 +80,18 @@
         <texturesliderbackground colordiffuse="color" border="int">path</texturesliderbackground>
         <texturesliderbar colordiffuse="color" border="int">path</texturesliderbar>
         <texturesliderbarfocus colordiffuse="color" border="int">path</texturesliderbarfocus>
-        <textureslidernib colordiffuse="color">-</textureslidernib>
-        <textureslidernibfocus colordiffuse="color">-</textureslidernibfocus>
+        <textureslidernib colordiffuse="color" border="int">-</textureslidernib>
+        <textureslidernibfocus colordiffuse="color" border="int">-</textureslidernibfocus>
         <orientation>orientation</orientation>
         <showonepage>bool</showonepage>
     </control>
     <control type="button" id="int">
         <include>common</include>
-        <include>label_common</include>
+        <include>button_common</include>
         <include>nav_common</include>
         <label2>label</label2>
-        <colordiffuse>color</colordiffuse>
-        <enable>bool</enable>
-        <texturefocus colordiffuse="color" flipx="bool" flipy="bool" border="int">path</texturefocus>
-        <texturenofocus colordiffuse="color" flipx="bool" flipy="bool" border="int">path</texturenofocus>
-        <focusedcolor>color</focusedcolor>
-        <shadowcolor>color</shadowcolor>
         <selectedcolor>color</selectedcolor>
-        <disabledcolor>color</disabledcolor>
-        <invalidcolor>color</invalidcolor>
-        <textoffsetx>int</textoffsetx>
-        <textoffsety>int</textoffsety>
-        <textwidth>int</textwidth>
-        <pulseonselect>bool</pulseonselect>
         <onclick condition="bool">builtin</onclick>
-        <onfocus condition="bool">builtin</onfocus>
-        <onunfocus condition="bool">builtin</onunfocus>
     </control>
     <control type="image" id="int">
         <include>common</include>
@@ -130,9 +120,7 @@
     <control type="radiobutton" id="int">
         <include>common</include>
         <include>nav_common</include>
-        <colordiffuse>color</colordiffuse>
-        <texturefocus colordiffuse="color" flipx="bool" flipy="bool" border="int">path</texturefocus>
-        <texturenofocus colordiffuse="color" flipx="bool" flipy="bool" border="int">path</texturenofocus>
+        <include>button_common</include>
         <textureradioonfocus colordiffuse="color">path</textureradioonfocus>
         <textureradioonnofocus colordiffuse="color">path</textureradioonnofocus>
         <textureradioondisabled colordiffuse="color">path</textureradioondisabled>
@@ -140,49 +128,22 @@
         <textureradiooffnofocus colordiffuse="color">path</textureradiooffnofocus>
         <textureradiooffdisabled colordiffuse="color">path</textureradiooffdisabled>
         <selected>bool</selected>
-        <enable>bool</enable>
         <onclick condition="bool">builtin</onclick>
-        <label fallback="label">label</label>
-        <textwidth>int</textwidth>
-        <font>font</font>
-        <textcolor>color</textcolor>
-        <focusedcolor>color</focusedcolor>
-        <disabledcolor>color</disabledcolor>
-        <align>align</align>
-        <aligny>aligny</aligny>
-        <textoffsetx>int</textoffsetx>
-        <textoffsety>int</textoffsety>
         <radioposx>int</radioposx>
         <radioposy>int</radioposy>
         <radiowidth>int</radiowidth>
         <radioheight>int</radioheight>
-        <pulseonselect>bool</pulseonselect>
-        <onfocus condition="bool">builtin</onfocus>
-        <onunfocus condition="bool">builtin</onunfocus>
     </control>
     <control type="togglebutton" id="int">
         <include>common</include>
         <include>nav_common</include>
-        <colordiffuse>color</colordiffuse>
-        <texturefocus colordiffuse="color" flipx="bool" flipy="bool" border="int">path</texturefocus>
-        <texturenofocus colordiffuse="color" flipx="bool" flipy="bool" border="int">path</texturenofocus>
+        <include>button_common</include>
         <alttexturefocus colordiffuse="color" flipx="bool" flipy="bool" border="int">path</alttexturefocus>
         <alttexturenofocus colordiffuse="color" flipx="bool" flipy="bool" border="int">path</alttexturenofocus>
         <usealttexture>bool</usealttexture>
         <altclick condition="condition">builtin</altclick>
-        <label fallback="label">label</label>
         <altlabel>label</altlabel>
-        <font>font</font>
-        <textcolor>color</textcolor>
-        <disabledcolor>color</disabledcolor>
-        <align>align</align>
-        <aligny>aligny</aligny>
-        <textoffsetx>int</textoffsetx>
-        <textoffsety>int</textoffsety>
-        <pulseonselect>bool</pulseonselect>
         <onclick condition="bool">builtin</onclick>
-        <onfocus condition="bool">builtin</onfocus>
-        <onunfocus condition="bool">builtin</onunfocus>
     </control>
     <control type="spincontrol" id="int">
         <include>common</include>
@@ -206,29 +167,15 @@
     <control type="spincontrolex" id="int">
         <include>common</include>
         <include>nav_common</include>
+        <include>button_common</include>
         <spinposx>int</spinposx>
         <spinposy>int</spinposy>
         <spinwidth>int</spinwidth>
         <spinheight>int</spinheight>
-        <visible>bool</visible>
-        <colordiffuse>color</colordiffuse>
-        <texturefocus colordiffuse="color" flipx="bool" flipy="bool" border="int">path</texturefocus>
-        <texturenofocus colordiffuse="color" flipx="bool" flipy="bool" border="int">path</texturenofocus>
         <textureup colordiffuse="color">path</textureup>
         <textureupfocus colordiffuse="color">path</textureupfocus>
         <texturedown colordiffuse="color">path</texturedown>
         <texturedownfocus colordiffuse="color">path</texturedownfocus>
-        <textwidth>int</textwidth>
-        <label fallback="label">label</label>
-        <font>font</font>
-        <textcolor>color</textcolor>
-        <disabledcolor>color</disabledcolor>
-        <focusedcolor>color</focusedcolor>
-        <align>align</align>
-        <aligny>aligny</aligny>
-        <textoffsetx>int</textoffsetx>
-        <textoffsety>int</textoffsety>
-        <pulseonselect>bool</pulseonselect>
     </control>
     <control type="slider" id="int">
         <include>common</include>
@@ -245,17 +192,12 @@
     <control type="sliderex" id="int">
         <include>common</include>
         <include>nav_common</include>
-        <align>align</align>
-        <aligny>aligny</aligny>
-        <label>label</label>
-        <font>font</font>
-        <texturefocus colordiffuse="color" flipx="bool" flipy="bool" border="int">path</texturefocus>
-        <texturenofocus colordiffuse="color" flipx="bool" flipy="bool" border="int">path</texturenofocus>
+        <include>button_common</include>
         <sliderwidth>int</sliderwidth>
         <sliderheight>int</sliderheight>
-        <texturesliderbar colordiffuse="color">path</texturesliderbar>
-        <textureslidernib colordiffuse="color">path</textureslidernib>
-        <textureslidernibfocus colordiffuse="color">path</textureslidernibfocus>
+        <texturesliderbar colordiffuse="color" border="int">path</texturesliderbar>
+        <textureslidernib colordiffuse="color" border="int">path</textureslidernib>
+        <textureslidernibfocus colordiffuse="color" border="int">path</textureslidernibfocus>
     </control>
     <control type="mover" id="int">
         <include>common</include>
@@ -314,20 +256,8 @@
     <control type="edit" id="int">
         <include>common</include>
         <include>nav_common</include>
-        <align>align</align>
-        <aligny>aligny</aligny>
-        <label fallback="label">label</label>
+        <include>button_common</include>
         <hinttext>label</hinttext>
-        <font>font</font>
-        <textoffsetx>int</textoffsetx>
-        <textwidth>int</textwidth>
-        <textcolor>color</textcolor>
-        <shadowcolor>color</shadowcolor>
-        <disabledcolor>color</disabledcolor>
-        <invalidcolor>color</invalidcolor>
-        <texturefocus colordiffuse="color" flipx="bool" flipy="bool" border="int">path</texturefocus>
-        <texturenofocus colordiffuse="color" flipx="bool" flipy="bool" border="int">path</texturenofocus>
-        <pulseonselect>no</pulseonselect>
     </control>
     <control type="epggrid" id="int">
         <include>common</include>
@@ -405,17 +335,31 @@
         <focusedlayout height="int" width="int" condition="bool"></focusedlayout>
         <content sortby="xxx" sortorder="xxx" target="xxx" limit="int"></content>
     </include>
-    <include name="label_common">
-        <font>font</font>
-        <textcolor>color</textcolor>
-        <align>align</align>
-        <aligny>aligny</aligny>
-        <label fallback="label">label</label>
-    </include>
     <include name="nav_common">
         <onup condition="bool">builtin</onup>
         <ondown condition="bool">builtin</ondown>
         <onleft condition="bool">builtin</onleft>
         <onright condition="bool">builtin</onright>
+    </include>
+    <include name="button_common">
+        <label fallback="label">label</label>
+        <colordiffuse>color</colordiffuse>
+        <texturefocus colordiffuse="color" flipx="bool" flipy="bool" border="int">path</texturefocus>
+        <texturenofocus colordiffuse="color" flipx="bool" flipy="bool" border="int">path</texturenofocus>
+        <font>font</font>
+        <textcolor>color</textcolor>
+        <disabledcolor>color</disabledcolor>
+        <focusedcolor>color</focusedcolor>
+        <shadowcolor>color</shadowcolor>
+        <invalidcolor>color</invalidcolor>
+        <align>align</align>
+        <aligny>aligny</aligny>
+        <textoffsetx>int</textoffsetx>
+        <textoffsety>int</textoffsety>
+        <pulseonselect>bool</pulseonselect>
+        <textwidth>int</textwidth>
+        <onfocus condition="bool">builtin</onfocus>
+        <onunfocus condition="bool">builtin</onunfocus>
+        <enable>bool</enable>
     </include>
 </root>
