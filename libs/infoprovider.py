@@ -694,6 +694,14 @@ class InfoProvider(object):
                                     "identifier": v,
                                     "message": "invalid value for %s attribute: %s" % (k, v)}
                             listitems.append(item)
+                        if k == "condition" and not Utils.check_brackets(subnode.attrib["condition"]):
+                            condition = str(v).replace("  ", "").replace("\t", "")
+                            item = {"line": subnode.sourceline,
+                                    "type": subnode.tag,
+                                    "identifier": condition,
+                                    "message": "Brackets do not match: %s" % (condition)}
+                            listitems.append(item)
+
                     if subnode.tag in ALLOWED_TEXT:
                         if subnode.text.lower() in ALLOWED_TEXT[subnode.tag] or subnode.text.startswith("$PARAM["):
                             continue
@@ -716,15 +724,6 @@ class InfoProvider(object):
                                 "identifier": condition,
                                 "message": message}
                         listitems.append(item)
-        # check conditions in attribute values
-        for node in root.xpath(".//*[@condition]"):
-            if not Utils.check_brackets(node.attrib["condition"]):
-                condition = str(node.attrib["condition"]).replace("  ", "").replace("\t", "")
-                item = {"line": node.sourceline,
-                        "type": node.tag,
-                        "identifier": condition,
-                        "message": "Brackets do not match: %s" % (condition)}
-                listitems.append(item)
         # check for noop as empty action
         xpath = ".//" + " | .//".join(NOOP_TAGS)
         for node in root.xpath(xpath):
