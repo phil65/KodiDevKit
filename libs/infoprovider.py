@@ -595,10 +595,7 @@ class InfoProvider(object):
                                 "file": path,
                                 "line": element.sourceline}
                         refs.append(item)
-                for element in root.xpath(".//label | .//altlabel | .//label2"):
-                    if not element.text:
-                        continue
-                    if element.text.isdigit():
+                    if element.tag in set(["label", "altlabel", "label2"]) and element.text.isdigit():
                         item = {"name": element.text,
                                 "type": element.tag,
                                 "file": path,
