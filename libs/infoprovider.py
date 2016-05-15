@@ -710,6 +710,14 @@ class InfoProvider(object):
                                 "identifier": subnode.text,
                                 "message": "invalid value for %s: %s" % (subnode.tag, subnode.text)}
                         listitems.append(item)
+                    if subnode.tag in NOOP_TAGS:
+                        if subnode.text and subnode.text != "-":
+                            continue
+                        item = {"line": subnode.sourceline,
+                                "type": subnode.tag,
+                                "identifier": subnode.tag,
+                                "message": "Use 'noop' for empty calls <%s>" % (node.tag)}
+                        listitems.append(item)
                     if subnode.tag in BRACKET_TAGS:
                         if not subnode.text:
                             message = "Empty condition: %s" % (subnode.tag)
@@ -724,15 +732,6 @@ class InfoProvider(object):
                                 "identifier": condition,
                                 "message": message}
                         listitems.append(item)
-        # check for noop as empty action
-        xpath = ".//" + " | .//".join(NOOP_TAGS)
-        for node in root.xpath(xpath):
-            if node.text == "-" or not node.text:
-                item = {"line": node.sourceline,
-                        "type": node.tag,
-                        "identifier": node.tag,
-                        "message": "Use 'noop' for empty calls <%s>" % (node.tag)}
-                listitems.append(item)
         # check for not-allowed siblings for some tags
         xpath = ".//" + " | .//".join(DOUBLE_TAGS)
         for node in root.xpath(xpath):
