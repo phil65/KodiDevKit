@@ -11,6 +11,7 @@ KodiDevKit is a plugin to assist with Kodi skinning / scripting using Sublime Te
 import sublime_plugin
 import sublime
 
+import time
 import re
 import os
 import webbrowser
@@ -273,10 +274,9 @@ class QuickPanelCommand(sublime_plugin.WindowCommand):
                               sublime.ENCODED_POSITION | sublime.TRANSIENT)
 
     @Utils.run_async
-    @staticmethod
-    def select_text(view, node):
+    def select_text(self, view, node):
         while view.is_loading():
-            pass
+            time.sleep(0.01)
         view.sel().clear()
         if "identifier" in node:
             text_point = view.text_point(node["line"] - 1, 0)
