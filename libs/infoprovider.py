@@ -129,27 +129,6 @@ TAG_CHECKS = [[".//content/*", ["item", "include"]],
               ["/fonts/*", ["fontset"]],
               [".//variable/*", ["value"]]]
 # allowed attributes for some specific nodes
-ATT_CHECKS = [[["aspectratio"], ["description", "align", "aligny", "scalediffuse"]],
-              [["texture"], ["description", "background", "flipx", "flipy", "fallback", "border", "diffuse", "colordiffuse"]],
-              [["label"], ["description", "fallback"]],
-              [["autoscroll"], ["time", "reverse", "delay", "repeat"]],
-              [["defaultcontrol"], ["description", "always"]],
-              [["visible"], ["description", "allowhiddenfocus"]],
-              [["align", "aligny", "posx", "posy", "textoffsetx", "textoffsety"], ["description"]],
-              [["height", "width"], ["description", "min", "max"]],
-              [["camera"], ["description", "x", "y"]],
-              [["hitrect"], ["description", "x", "y", "w", "h"]],
-              [["onload", "onunload", "onclick", "onleft", "onright", "onup", "ondown", "onback", "onfocus", "onunfocus", "value"], ["description", "condition"]],
-              [["property"], ["description", "name", "fallback"]],
-              [["focusedlayout", "itemlayout"], ["description", "height", "width", "condition"]],
-              [["item"], ["description", "id"]],
-              [["control"], ["description", "id", "type"]],
-              [["variable"], ["description", "name"]],
-              [["expression"], ["description", "name"]],
-              [["constant"], ["description", "name"]],
-              [["include"], ["description", "name", "condition", "file", "content"]],
-              [["animation"], ["description", "start", "end", "effect", "tween", "easing", "time", "condition", "reversible", "type", "center", "delay", "pulse", "loop", "acceleration"]],
-              [["effect"], ["description", "start", "end", "tween", "easing", "time", "condition", "type", "center", "delay", "pulse", "loop", "acceleration"]]]
 # all_tags = [d[0] for d in att_checks]
 # check correct parantheses for some nodes
 BRACKET_TAGS = ["visible", "enable", "usealttexture", "selected", "expression"]
@@ -161,13 +140,18 @@ DOUBLE_TAGS = ["camera", "posx", "posy", "top", "bottom", "left", "right", "cent
                "colordiffuse", "texturefocus", "texturenofocus", "font", "selected", "textcolor", "disabledcolor", "selectedcolor",
                "shadowcolor", "align", "aligny", "textoffsetx", "textoffsety", "pulseonselect", "textwidth", "focusedcolor", "invalidcolor", "angle", "hitrect"]
 # check that some nodes only contain specific text
-ALLOWED_TEXT = [[["align"], set(["left", "center", "right", "justify"])],
-                [["aspectratio"], set(["keep", "scale", "stretch", "center"])],
-                [["aligny"], set(["top", "center", "bottom"])],
-                [["orientation"], set(["horizontal", "vertical"])],
-                [["subtype"], set(["page", "int", "float", "text"])],
-                [["action"], set(["volume", "seek"])],
-                [["scroll", "randomize", "scrollout", "pulseonselect", "reverse", "usecontrolcoords"], set(["false", "true", "yes", "no"])]]
+ALLOWED_TEXT = {"align": set(["left", "center", "right", "justify"]),
+                "aligny": set(["top", "center", "bottom"]),
+                "aspectratio": set(["keep", "scale", "stretch", "center"]),
+                "orientation": set(["horizontal", "vertical"]),
+                "subtype": set(["page", "int", "float", "text"]),
+                "action": set(["volume", "seek"]),
+                "scroll": set(["false", "true", "yes", "no"]),
+                "randomize": set(["false", "true", "yes", "no"]),
+                "scrollout": set(["false", "true", "yes", "no"]),
+                "pulseonselect": set(["false", "true", "yes", "no"]),
+                "reverse": set(["false", "true", "yes", "no"]),
+                "usecontrolcoords": set(["false", "true", "yes", "no"])}
 # check that some attributes may only contain specific values
 ALLOWED_ATTR = {"align": set(["left", "center", "right", "justify"]),
                 "aligny": set(["top", "center", "bottom"]),
@@ -700,13 +684,20 @@ class InfoProvider(object):
                                     "identifier": k,
                                     "message": "invalid attribute for <%s>: %s" % (subnode.tag, k)}
                             listitems.append(item)
-                        elif k in ATT_CHECKS:
-                            if v not in ATT_CHECKS[k] or v.startswith("$PARAM["):
+                        elif k in ALLOWED_ATTR:
+                            if v in ALLOWED_ATTR[k] or v.startswith("$PARAM["):
                                 continue
-                            item = {"line": node.sourceline,
-                                    "type": node.tag,
+                            item = {"line": subnode.sourceline,
+                                    "type": subnode.tag,
                                     "identifier": v,
                                     "message": "invalid value for %s attribute: %s" % (k, v)}
+                            listitems.append(item)
+                    if subnode.tag in ALLOWED_TEXT:
+                        if subnode.text.lower() not in ALLOWED_TEXT[subnode.tag]:
+                            item = {"line": subnode.sourceline,
+                                    "type": subnode.tag,
+                                    "identifier": subnode.text,
+                                    "message": "invalid value for %s: %s" % (subnode.tag, subnode.text)}
                             listitems.append(item)
         # check conditions in element content
         xpath = ".//" + " | .//".join(BRACKET_TAGS)
@@ -752,18 +743,6 @@ class InfoProvider(object):
                             "type": node.tag,
                             "identifier": node.tag,
                             "message": "Invalid multiple tags for %s: <%s>" % (node.getparent().tag, node.tag)}
-                    listitems.append(item)
-        # Check tags which require specific values
-        for check in ALLOWED_TEXT:
-            xpath = ".//" + " | .//".join(check[0])
-            for node in root.xpath(xpath):
-                if node.text.startswith("$PARAM"):
-                    continue
-                if node.text.lower() not in check[1]:
-                    item = {"line": node.sourceline,
-                            "type": node.tag,
-                            "identifier": node.text,
-                            "message": "invalid value for %s: %s" % (node.tag, node.text)}
                     listitems.append(item)
         for item in listitems:
             item["filename"] = xml_file
