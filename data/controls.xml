@@ -69,6 +69,7 @@
         <pauseatend>int</pauseatend>
         <align>align</align>
         <aligny>aligny</aligny>
+        <angle>int</angle>
         <label fallback="label">label</label>
         <info>label</info>
         <font>font</font>
@@ -367,6 +368,7 @@
         <colordiffuse>color</colordiffuse>
         <texturefocus colordiffuse="color" flipx="bool" flipy="bool" border="int">path</texturefocus>
         <texturenofocus colordiffuse="color" flipx="bool" flipy="bool" border="int">path</texturenofocus>
+        <angle>int</angle>
         <font>font</font>
         <textcolor>color</textcolor>
         <disabledcolor>color</disabledcolor>
