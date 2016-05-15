@@ -18,6 +18,8 @@ from .addon import Addon
 from .kodi import kodi
 from . import ImageParser
 
+ns = ET.FunctionNamespace(None)
+ns['lower-case'] = lambda context, s: str.lower(s)
 
 # c&p from wiki
 WINDOW_MAP = [("home", "WINDOW_HOME", " 10000", "0", "Home.xml"),
@@ -657,7 +659,7 @@ class InfoProvider(object):
         tree = ET.ElementTree(root)
         listitems = []
         all_controls = set(self.template_attribs.keys())
-        xpath = " or ".join(["@type='{}'".format(c) for c in all_controls])
+        xpath = " or ".join(["lower-case(string(@type))='{}'".format(c) for c in all_controls])
         xpath = ".//control[not({}) and @type[string()]]".format(xpath)
         for node in root.xpath(xpath):
             item = {"line": node.sourceline,
