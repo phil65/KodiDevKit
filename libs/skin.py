@@ -22,6 +22,7 @@ class Skin(addon.Addon):
 
     def __init__(self, *args, **kwargs):
         super(Skin, self).__init__(*args, **kwargs)
+        self.kodi_version = self.root.find(".//import[@addon='xbmc.gui']")
         self.includes = {}
         self.include_files = {}
         self.font_file = None

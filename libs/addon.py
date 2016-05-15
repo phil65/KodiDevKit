@@ -28,6 +28,8 @@ class Addon(object):
         self.path = kwargs.get("project_path")
         self.xml_file = os.path.join(self.path, "addon.xml")
         self.root = Utils.get_root_from_file(self.xml_file)
+        self.kodi_version = self.root.find(".//import[@addon='xbmc.python']")
+        self.version = self.root.attrib.get("version")
         for item in self.root.xpath("/addon[@id]"):
             self.name = item.attrib["id"]
             break

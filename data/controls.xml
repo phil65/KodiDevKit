@@ -34,7 +34,7 @@
     </control>
     <control type="grouplist" id="int">
         <width>int</width>
-        <height>int</height>
+        <height min="int" max="int">int</height>
         <include>common</include>
         <include>nav_common</include>
         <onback condition="bool">builtin</onback>
@@ -73,6 +73,8 @@
         <width>int</width>
         <height>int</height>
         <include>common</include>
+        <scroll>bool</scroll>
+        <scrollspeed>int</scrollspeed>
         <scrollout>bool</scrollout>
         <pauseatend>int</pauseatend>
         <align>align</align>
@@ -133,7 +135,7 @@
         <width>int</width>
         <height>int</height>
         <include>common</include>
-        <imagepath background="true" colordiffuse="color">path</imagepath>
+        <imagepath background="true" colordiffuse="color" fallback="path">path</imagepath>
         <colordiffuse>color</colordiffuse>
         <info></info>
         <timeperimage>int</timeperimage>
@@ -337,6 +339,7 @@
         <scrolltime tween="tween" easing="easing">int</scrolltime>
         <timeblocks>int</timeblocks>
         <rulerunit>int</rulerunit>
+        <onback condition="bool">builtin</onback>
         <viewtype label="label">viewtype</viewtype>
         <progresstexture colordiffuse="color" border="int">path</progresstexture>
         <rulerlayout height="int" width="int" condition="condition"></rulerlayout>

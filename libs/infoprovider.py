@@ -668,7 +668,7 @@ class InfoProvider(object):
                     "message": "invalid control type: %s" % (node.attrib.get("type"))}
             listitems.append(item)
         for c_type, subnodes in self.template_attribs.items():
-            for node in root.xpath(".//control[@type='%s']" % c_type):
+            for node in root.xpath(".//control[lower-case(string(@type))='%s']" % c_type):
                 for subnode in node.iterchildren():
                     if subnode.tag not in subnodes:
                         label = node.tag if "type" not in node.attrib else "%s type=%s" % (node.tag, node.attrib.get("type"))
