@@ -573,12 +573,13 @@ class InfoProvider(object):
     def check_labels(self):
         listitems = []
         refs = []
-        regexs = [r"\$LOCALIZE\[([0-9].*?)\]", r"^(\d+)$"]
-        label_regex = r"[A-Za-z]+"
+        REGEXS = [r"\$LOCALIZE\[([0-9].*?)\]", r"^(\d+)$"]
+        LABEL_REGEX = r"[A-Za-z]+"
         # labels = [s.msgid for s in self.po_files]
-        checks = [[".//viewtype[(@label)]", "label"],
+        CHECKS = [[".//viewtype[(@label)]", "label"],
                   [".//fontset[(@idloc)]", "idloc"],
                   [".//label[(@fallback)]", "fallback"]]
+        LABELS_CONTAINING_IDS = set(["label", "altlabel", "label2"])
         for folder in self.addon.xml_folders:
             for xml_file in self.addon.window_files[folder]:
                 path = os.path.join(self.addon.path, folder, xml_file)
@@ -589,20 +590,20 @@ class InfoProvider(object):
                 for element in root.xpath(".//label | .//altlabel | .//label2 | .//value | .//onclick | .//property"):
                     if not element.text:
                         continue
-                    for match in re.finditer(regexs[0], element.text):
+                    for match in re.finditer(REGEXS[0], element.text):
                         item = {"name": match.group(1),
                                 "type": element.tag,
                                 "file": path,
                                 "line": element.sourceline}
                         refs.append(item)
-                    if element.tag in set(["label", "altlabel", "label2"]) and element.text.isdigit():
+                    if element.tag in LABELS_CONTAINING_IDS and element.text.isdigit():
                         item = {"name": element.text,
                                 "type": element.tag,
                                 "file": path,
                                 "line": element.sourceline}
                         refs.append(item)
                 # check for untranslated strings...
-                    elif "$" not in element.text and not len(element.text) == 1 and not element.text.endswith(".xml") and re.match(label_regex, element.text):
+                    elif "$" not in element.text and not len(element.text) == 1 and not element.text.endswith(".xml") and re.match(LABEL_REGEX, element.text):
                         item = {"name": element.text,
                                 "type": element.tag,
                                 "file": path,
@@ -611,10 +612,10 @@ class InfoProvider(object):
                                 "line": element.sourceline}
                         listitems.append(item)
                 # find some more references (in attribute values this time)....
-                for check in checks:
+                for check in CHECKS:
                     for element in root.xpath(check[0]):
                         attr = element.attrib[check[1]]
-                        for regex in regexs:
+                        for regex in REGEXS:
                             for match in re.finditer(regex, attr):
                                 item = {"name": match.group(1),
                                         "type": element.tag,
@@ -622,7 +623,7 @@ class InfoProvider(object):
                                         "line": element.sourceline}
                                 refs.append(item)
                         # find some more untranslated strings
-                        if "$" not in attr and not attr.isdigit() and re.match(label_regex, attr):
+                        if "$" not in attr and not attr.isdigit() and re.match(LABEL_REGEX, attr):
                             item = {"name": attr,
                                     "type": element.tag,
                                     "file": path,
@@ -664,71 +665,69 @@ class InfoProvider(object):
                     "identifier": node.attrib.get("type"),
                     "message": "invalid control type: %s" % (node.attrib.get("type"))}
             listitems.append(item)
-        for c_type, subnodes in self.template_attribs.items():
-            for node in root.xpath(".//control[lower-case(string(@type))='%s']" % c_type):
-                for subnode in node.iterchildren():
-                    if subnode.tag not in subnodes:
-                        label = node.tag if "type" not in node.attrib else "%s type=%s" % (node.tag, node.attrib.get("type"))
-                        item = {"line": subnode.sourceline,
-                                "type": subnode.tag,
-                                "identifier": subnode.tag,
-                                "message": "invalid tag for <%s>: <%s>" % (label, subnode.tag)}
-                        listitems.append(item)
+        for c_type, subnodes, node, subnode in self.file_control_checks(root):
+            if subnode.tag not in subnodes:
+                label = node.tag if "type" not in node.attrib else "%s type=%s" % (node.tag, node.attrib.get("type"))
+                item = {"line": subnode.sourceline,
+                        "type": subnode.tag,
+                        "identifier": subnode.tag,
+                        "message": "invalid tag for <%s>: <%s>" % (label, subnode.tag)}
+                listitems.append(item)
+                continue
+            for k, v in subnode.attrib.items():
+                tpl_control = subnodes[subnode.tag]
+                if k not in tpl_control:
+                    item = {"line": subnode.sourceline,
+                            "type": subnode.tag,
+                            "identifier": k,
+                            "message": "invalid attribute for <%s>: %s" % (subnode.tag, k)}
+                    listitems.append(item)
+                elif k in ALLOWED_ATTR:
+                    if v in ALLOWED_ATTR[k] or v.startswith("$PARAM["):
                         continue
-                    for k, v in subnode.attrib.items():
-                        tpl_control = subnodes[subnode.tag]
-                        if k not in tpl_control:
-                            item = {"line": subnode.sourceline,
-                                    "type": subnode.tag,
-                                    "identifier": k,
-                                    "message": "invalid attribute for <%s>: %s" % (subnode.tag, k)}
-                            listitems.append(item)
-                        elif k in ALLOWED_ATTR:
-                            if v in ALLOWED_ATTR[k] or v.startswith("$PARAM["):
-                                continue
-                            item = {"line": subnode.sourceline,
-                                    "type": subnode.tag,
-                                    "identifier": v,
-                                    "message": "invalid value for %s attribute: %s" % (k, v)}
-                            listitems.append(item)
-                        if k == "condition" and not Utils.check_brackets(subnode.attrib["condition"]):
-                            condition = str(v).replace("  ", "").replace("\t", "")
-                            item = {"line": subnode.sourceline,
-                                    "type": subnode.tag,
-                                    "identifier": condition,
-                                    "message": "Brackets do not match: %s" % (condition)}
-                            listitems.append(item)
+                    item = {"line": subnode.sourceline,
+                            "type": subnode.tag,
+                            "identifier": v,
+                            "message": "invalid value for %s attribute: %s" % (k, v)}
+                    listitems.append(item)
+                if k == "condition" and not Utils.check_brackets(subnode.attrib["condition"]):
+                    condition = str(v).replace("  ", "").replace("\t", "")
+                    item = {"line": subnode.sourceline,
+                            "type": subnode.tag,
+                            "identifier": condition,
+                            "message": "Brackets do not match: %s" % (condition)}
+                    listitems.append(item)
 
-                    if subnode.tag in ALLOWED_TEXT:
-                        if subnode.text.lower() in ALLOWED_TEXT[subnode.tag] or subnode.text.startswith("$PARAM["):
-                            continue
-                        item = {"line": subnode.sourceline,
-                                "type": subnode.tag,
-                                "identifier": subnode.text,
-                                "message": "invalid value for %s: %s" % (subnode.tag, subnode.text)}
-                        listitems.append(item)
-                    if subnode.tag in NOOP_TAGS:
-                        if subnode.text and subnode.text != "-":
-                            continue
-                        item = {"line": subnode.sourceline,
-                                "type": subnode.tag,
-                                "identifier": subnode.tag,
-                                "message": "Use 'noop' for empty calls <%s>" % (node.tag)}
-                        listitems.append(item)
-                    if subnode.tag in BRACKET_TAGS:
-                        if not subnode.text:
-                            message = "Empty condition: %s" % (subnode.tag)
-                            condition = ""
-                        elif not Utils.check_brackets(subnode.text):
-                            condition = str(subnode.text).replace("  ", "").replace("\t", "")
-                            message = "Brackets do not match: %s" % (condition)
-                        else:
-                            continue
-                        item = {"line": subnode.sourceline,
-                                "type": subnode.tag,
-                                "identifier": condition,
-                                "message": message}
-                        listitems.append(item)
+            if subnode.tag in ALLOWED_TEXT:
+                if subnode.text.lower() in ALLOWED_TEXT[subnode.tag] or subnode.text.startswith("$PARAM["):
+                    continue
+                item = {"line": subnode.sourceline,
+                        "type": subnode.tag,
+                        "identifier": subnode.text,
+                        "message": "invalid value for %s: %s" % (subnode.tag, subnode.text)}
+                listitems.append(item)
+            if subnode.tag in NOOP_TAGS:
+                if subnode.text and subnode.text != "-":
+                    continue
+                item = {"line": subnode.sourceline,
+                        "type": subnode.tag,
+                        "identifier": subnode.tag,
+                        "message": "Use 'noop' for empty calls <%s>" % (node.tag)}
+                listitems.append(item)
+            if subnode.tag in BRACKET_TAGS:
+                if not subnode.text:
+                    message = "Empty condition: %s" % (subnode.tag)
+                    condition = ""
+                elif not Utils.check_brackets(subnode.text):
+                    condition = str(subnode.text).replace("  ", "").replace("\t", "")
+                    message = "Brackets do not match: %s" % (condition)
+                else:
+                    continue
+                item = {"line": subnode.sourceline,
+                        "type": subnode.tag,
+                        "identifier": condition,
+                        "message": message}
+                listitems.append(item)
         # check for not-allowed siblings for some tags
         xpath = ".//" + " | .//".join(DOUBLE_TAGS)
         for node in root.xpath(xpath):
@@ -744,3 +743,9 @@ class InfoProvider(object):
             item["filename"] = xml_file
             item["file"] = path
         return listitems
+
+    def file_control_checks(self, root):
+        for c_type, subnodes in self.template_attribs.items():
+            for node in root.xpath(".//control[lower-case(string(@type))='%s']" % c_type):
+                for subnode in node.iterchildren():
+                    yield (c_type, subnodes, node, subnode)
