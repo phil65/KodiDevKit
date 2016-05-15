@@ -17,6 +17,7 @@
     - aligny [top, center, bottom]
     - tween [quadratic, sine, ...]
     - easing [in, out, inout]
+    - controls [when it is allowed to nest other controls in this element]
 
 
     always allowed tags: description, include
@@ -26,7 +27,8 @@
     <control type="group" id="int">
         <include>common</include>
         <defaultcontrol always="bool">int</defaultcontrol>
-        <control type="controltype" id="int">xxx</control>
+        <renderfocusedlast>true</renderfocusedlast>
+        <control type="controltype" id="int">controls</control>
     </control>
     <control type="grouplist" id="int">
         <include>common</include>
@@ -39,7 +41,7 @@
         <defaultcontrol always="bool">int</defaultcontrol>
         <scrolltime tween="tween" easing="easing">int</scrolltime>
         <usecontrolcoords>bool</usecontrolcoords>
-        <control type="controltype" id="int">xxx</control>
+        <control type="controltype" id="int">controls</control>
     </control>
     <control type="label" id="int">
         <include>common</include>
@@ -71,7 +73,10 @@
         <info>label</info>
         <font>font</font>
         <textcolor>color</textcolor>
+        <shadowcolor>color</shadowcolor>
+        <selectedcolor>color</selectedcolor>
         <textoffsetx>int</textoffsetx>
+        <textoffsety>int</textoffsety>
     </control>
     <control type="scrollbar" id="int">
         <include>common</include>
@@ -92,6 +97,9 @@
         <label2>label</label2>
         <selectedcolor>color</selectedcolor>
         <onclick condition="bool">builtin</onclick>
+        <onback condition="bool">builtin</onback>
+        <onfocus condition="bool">builtin</onfocus>
+        <onunfocus condition="bool">builtin</onunfocus>
     </control>
     <control type="image" id="int">
         <include>common</include>
@@ -129,6 +137,9 @@
         <textureradiooffdisabled colordiffuse="color">path</textureradiooffdisabled>
         <selected>bool</selected>
         <onclick condition="bool">builtin</onclick>
+        <onback condition="bool">builtin</onback>
+        <onfocus condition="bool">builtin</onfocus>
+        <onunfocus condition="bool">builtin</onunfocus>
         <radioposx>int</radioposx>
         <radioposy>int</radioposy>
         <radiowidth>int</radiowidth>
@@ -144,6 +155,9 @@
         <altclick condition="condition">builtin</altclick>
         <altlabel>label</altlabel>
         <onclick condition="bool">builtin</onclick>
+        <onback condition="bool">builtin</onback>
+        <onfocus condition="bool">builtin</onfocus>
+        <onunfocus condition="bool">builtin</onunfocus>
     </control>
     <control type="spincontrol" id="int">
         <include>common</include>
@@ -161,6 +175,7 @@
         <aligny>aligny</aligny>
         <textoffsetx>int</textoffsetx>
         <textoffsety>int</textoffsety>
+        <reverse>bool</reverse>
         <pulseonselect>bool</pulseonselect>
         <showonepage>bool</showonepage>
     </control>
@@ -172,10 +187,14 @@
         <spinposy>int</spinposy>
         <spinwidth>int</spinwidth>
         <spinheight>int</spinheight>
+        <reverse>bool</reverse>
         <textureup colordiffuse="color">path</textureup>
         <textureupfocus colordiffuse="color">path</textureupfocus>
         <texturedown colordiffuse="color">path</texturedown>
         <texturedownfocus colordiffuse="color">path</texturedownfocus>
+        <onback condition="bool">builtin</onback>
+        <onfocus condition="bool">builtin</onfocus>
+        <onunfocus condition="bool">builtin</onunfocus>
     </control>
     <control type="slider" id="int">
         <include>common</include>
@@ -184,9 +203,7 @@
         <textureslidernib colordiffuse="color">path</textureslidernib>
         <textureslidernibfocus colordiffuse="color">path</textureslidernibfocus>
         <info>info</info>
-        <action></action>
-        <controloffsetx></controloffsetx>
-        <controloffsety></controloffsety>
+        <action>action</action>
         <pulseonselect>bool</pulseonselect>
     </control>
     <control type="sliderex" id="int">
@@ -198,6 +215,9 @@
         <texturesliderbar colordiffuse="color" border="int">path</texturesliderbar>
         <textureslidernib colordiffuse="color" border="int">path</textureslidernib>
         <textureslidernibfocus colordiffuse="color" border="int">path</textureslidernibfocus>
+        <onback condition="bool">builtin</onback>
+        <onfocus condition="bool">builtin</onfocus>
+        <onunfocus condition="bool">builtin</onunfocus>
     </control>
     <control type="mover" id="int">
         <include>common</include>
@@ -215,7 +235,7 @@
         <lefttexture border="int" colordiffuse="color">path</lefttexture>
         <midtexture border="int" colordiffuse="color">path</midtexture>
         <righttexture border="int" colordiffuse="color">path</righttexture>
-        <overlaytexture colordiffuse="color">path</overlaytexture>
+        <overlaytexture colordiffuse="color" border="int">path</overlaytexture>
         <info>info</info>
     </control>
     <control type="textbox" id="int">
@@ -224,6 +244,7 @@
         <font>font</font>
         <textcolor>color</textcolor>
         <shadowcolor>color</shadowcolor>
+        <selectedcolor>color</selectedcolor>
         <pulseonselect>bool</pulseonselect>
         <pagecontrol>int</pagecontrol>
         <scrolltime tween="tween" easing="easing">int</scrolltime>
@@ -358,8 +379,6 @@
         <textoffsety>int</textoffsety>
         <pulseonselect>bool</pulseonselect>
         <textwidth>int</textwidth>
-        <onfocus condition="bool">builtin</onfocus>
-        <onunfocus condition="bool">builtin</onunfocus>
         <enable>bool</enable>
     </include>
 </root>
