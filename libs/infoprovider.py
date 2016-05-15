@@ -693,12 +693,13 @@ class InfoProvider(object):
                                     "message": "invalid value for %s attribute: %s" % (k, v)}
                             listitems.append(item)
                     if subnode.tag in ALLOWED_TEXT:
-                        if subnode.text.lower() not in ALLOWED_TEXT[subnode.tag]:
-                            item = {"line": subnode.sourceline,
-                                    "type": subnode.tag,
-                                    "identifier": subnode.text,
-                                    "message": "invalid value for %s: %s" % (subnode.tag, subnode.text)}
-                            listitems.append(item)
+                        if subnode.text.lower() in ALLOWED_TEXT[subnode.tag] or subnode.text.startswith("$PARAM["):
+                            continue
+                        item = {"line": subnode.sourceline,
+                                "type": subnode.tag,
+                                "identifier": subnode.text,
+                                "message": "invalid value for %s: %s" % (subnode.tag, subnode.text)}
+                        listitems.append(item)
         # check conditions in element content
         xpath = ".//" + " | .//".join(BRACKET_TAGS)
         for node in root.xpath(xpath):
