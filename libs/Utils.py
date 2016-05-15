@@ -20,11 +20,22 @@ from threading import Thread
 from functools import wraps
 import time
 import logging
-from .include import Include
-from .polib import polib
 from lxml import etree as ET
 
+from .include import Include
+from .polib import polib
+from .yattag import indent
+
 PARSER = ET.XMLParser(remove_blank_text=True, remove_comments=True)
+
+
+def save_xml(filename, root):
+    tree = ET.ElementTree(root)
+    content = ET.tostring(tree, encoding='UTF-8', xml_declaration=True)
+    content = indent(string=content.decode("utf-8"),
+                     indentation="\t")
+    with open(filename, 'w', encoding="utf-8") as f:
+        f.write(content)
 
 
 def retry(ExceptionToCheck, tries=4, delay=3, backoff=2):

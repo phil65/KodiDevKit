@@ -376,7 +376,7 @@
         <left>int</left>
         <right>int</right>
         <top>int</top>
-        <animation effect="effect" type="xxx" start="int" end="int" time="int" tween="tween" easing="easing" condition="bool" center="xxx" delay="int" reversible="bool" loop="bool" pulse="bool" acceleration="int">xxx</animation>
+        <animation effect="effect" type="effect" start="int" end="int" time="int" tween="tween" easing="easing" condition="bool" center="xxx" delay="int" reversible="bool" loop="bool" pulse="bool" acceleration="int">xxx</animation>
         <centertop>int</centertop>
         <centerbottom>int</centerbottom>
         <centerleft>int</centerleft>

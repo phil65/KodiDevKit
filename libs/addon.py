@@ -54,6 +54,13 @@ class Addon(object):
         return os.path.join(self.path, "resources", "language")
 
     @property
+    def changelog_path(self):
+        """
+        returns the add-on language folder path
+        """
+        return os.path.join(self.path, "changelog.txt")
+
+    @property
     def primary_lang_folder(self):
         """
         returns default language folder (first one from settings file)
@@ -214,3 +221,7 @@ class Addon(object):
             for folder in self.xml_folders:
                 for xml_file in self.window_files[folder]:
                     yield os.path.join(self.path, folder, xml_file)
+
+    def bump_version(self, version):
+        self.root.attrib["version"] = version
+        Utils.save_xml(self.xml_file, self.root)
