@@ -188,6 +188,12 @@ class Addon(object):
         self.update_labels()
         return label_id
 
+    def attach_occurrence_to_label(self, label_id, rel_path):
+        if 31000 <= int(label_id[1:]) < 33000:
+            entry = self.po_files[0].find(label_id, by="msgctxt")
+            entry.occurrences.append((rel_path, None))
+            self.po_files[0].save(self.po_files[0].fpath)
+
     def translate_path(self, path):
         """
         return translated path for textures
@@ -223,6 +229,9 @@ class Addon(object):
                     yield os.path.join(self.path, folder, xml_file)
 
     def bump_version(self, version):
+        """
+        bump addon.xml version and create changelog entry
+        """
         self.root.attrib["version"] = version
         Utils.save_xml(self.xml_file, self.root)
         with open(self.changelog_path, "r") as f:

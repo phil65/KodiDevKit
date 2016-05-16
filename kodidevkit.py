@@ -725,10 +725,7 @@ class MoveToLanguageFile(sublime_plugin.TextCommand):
                                                     filepath=rel_path)
         else:
             label_id = self.label_ids[index]
-            if 31000 <= int(label_id[1:]) < 33000:
-                entry = INFOS.addon.po_files[0].find(label_id, by="msgctxt")
-                entry.occurrences.append((rel_path, None))
-                INFOS.addon.po_files[0].save(INFOS.addon_po_files[0].fpath)
+            INFOS.addon.attach_occurrence_to_label(label_id, rel_path)
         self.view.run_command("replace_text", {"label_id": label_id})
 
 
