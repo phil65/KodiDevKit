@@ -684,7 +684,6 @@ class InfoProvider(object):
                             "identifier": condition,
                             "message": "Brackets do not match: %s" % (condition)}
                     listitems.append(item)
-                listitems.append(item)
             if subnode.tag in DOUBLE_TAGS and not subnode.getchildren():
                 xpath = tree.getpath(subnode)
                 if xpath.endswith("]") and not xpath.endswith("[1]"):
