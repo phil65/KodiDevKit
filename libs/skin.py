@@ -210,3 +210,22 @@ class Skin(addon.Addon):
         returns a list of all theme names, taken from "themes" folder
         """
         return [folder for folder in os.listdir(os.path.join(self.path, "themes"))]
+
+    def resolve_include(self, ref, folder):
+        if not ref.text:
+            return None
+        include_names = [item["name"] for item in self.addon.includes[folder]]
+        if ref.text not in include_names:
+            return None
+        index = include_names.index(ref.text)
+        node = self.addon.includes[folder][index]
+        root = ET.fromstring(node["content"])
+        return self.resolve_includes(root, folder)
+
+    def resolve_includes(self, xml_source, folder):
+        for node in xml_source.xpath(".//include"):
+            if node.text:
+                new_include = self.resolve_include(node, folder)
+                if new_include is not None:
+                    node.getparent().replace(node, new_include)
+        return xml_source
