@@ -124,12 +124,12 @@ WINDOW_NAMES = [item[0] for item in WINDOW_MAP]
 WINDOW_IDS = [item[3] for item in WINDOW_MAP]
 
 # allowed child nodes for different control types (+ some other nodes)
-TAG_CHECKS = [[".//content/*", ["item", "include"]],
-              [".//itemlayout/* | .//focusedlayout/*", ["control", "include"]],
-              ["/includes/*", ["include", "default", "constant", "variable", "expression"]],
-              ["/window/*", ["include", "defaultcontrol", "depth", "menucontrol", "onload", "onunload", "controls", "allowoverlay", "views", "coordinates", "animation", "visible", "zorder", "fontset", "backgroundcolor"]],
-              ["/fonts/*", ["fontset"]],
-              [".//variable/*", ["value"]]]
+TAG_CHECKS = [[".//content/*", set(["item", "include"])],
+              [".//itemlayout/* | .//focusedlayout/*", set(["control", "include"])],
+              ["/includes/*", set(["include", "default", "constant", "variable", "expression"])],
+              ["/window/*", set(["include", "defaultcontrol", "depth", "menucontrol", "onload", "onunload", "controls", "allowoverlay", "views", "coordinates", "animation", "visible", "zorder", "fontset", "backgroundcolor"])],
+              ["/fonts/*", set(["fontset"])],
+              [".//variable/*", set(["value"])]]
 # allowed attributes for some specific nodes
 # all_tags = [d[0] for d in att_checks]
 # check correct parantheses for some nodes
@@ -148,6 +148,7 @@ ALLOWED_TEXT = {"align": set(["left", "center", "right", "justify"]),
                 "orientation": set(["horizontal", "vertical"]),
                 "subtype": set(["page", "int", "float", "text"]),
                 "action": set(["volume", "seek"]),
+                "viewtype": set(["list", "icon", "biglist", "bigicon", "wide", "bigwide", "wrap", "bigwrap", "info", "biginfo"]),
                 "scroll": set(["false", "true", "yes", "no"]),
                 "randomize": set(["false", "true", "yes", "no"]),
                 "scrollout": set(["false", "true", "yes", "no"]),
@@ -292,10 +293,7 @@ class InfoProvider(object):
             folder = po_file.fpath.split(os.sep)[-2]
             if folder == "resources":
                 folder = po_file.fpath.split(os.sep)[-3].replace("resource.language.", "")
-            if hit.msgstr:
-                tooltips += "<b>%s:</b> %s<br>" % (folder, hit.msgstr)
-            else:
-                tooltips += "<b>%s:</b> %s<br>" % (folder, hit.msgid)
+            tooltips += "<b>%s:</b> %s<br>" % (folder, hit.msgstr if hit.msgstr else hit.msgid)
         return tooltips
 
     def get_po_files(self):

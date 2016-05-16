@@ -88,6 +88,7 @@
         <selectedcolor>color</selectedcolor>
         <textoffsetx>int</textoffsetx>
         <textoffsety>int</textoffsety>
+        <resetonlabelchange>bool</resetonlabelchange>
     </control>
     <control type="scrollbar" id="int">
         <width>int</width>
@@ -95,6 +96,7 @@
         <include>common</include>
         <include>nav_common</include>
         <hitrect x="int" y="int" w="int" h="int"></hitrect>
+        <hitrectcolor>color</hitrectcolor>
         <onback condition="bool">builtin</onback>
         <texturesliderbackground colordiffuse="color" border="int">path</texturesliderbackground>
         <texturesliderbar colordiffuse="color" border="int">path</texturesliderbar>
@@ -111,6 +113,7 @@
         <include>button_common</include>
         <include>nav_common</include>
         <label2>label</label2>
+        <wrapmultiline>bool</wrapmultiline>
         <selectedcolor>color</selectedcolor>
         <onclick condition="bool">builtin</onclick>
         <onback condition="bool">builtin</onback>
@@ -175,6 +178,7 @@
         <include>button_common</include>
         <alttexturefocus colordiffuse="color" flipx="bool" flipy="bool" border="int">path</alttexturefocus>
         <alttexturenofocus colordiffuse="color" flipx="bool" flipy="bool" border="int">path</alttexturenofocus>
+        <wrapmultiline>bool</wrapmultiline>
         <usealttexture>bool</usealttexture>
         <altclick condition="condition">builtin</altclick>
         <altlabel>label</altlabel>
@@ -195,6 +199,7 @@
         <texturedownfocus colordiffuse="color">path</texturedownfocus>
         <subtype>page</subtype>
         <font>font</font>
+        <range>range</range>
         <textcolor>color</textcolor>
         <disabledcolor>color</disabledcolor>
         <align>align</align>
@@ -301,6 +306,7 @@
         <textcolor>color</textcolor>
         <headlinecolor>color</headlinecolor>
         <titlecolor>color</titlecolor>
+        <title>xxx</title>
         <shadowcolor>color</shadowcolor>
         <urlset>xxx</urlset>
     </control>
@@ -329,6 +335,7 @@
         <include>nav_common</include>
         <include>button_common</include>
         <hinttext>label</hinttext>
+        <password>bool</password>
     </control>
     <control type="epggrid" id="int">
         <width>int</width>
@@ -405,6 +412,7 @@
         <viewtype label="label">viewtype</viewtype>
         <autoscroll delay="int" time="int" repeat="int" reverse="bool">bool</autoscroll>
         <hitrect x="int" y="int" w="int" h="int"></hitrect>
+        <hitrectcolor>color</hitrectcolor>
         <itemlayout width="int" height="int" condition="bool"></itemlayout>
         <focusedlayout height="int" width="int" condition="bool"></focusedlayout>
         <content sortby="xxx" sortorder="xxx" target="xxx" limit="int"></content>
@@ -421,6 +429,7 @@
         <texturefocus colordiffuse="color" flipx="bool" flipy="bool" border="int">path</texturefocus>
         <texturenofocus colordiffuse="color" flipx="bool" flipy="bool" border="int">path</texturenofocus>
         <hitrect x="int" y="int" w="int" h="int"></hitrect>
+        <hitrectcolor>color</hitrectcolor>
         <angle>int</angle>
         <font>font</font>
         <textcolor>color</textcolor>
