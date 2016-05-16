@@ -551,25 +551,6 @@ class InfoProvider(object):
                 listitems.append(item)
         return listitems
 
-    def resolve_include(self, ref, folder):
-        if not ref.text:
-            return None
-        include_names = [item["name"] for item in self.addon.includes[folder]]
-        if ref.text not in include_names:
-            return None
-        index = include_names.index(ref.text)
-        node = self.addon.includes[folder][index]
-        root = ET.fromstring(node["content"])
-        return self.resolve_includes(root, folder)
-
-    def resolve_includes(self, xml_source, folder):
-        for node in xml_source.xpath(".//include"):
-            if node.text:
-                new_include = self.resolve_include(node, folder)
-                if new_include is not None:
-                    node.getparent().replace(node, new_include)
-        return xml_source
-
     def check_labels(self):
         listitems = []
         refs = []
@@ -674,6 +655,44 @@ class InfoProvider(object):
                         "message": "invalid tag for <%s>: <%s>" % (label, subnode.tag)}
                 listitems.append(item)
                 continue
+            if subnode.tag in ALLOWED_TEXT:
+                if subnode.text.lower() in ALLOWED_TEXT[subnode.tag] or subnode.text.startswith("$PARAM["):
+                    continue
+                item = {"line": subnode.sourceline,
+                        "type": subnode.tag,
+                        "identifier": subnode.text,
+                        "message": "invalid value for %s: %s" % (subnode.tag, subnode.text)}
+                listitems.append(item)
+            if subnode.tag in NOOP_TAGS:
+                if not subnode.text or not subnode.text != "-":
+                    item = {"line": subnode.sourceline,
+                            "type": subnode.tag,
+                            "identifier": subnode.tag,
+                            "message": "Use 'noop' for empty calls <%s>" % (node.tag)}
+                    listitems.append(item)
+            if subnode.tag in BRACKET_TAGS:
+                if not subnode.text:
+                    item = {"line": subnode.sourceline,
+                            "type": subnode.tag,
+                            "identifier": "",
+                            "message": "Empty condition: %s" % (subnode.tag)}
+                    listitems.append(item)
+                elif not Utils.check_brackets(subnode.text):
+                    condition = str(subnode.text).replace("  ", "").replace("\t", "")
+                    item = {"line": subnode.sourceline,
+                            "type": subnode.tag,
+                            "identifier": condition,
+                            "message": "Brackets do not match: %s" % (condition)}
+                    listitems.append(item)
+                listitems.append(item)
+            if subnode.tag in DOUBLE_TAGS and not subnode.getchildren():
+                xpath = tree.getpath(subnode)
+                if xpath.endswith("]") and not xpath.endswith("[1]"):
+                    item = {"line": subnode.sourceline,
+                            "type": subnode.tag,
+                            "identifier": subnode.tag,
+                            "message": "Invalid multiple tags for %s: <%s>" % (subnode.getparent().tag, subnode.tag)}
+                    listitems.append(item)
             for k, v in subnode.attrib.items():
                 tpl_control = subnodes[subnode.tag]
                 if k not in tpl_control:
@@ -696,48 +715,6 @@ class InfoProvider(object):
                             "type": subnode.tag,
                             "identifier": condition,
                             "message": "Brackets do not match: %s" % (condition)}
-                    listitems.append(item)
-
-            if subnode.tag in ALLOWED_TEXT:
-                if subnode.text.lower() in ALLOWED_TEXT[subnode.tag] or subnode.text.startswith("$PARAM["):
-                    continue
-                item = {"line": subnode.sourceline,
-                        "type": subnode.tag,
-                        "identifier": subnode.text,
-                        "message": "invalid value for %s: %s" % (subnode.tag, subnode.text)}
-                listitems.append(item)
-            if subnode.tag in NOOP_TAGS:
-                if subnode.text and subnode.text != "-":
-                    continue
-                item = {"line": subnode.sourceline,
-                        "type": subnode.tag,
-                        "identifier": subnode.tag,
-                        "message": "Use 'noop' for empty calls <%s>" % (node.tag)}
-                listitems.append(item)
-            if subnode.tag in BRACKET_TAGS:
-                if not subnode.text:
-                    message = "Empty condition: %s" % (subnode.tag)
-                    condition = ""
-                elif not Utils.check_brackets(subnode.text):
-                    condition = str(subnode.text).replace("  ", "").replace("\t", "")
-                    message = "Brackets do not match: %s" % (condition)
-                else:
-                    continue
-                item = {"line": subnode.sourceline,
-                        "type": subnode.tag,
-                        "identifier": condition,
-                        "message": message}
-                listitems.append(item)
-        # check for not-allowed siblings for some tags
-        xpath = ".//" + " | .//".join(DOUBLE_TAGS)
-        for node in root.xpath(xpath):
-            if not node.getchildren():
-                xpath = tree.getpath(node)
-                if xpath.endswith("]") and not xpath.endswith("[1]"):
-                    item = {"line": node.sourceline,
-                            "type": node.tag,
-                            "identifier": node.tag,
-                            "message": "Invalid multiple tags for %s: <%s>" % (node.getparent().tag, node.tag)}
                     listitems.append(item)
         for item in listitems:
             item["filename"] = xml_file
