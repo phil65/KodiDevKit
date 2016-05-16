@@ -656,13 +656,12 @@ class InfoProvider(object):
                 listitems.append(item)
                 continue
             if subnode.tag in ALLOWED_TEXT:
-                if subnode.text.lower() in ALLOWED_TEXT[subnode.tag] or subnode.text.startswith("$PARAM["):
-                    continue
-                item = {"line": subnode.sourceline,
-                        "type": subnode.tag,
-                        "identifier": subnode.text,
-                        "message": "invalid value for %s: %s" % (subnode.tag, subnode.text)}
-                listitems.append(item)
+                if subnode.text.lower() not in ALLOWED_TEXT[subnode.tag] and not subnode.text.startswith("$PARAM["):
+                    item = {"line": subnode.sourceline,
+                            "type": subnode.tag,
+                            "identifier": subnode.text,
+                            "message": "invalid value for %s: %s" % (subnode.tag, subnode.text)}
+                    listitems.append(item)
             if subnode.tag in NOOP_TAGS:
                 if not subnode.text or not subnode.text != "-":
                     item = {"line": subnode.sourceline,
@@ -701,13 +700,12 @@ class InfoProvider(object):
                             "message": "invalid attribute for <%s>: %s" % (subnode.tag, k)}
                     listitems.append(item)
                 elif k in ALLOWED_ATTR:
-                    if v in ALLOWED_ATTR[k] or v.startswith("$PARAM["):
-                        continue
-                    item = {"line": subnode.sourceline,
-                            "type": subnode.tag,
-                            "identifier": v,
-                            "message": "invalid value for %s attribute: %s" % (k, v)}
-                    listitems.append(item)
+                    if v not in ALLOWED_ATTR[k] and not v.startswith("$PARAM["):
+                        item = {"line": subnode.sourceline,
+                                "type": subnode.tag,
+                                "identifier": v,
+                                "message": "invalid value for %s attribute: %s" % (k, v)}
+                        listitems.append(item)
                 if k == "condition" and not Utils.check_brackets(subnode.attrib["condition"]):
                     condition = str(v).replace("  ", "").replace("\t", "")
                     item = {"line": subnode.sourceline,
