@@ -18,6 +18,7 @@ import webbrowser
 import logging
 from itertools import chain
 from xml.sax.saxutils import escape
+from lxml import etree as ET
 
 import mdpopups
 
@@ -31,6 +32,17 @@ INFOS = infoprovider.InfoProvider()
 SETTINGS_FILE = 'kodidevkit.sublime-settings'
 
 sublimelogger.config()
+
+CONST_ATTRIBUTES = set(["x", "y", "width", "height", "center", "max", "min", "w", "h", "time",
+                        "acceleration", "delay", "start", "end", "center", "border", "repeat"])
+
+
+CONST_NODES = set(["posx", "posy", "left", "centerleft", "right", "centerright", "top", "centertop",
+                   "bottom", "centerbottom", "width", "height", "offsetx", "offsety", "textoffsetx",
+                   "textoffsety", "textwidth", "spinposx", "spinposy", "spinwidth", "spinheight",
+                   "radioposx", "radioposy", "radiowidth", "radioheight", "markwidth", "markheight",
+                   "sliderwidth", "sliderheight", "itemgap", "bordersize", "timeperimage", "fadetime",
+                   "pauseatend", "depth"])
 
 
 def plugin_loaded():
@@ -54,6 +66,8 @@ class KodiDevKit(sublime_plugin.EventListener):
         self.actual_project = None
         self.prev_selection = None
         self.is_modified = False
+        self.root = None
+        self.tree = None
 
     def on_query_completions(self, view, prefix, locations):
         """
@@ -114,6 +128,12 @@ class KodiDevKit(sublime_plugin.EventListener):
         get correct tooltip based on context (veeery hacky atm)
         """
         flags = sublime.CLASS_WORD_START | sublime.CLASS_WORD_END
+        row, col = view.rowcol(view.sel()[0].begin())
+        is_const = False
+        for i in self.tree.iter():
+            if i.sourceline == row + 1:
+                if i.tag in CONST_NODES:
+                    is_const = True
         info_type = ""
         info_id = ""
         scope_name = view.scope_name(region.b)
@@ -150,7 +170,7 @@ class KodiDevKit(sublime_plugin.EventListener):
                         return str(value)
             elif info_type == "LOCALIZE":
                 return INFOS.return_label(info_id)
-            if line_contents.startswith(("<include>", "<include content=", "<font", "<depth")):
+            if line_contents.startswith(("<include>", "<include content=", "<font")) or is_const:
                 content = Utils.get_node_content(view, flags)
                 node = INFOS.addon.return_node(content, folder=folder)
                 if node:
@@ -236,6 +256,8 @@ class KodiDevKit(sublime_plugin.EventListener):
             filename = os.path.basename(view.file_name())
             folder = view.file_name().split(os.sep)[-2]
             INFOS.addon.reload_after_save(view.file_name())
+            self.root = Utils.get_root_from_file(view.file_name())
+            self.tree = ET.ElementTree(self.root)
             if folder in INFOS.addon.window_files and filename in INFOS.addon.window_files[folder]:
                 if self.settings.get("auto_reload_skin", True):
                     self.is_modified = False
@@ -252,12 +274,14 @@ class KodiDevKit(sublime_plugin.EventListener):
         check currently visible view, assign syntax file and update InfoProvider if needed
         """
         view = sublime.active_window().active_view()
-        filename = view.file_name()
-        if INFOS.addon and filename and filename.endswith(".xml"):
+        self.filename = view.file_name()
+        self.root = Utils.get_root_from_file(self.filename)
+        self.tree = ET.ElementTree(self.root)
+        if INFOS.addon and self.filename and self.filename.endswith(".xml"):
             view.assign_syntax('Packages/KodiDevKit/KodiSkinXML.sublime-syntax')
-        if filename and filename.endswith(".po"):
+        if self.filename and self.filename.endswith(".po"):
             view.assign_syntax('Packages/KodiDevKit/Gettext.tmLanguage')
-        if filename and filename.endswith(".log"):
+        if self.filename and self.filename.endswith(".log"):
             view.assign_syntax('Packages/KodiDevKit/KodiLog.sublime-syntax')
         if view and view.window() is not None:
             variables = view.window().extract_variables()
