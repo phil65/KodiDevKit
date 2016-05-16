@@ -129,11 +129,11 @@ class KodiDevKit(sublime_plugin.EventListener):
         """
         flags = sublime.CLASS_WORD_START | sublime.CLASS_WORD_END
         row, col = view.rowcol(view.sel()[0].begin())
-        is_const = False
+        element = None
         for i in self.tree.iter():
-            if i.sourceline == row + 1:
-                if i.tag in CONST_NODES:
-                    is_const = True
+            if i.sourceline >= row + 1:
+                element = i
+                break
         info_type = ""
         info_id = ""
         scope_name = view.scope_name(region.b)
@@ -170,7 +170,7 @@ class KodiDevKit(sublime_plugin.EventListener):
                         return str(value)
             elif info_type == "LOCALIZE":
                 return INFOS.return_label(info_id)
-            if line_contents.startswith(("<include>", "<include content=", "<font")) or is_const:
+            if element.tag in CONST_NODES or element.tag == "font" or (element.tag == "include" and "name" not in element.attrib):
                 content = Utils.get_node_content(view, flags)
                 node = INFOS.addon.return_node(content, folder=folder)
                 if node:
@@ -183,16 +183,12 @@ class KodiDevKit(sublime_plugin.EventListener):
                                                          language="xml")
                     else:
                         return "include too big for preview"
-            elif "<visible" in line_contents or "<enable" in line_contents:
+            elif element.tag in ["visible", "enable"]:
                 self.boolean_popup(selected_content, view)
             elif "label" in line_contents or "<property" in line_contents or "localize" in line_contents:
                 label = INFOS.return_label(selected_content)
                 if label:
                     return label
-            elif "<fadetime" in line_contents:
-                content = Utils.get_node_content(view, flags)
-                node = INFOS.addon.return_node(content, folder=folder)
-                node_content = str(node["content"])[2:-3]
             elif line_contents.startswith(("<texture", "<alttexture", "<bordertexture", "<icon", "<thumb")):
                 return INFOS.get_image_info(selected_content)
             elif "<control " in line_contents:
@@ -275,6 +271,10 @@ class KodiDevKit(sublime_plugin.EventListener):
         """
         view = sublime.active_window().active_view()
         self.filename = view.file_name()
+        if not self.filename:
+            self.root = None
+            self.tree = None
+            return None
         self.root = Utils.get_root_from_file(self.filename)
         self.tree = ET.ElementTree(self.root)
         if INFOS.addon and self.filename and self.filename.endswith(".xml"):
