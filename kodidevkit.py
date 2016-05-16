@@ -248,6 +248,9 @@ class KodiDevKit(sublime_plugin.EventListener):
             INFOS.addon.update_labels()
 
     def check_status(self):
+        """
+        check currently visible view, assign syntax file and update InfoProvider if needed
+        """
         view = sublime.active_window().active_view()
         filename = view.file_name()
         if INFOS.addon and filename and filename.endswith(".xml"):
@@ -336,6 +339,10 @@ class OpenSkinImageCommand(sublime_plugin.WindowCommand):
 
 class BuildAddonCommand(sublime_plugin.WindowCommand):
 
+    """
+    Create an installable zip archive of the currently open addon
+    """
+
     def is_visible(self):
         return bool(INFOS.addon) and INFOS.addon.type == "skin"
 
@@ -351,6 +358,10 @@ class BuildAddonCommand(sublime_plugin.WindowCommand):
 
 
 class BuildThemeCommand(sublime_plugin.WindowCommand):
+
+    """
+    Select and build a theme of the currently open skin
+    """
 
     def is_visible(self):
         return bool(INFOS.addon) and os.path.exists(INFOS.addon.theme_path)
@@ -445,6 +456,10 @@ class CheckVariablesCommand(QuickPanelCommand):
 
 
 class OpenActiveWindowXmlFromRemoteCommand(sublime_plugin.WindowCommand):
+
+    """
+    checks currently active window via JSON and opens corresponding XML file
+    """
 
     @Utils.run_async
     def run(self):
@@ -554,6 +569,10 @@ class SearchForJsonCommand(sublime_plugin.WindowCommand):
 
 class PreviewImageCommand(sublime_plugin.TextCommand):
 
+    """
+    show image preview of selected text inside SublimeText
+    """
+
     def is_visible(self):
         if not INFOS.addon or not INFOS.addon.media_path:
             return False
@@ -591,6 +610,10 @@ class PreviewImageCommand(sublime_plugin.TextCommand):
 
 class GoToTagCommand(sublime_plugin.WindowCommand):
 
+    """
+    Jump to include/font/etc
+    """
+
     def run(self):
         flags = sublime.CLASS_WORD_START | sublime.CLASS_WORD_END
         view = self.window.active_view()
@@ -601,6 +624,10 @@ class GoToTagCommand(sublime_plugin.WindowCommand):
 
 
 class SearchForImageCommand(sublime_plugin.TextCommand):
+
+    """
+    Search through all files in media folder via QuickPanel
+    """
 
     def is_visible(self):
         return bool(INFOS.addon and INFOS.addon.media_path)
@@ -636,6 +663,10 @@ class SearchForImageCommand(sublime_plugin.TextCommand):
 
 class SearchForFontCommand(sublime_plugin.TextCommand):
 
+    """
+    search through all fonts from Fonts.xml via QuickPanel
+    """
+
     def is_visible(self):
         return bool(INFOS.addon and INFOS.addon.fonts)
 
@@ -654,6 +685,10 @@ class SearchForFontCommand(sublime_plugin.TextCommand):
 
 
 class MoveToLanguageFile(sublime_plugin.TextCommand):
+
+    """
+    move selected file to default .po file (or create .po file if not existing)
+    """
 
     def is_visible(self):
         scope_name = self.view.scope_name(self.view.sel()[0].b)
@@ -706,6 +741,10 @@ class ReplaceTextCommand(sublime_plugin.TextCommand):
 
 
 class SwitchXmlFolderCommand(QuickPanelCommand):
+
+    """
+    switch to same file in different XML folder if available
+    """
 
     def is_visible(self):
         return bool(INFOS.addon) and len(INFOS.addon.xml_folders) > 1
