@@ -310,6 +310,11 @@
         <shadowcolor>color</shadowcolor>
         <urlset>xxx</urlset>
     </control>
+    <control type="renderaddon" id="int">
+        <width>int</width>
+        <height>int</height>
+        <include>common</include>
+    </control>
     <control type="visualisation" id="int">
         <width>int</width>
         <height>int</height>
