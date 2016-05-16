@@ -336,8 +336,8 @@ class QuickPanelCommand(sublime_plugin.WindowCommand):
         view.sel().clear()
         if "identifier" in node:
             text_point = view.text_point(node["line"] - 1, 0)
-            label = escape(node["identifier"])
             line_contents = view.substr(view.line(text_point))
+            label = escape(node["identifier"])
             if line_contents.count(label) != 1:
                 return False
             line_start = line_contents.find(label)
@@ -347,14 +347,17 @@ class QuickPanelCommand(sublime_plugin.WindowCommand):
 
 class OpenSkinImageCommand(sublime_plugin.WindowCommand):
 
+    """
+    Open image with default OS image tool
+    """
+
     def is_visible(self):
         return bool(INFOS.addon) and os.path.exists(INFOS.addon.media_path)
 
     @Utils.run_async
     def run(self, pack_textures=True):
-        view = self.window.active_view()
-        flags = sublime.CLASS_WORD_START | sublime.CLASS_WORD_END
-        path = Utils.get_node_content(view, flags)
+        path = Utils.get_node_content(view=self.window.active_view(),
+                                      flags=sublime.CLASS_WORD_START | sublime.CLASS_WORD_END)
         imagepath = INFOS.addon.translate_path(path)
         if not os.path.exists(imagepath):
             return None
@@ -463,6 +466,10 @@ class SearchFileForLabelsCommand(QuickPanelCommand):
 
 class CheckVariablesCommand(QuickPanelCommand):
 
+    """
+    start skin check with *check_type and show results in QuickPanel
+    """
+
     def run(self, check_type):
         if check_type == "file":
             filename = self.window.active_view().file_name()
@@ -503,6 +510,10 @@ class OpenActiveWindowXmlFromRemoteCommand(sublime_plugin.WindowCommand):
 
 
 class SearchForLabelCommand(sublime_plugin.WindowCommand):
+
+    """
+    Search through all core / addon labels and insert selected entry
+    """
 
     def is_visible(self):
         return bool(INFOS.addon) and bool(INFOS.get_po_files())
@@ -545,6 +556,10 @@ class SearchForBuiltinCommand(sublime_plugin.WindowCommand):
 
 class BumpVersionCommand(sublime_plugin.WindowCommand):
 
+    """
+    Bump Addon version by incrementing addon.xml version and adding changelog entry
+    """
+
     def run(self):
         self.window.show_quick_panel(items=["Major", "Minor", "Bugfix"],
                                      on_select=self.on_done,
@@ -573,6 +588,10 @@ class SearchForVisibleConditionCommand(sublime_plugin.WindowCommand):
 
 
 class SearchForJsonCommand(sublime_plugin.WindowCommand):
+
+    """
+    search through JSONRPC Introspect results
+    """
 
     @Utils.run_async
     def run(self):
@@ -754,6 +773,10 @@ class MoveToLanguageFile(sublime_plugin.TextCommand):
 
 
 class ReplaceTextCommand(sublime_plugin.TextCommand):
+
+    """
+    replace selected text with label from *label_id
+    """
 
     def run(self, edit, label_id):
         for region in self.view.sel():
