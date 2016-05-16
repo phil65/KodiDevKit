@@ -334,6 +334,7 @@
         <include>common</include>
         <include>nav_common</include>
         <include>button_common</include>
+        <ontextchange>builtin</ontextchange>
         <hinttext>label</hinttext>
         <password>bool</password>
     </control>

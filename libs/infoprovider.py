@@ -690,8 +690,7 @@ class InfoProvider(object):
                             "message": "Invalid multiple tags for %s: <%s>" % (subnode.getparent().tag, subnode.tag)}
                     listitems.append(item)
             for k, v in subnode.attrib.items():
-                tpl_control = subnodes[subnode.tag]
-                if k not in tpl_control:
+                if k not in subnodes[subnode.tag] and k != "description":
                     item = {"line": subnode.sourceline,
                             "type": subnode.tag,
                             "identifier": k,

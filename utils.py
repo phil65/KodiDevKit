@@ -27,6 +27,16 @@ SETTINGS_FILE = 'kodidevkit.sublime-settings'
 SUBLIME_PATH = Utils.get_sublime_path()
 
 
+class OpenKodiLogCommand(sublime_plugin.WindowCommand):
+
+    def run(self):
+        filename = "%s.log" % APP_NAME.lower()
+        self.log = Utils.check_paths([os.path.join(kodi.userdata_folder, filename),
+                                      os.path.join(kodi.userdata_folder, "temp", filename),
+                                      os.path.join(os.path.expanduser("~"), "Library", "Logs", filename)])
+        self.window.open_file(self.log)
+
+
 class OpenSourceFromLog(sublime_plugin.TextCommand):
 
     """

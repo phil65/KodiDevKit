@@ -225,3 +225,8 @@ class Addon(object):
     def bump_version(self, version):
         self.root.attrib["version"] = version
         Utils.save_xml(self.xml_file, self.root)
+        with open(self.changelog_path, "r") as f:
+            contents = f.readlines()
+        contents = [version, "", "-", "-", "", ""] + contents
+        with open(self.changelog_path, "w") as f:
+            f.write("\n".join(contents))

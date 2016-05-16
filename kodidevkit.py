@@ -28,13 +28,15 @@ from .libs.kodi import kodi
 
 INFOS = infoprovider.InfoProvider()
 # sublime.log_commands(True)
-APP_NAME = "Kodi"
 SETTINGS_FILE = 'kodidevkit.sublime-settings'
 
 sublimelogger.config()
 
 
 def plugin_loaded():
+    """
+    ST API method: gets called once API is ready
+    """
     settings = sublime.load_settings(SETTINGS_FILE)
     kodi.load_settings(settings)
     INFOS.load_settings(settings)
@@ -44,12 +46,19 @@ def plugin_loaded():
 
 class KodiDevKit(sublime_plugin.EventListener):
 
+    """
+    Handles interaction of ST with InfoProviders (kodi/skin)
+    """
+
     def __init__(self, **kwargs):
         self.actual_project = None
         self.prev_selection = None
         self.is_modified = False
 
     def on_query_completions(self, view, prefix, locations):
+        """
+        ST API method: gets called when autocompletion triggers
+        """
         completions = []
         scope_name = view.scope_name(view.sel()[0].b)
         filename = view.file_name()
@@ -77,6 +86,9 @@ class KodiDevKit(sublime_plugin.EventListener):
             # return (completions, sublime.INHIBIT_WORD_COMPLETIONS | sublime.INHIBIT_EXPLICIT_COMPLETIONS)
 
     def on_selection_modified_async(self, view):
+        """
+        ST API method: gets called when selection changed
+        """
         if len(view.sel()) > 1 or not INFOS.addon:
             return None
         try:
@@ -98,13 +110,16 @@ class KodiDevKit(sublime_plugin.EventListener):
                                       self.settings.get("tooltip_delay", 0))
 
     def get_tooltip(self, view, region, folder):
+        """
+        get correct tooltip based on context (veeery hacky atm)
+        """
         flags = sublime.CLASS_WORD_START | sublime.CLASS_WORD_END
         info_type = ""
         info_id = ""
         scope_name = view.scope_name(region.b)
         scope_content = view.substr(view.extract_scope(region.b))
         line = view.line(region)
-        line_contents = view.substr(line).lower()
+        line_contents = view.substr(line).lower().strip()
         label_region = view.expand_by_class(region, flags, '$],')
         bracket_region = view.expand_by_class(region, flags, '<>')
         selected_content = view.substr(view.expand_by_class(region, flags, '<>"[]'))
@@ -135,7 +150,7 @@ class KodiDevKit(sublime_plugin.EventListener):
                         return str(value)
             elif info_type == "LOCALIZE":
                 return INFOS.return_label(info_id)
-            if "<include>" in line_contents or "<include content=" in line_contents or "<font" in line_contents:
+            if line_contents.startswith(("<include>", "<include content=", "<font", "<depth")):
                 content = Utils.get_node_content(view, flags)
                 node = INFOS.addon.return_node(content, folder=folder)
                 if node:
@@ -158,7 +173,7 @@ class KodiDevKit(sublime_plugin.EventListener):
                 content = Utils.get_node_content(view, flags)
                 node = INFOS.addon.return_node(content, folder=folder)
                 node_content = str(node["content"])[2:-3]
-            elif "<texture" in line_contents or "<alttexture" in line_contents or "<bordertexture" in line_contents or "<icon" in line_contents or "<thumb" in line_contents:
+            elif line_contents.startswith(("<texture", "<alttexture", "<bordertexture", "<icon", "<thumb")):
                 return INFOS.get_image_info(selected_content)
             elif "<control " in line_contents:
                 # TODO: add positioning based on parent nodes
@@ -175,6 +190,9 @@ class KodiDevKit(sublime_plugin.EventListener):
 
     @Utils.run_async
     def boolean_popup(self, selected_content, view):
+        """
+        popup to show boolean value
+        """
         result = kodi.request(method="XBMC.GetInfoBooleans",
                               params={"booleans": [selected_content]})
         if result:
@@ -184,6 +202,9 @@ class KodiDevKit(sublime_plugin.EventListener):
                                           self.settings.get("tooltip_delay", 0))
 
     def show_tooltip(self, view, tooltip_label):
+        """
+        show tooltip using mdpopups
+        """
         mdpopups.show_popup(view=view,
                             content=tooltip_label,
                             flags=sublime.COOPERATE_WITH_AUTO_COMPLETE,
@@ -249,6 +270,10 @@ class KodiDevKit(sublime_plugin.EventListener):
 
 class ReloadKodiLanguageFilesCommand(sublime_plugin.WindowCommand):
 
+    """
+    Command to manually reload language files
+    """
+
     def run(self):
         INFOS.load_settings(sublime.load_settings(SETTINGS_FILE))
         kodi.update_labels()
@@ -256,6 +281,10 @@ class ReloadKodiLanguageFilesCommand(sublime_plugin.WindowCommand):
 
 
 class QuickPanelCommand(sublime_plugin.WindowCommand):
+
+    """
+    Parent class including method callbacks to show location and select text
+    """
 
     def is_visible(self):
         return bool(INFOS.addon)
@@ -475,6 +504,20 @@ class SearchForBuiltinCommand(sublime_plugin.WindowCommand):
         view.run_command("insert", {"characters": INFOS.builtins[index][0]})
 
 
+class BumpVersionCommand(sublime_plugin.WindowCommand):
+
+    def run(self):
+        self.window.show_quick_panel(items=["Major", "Minor", "Bugfix"],
+                                     on_select=self.on_done,
+                                     selected_index=0)
+
+    def on_done(self, index):
+        if index == -1:
+            return None
+        INFOS.addon.bump_version("9.9.9")
+        self.window.open_file(INFOS.addon.changelog_path)
+
+
 class SearchForVisibleConditionCommand(sublime_plugin.WindowCommand):
 
     def run(self):
@@ -507,16 +550,6 @@ class SearchForJsonCommand(sublime_plugin.WindowCommand):
             return None
         view = self.window.active_view()
         view.run_command("insert", {"characters": str(self.listitems[index][0])})
-
-
-class OpenKodiLogCommand(sublime_plugin.WindowCommand):
-
-    def run(self):
-        filename = "%s.log" % APP_NAME.lower()
-        self.log = Utils.check_paths([os.path.join(kodi.userdata_folder, filename),
-                                      os.path.join(kodi.userdata_folder, "temp", filename),
-                                      os.path.join(os.path.expanduser("~"), "Library", "Logs", filename)])
-        self.window.open_file(self.log)
 
 
 class PreviewImageCommand(sublime_plugin.TextCommand):
