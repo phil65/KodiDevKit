@@ -5,7 +5,7 @@
 
 import os
 import logging
-from time import gmtime, strftime
+import time
 
 from . import Utils
 from .polib import polib
@@ -137,7 +137,7 @@ class Addon(object):
         """
         po = polib.POFile()
         mail = ""
-        actual_date = strftime("%Y-%m-%d %H:%M:%S", gmtime())
+        actual_date = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
         po.metadata = {
             'Project-Id-Version': '1.0',
             'Report-Msgid-Bugs-To': '%s' % mail,
