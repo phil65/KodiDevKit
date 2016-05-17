@@ -19,7 +19,7 @@ import logging
 from itertools import chain
 from xml.sax.saxutils import escape
 from lxml import etree as ET
-
+from threading import Timer
 import mdpopups
 
 from .libs import Utils
@@ -68,6 +68,7 @@ class KodiDevKit(sublime_plugin.EventListener):
         self.is_modified = False
         self.root = None
         self.tree = None
+        self.timer = None
 
     def on_query_completions(self, view, prefix, locations):
         """
@@ -107,26 +108,23 @@ class KodiDevKit(sublime_plugin.EventListener):
             return None
         try:
             region = view.sel()[0]
-            folder = view.file_name().split(os.sep)[-2]
         except Exception:
             return None
         if region == self.prev_selection:
             return None
         self.prev_selection = region
-        view.hide_popup()
-        tooltip = self.get_tooltip(view, region, folder)
+        delay = self.settings.get("tooltip_delay", 200)
+        if self.timer:
+            self.timer.cancel()
+        self.timer = Timer(delay / 1000, self.show_tooltip, (view,))
+        self.timer.start()
 
-        # node = INFOS.template_root.find(".//control[@type='label']")
-        # logging.info(node)
-        # popup_label = node.find(".//available_tags").text.replace("\\n", "<br>")
-        if tooltip and self.settings.get("tooltip_delay", 0) > -1:
-            sublime.set_timeout_async(lambda: self.show_tooltip(view, tooltip),
-                                      self.settings.get("tooltip_delay", 0))
-
-    def get_tooltip(self, view, region, folder):
+    def get_tooltip(self, view):
         """
         get correct tooltip based on context (veeery hacky atm)
         """
+        region = view.sel()[0]
+        folder = view.file_name().split(os.sep)[-2]
         flags = sublime.CLASS_WORD_START | sublime.CLASS_WORD_END
         row, col = view.rowcol(view.sel()[0].begin())
         element = None
@@ -170,7 +168,7 @@ class KodiDevKit(sublime_plugin.EventListener):
                         return str(value)
             elif info_type == "LOCALIZE":
                 return INFOS.return_label(info_id)
-            if element.tag in CONST_NODES or element.tag == "font" or (element.tag == "include" and "name" not in element.attrib):
+            if element is not None and (element.tag in CONST_NODES or element.tag == "font" or (element.tag == "include" and "name" not in element.attrib)):
                 content = Utils.get_node_content(view, flags)
                 node = INFOS.addon.return_node(content, folder=folder)
                 if node:
@@ -183,8 +181,13 @@ class KodiDevKit(sublime_plugin.EventListener):
                                                          language="xml")
                     else:
                         return "include too big for preview"
-            elif element.tag in ["visible", "enable"]:
-                self.boolean_popup(selected_content, view)
+            elif element is not None and element.tag in ["visible", "enable"]:
+                result = kodi.request(method="XBMC.GetInfoBooleans",
+                                      params={"booleans": [selected_content]})
+                if result:
+                    _, value = result["result"].popitem()
+                    if value is not None:
+                        return value
             elif "label" in line_contents or "<property" in line_contents or "localize" in line_contents:
                 label = INFOS.return_label(selected_content)
                 if label:
@@ -204,29 +207,22 @@ class KodiDevKit(sublime_plugin.EventListener):
                     window_index = infoprovider.WINDOW_NAMES.index(window_name)
                     return infoprovider.WINDOW_FILENAMES[window_index]
 
-    @Utils.run_async
-    def boolean_popup(self, selected_content, view):
-        """
-        popup to show boolean value
-        """
-        result = kodi.request(method="XBMC.GetInfoBooleans",
-                              params={"booleans": [selected_content]})
-        if result:
-            _, value = result["result"].popitem()
-            if value is not None:
-                sublime.set_timeout_async(lambda: self.show_tooltip(view, str(value)),
-                                          self.settings.get("tooltip_delay", 0))
-
-    def show_tooltip(self, view, tooltip_label):
+    def show_tooltip(self, view):
         """
         show tooltip using mdpopups
         """
+        view.hide_popup()
+        if not view.file_name():
+            return None
+        tooltip = self.get_tooltip(view)
+        if not tooltip:
+            return None
         mdpopups.show_popup(view=view,
-                            content=tooltip_label,
+                            content=tooltip,
                             flags=sublime.COOPERATE_WITH_AUTO_COMPLETE,
                             max_width=self.settings.get("tooltip_width", 1000),
                             max_height=self.settings.get("height", 400),
-                            on_navigate=lambda label_id, view=view: Utils.jump_to_label_declaration(view, tooltip_label))
+                            on_navigate=lambda label_id, view=view: Utils.jump_to_label_declaration(view, tooltip))
 
     def on_modified_async(self, view):
         if INFOS.addon and INFOS.addon.path:

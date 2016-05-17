@@ -71,11 +71,11 @@
     /*
      * Tooltip delay
      *
-     * Choose the delay until the info tooltip shows up
+     * Choose the delay until the info tooltip shows up (in ms)
      * Choose -1 if you do not want tooltip at all
      *
      */
-    "tooltip_delay": 0,
+    "tooltip_delay": 200,
     /*
      * Auto-Check XML
      *
