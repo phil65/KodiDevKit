@@ -132,10 +132,11 @@ class KodiDevKit(sublime_plugin.EventListener):
         flags = sublime.CLASS_WORD_START | sublime.CLASS_WORD_END
         row, _ = view.rowcol(view.sel()[0].begin())
         element = None
-        for i in self.tree.iter():
-            if i.sourceline >= row + 1:
-                element = i
-                break
+        if self.tree:
+            for i in self.tree.iter():
+                if i.sourceline >= row + 1:
+                    element = i
+                    break
         info_type = ""
         info_id = ""
         scope_name = view.scope_name(region.b)
@@ -177,6 +178,12 @@ class KodiDevKit(sublime_plugin.EventListener):
                         return str(value)
             elif info_type == "LOCALIZE":
                 return INFOS.return_label(info_id)
+            if "string.quoted.double.xml" in scope_name:
+                content = scope_content[1:-1]
+                if content.isdigit():
+                    label_id = INFOS.return_label(content)
+                    if label_id:
+                        return label_id
             if element is not None and (element.tag in CONST_NODES or element.tag == "font" or (element.tag == "include" and "name" not in element.attrib)):
                 content = Utils.get_node_content(view, flags)
                 node = INFOS.addon.return_node(content, folder=folder)
