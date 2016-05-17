@@ -25,6 +25,9 @@ class Addon(object):
         self.fonts = {}
         self.xml_folders = []
         self.window_files = {}
+        self.include_files = {}
+        self.font_file = None
+        self.includes = {}
         self.settings = kwargs.get("settings")
         self.path = kwargs.get("project_path")
         self.xml_file = os.path.join(self.path, "addon.xml")
