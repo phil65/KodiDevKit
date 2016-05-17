@@ -44,6 +44,10 @@ CONST_NODES = set(["posx", "posy", "left", "centerleft", "right", "centerright",
                    "sliderwidth", "sliderheight", "itemgap", "bordersize", "timeperimage", "fadetime",
                    "pauseatend", "depth"])
 
+LABEL_TAGS = set(["label", "label2", "altlabel", "property", "hinttext"])
+
+VISIBLE_TAGS = set(["visible", "enable", "usealttexture", "expression", "autoscroll"])
+
 
 def plugin_loaded():
     """
@@ -186,18 +190,18 @@ class KodiDevKit(sublime_plugin.EventListener):
                                                          language="xml")
                     else:
                         return "include too big for preview"
-            elif element is not None and element.tag in ["visible", "enable", "expression"]:
+            elif element is not None and element.tag in VISIBLE_TAGS:
                 result = kodi.request(method="XBMC.GetInfoBooleans",
                                       params={"booleans": [selected_content]})
                 if result:
                     key, value = result["result"].popitem()
                     if value is not None:
                         return "%s: <b>%s</b>" % (key, value)
-            elif "label" in line_contents or "<property" in line_contents or "localize" in line_contents:
+            elif element is not None and element.tag in LABEL_TAGS:
                 label = INFOS.return_label(selected_content)
                 if label:
                     return label
-            elif line_contents.startswith(("<texture", "<alttexture", "<bordertexture", "<icon", "<thumb")):
+            elif element is not None and (element.tag.find("texture") != -1 or element.tag in ["icon", "thumb"]):
                 image_info = INFOS.get_image_info(selected_content)
                 if image_info:
                     return image_info
