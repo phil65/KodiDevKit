@@ -345,8 +345,11 @@ class BrowseKodiVfsCommand(sublime_plugin.WindowCommand):
     """
 
     def run(self):
-        self.nodes = [["root", "library://video"]]
-        self.on_done(0)
+        self.nodes = [["video", "library://video"],
+                      ["music", "library://music"]]
+        self.window.show_quick_panel(items=self.nodes,
+                                     on_select=self.on_done,
+                                     selected_index=0)
 
     @Utils.run_async
     def on_done(self, index):
