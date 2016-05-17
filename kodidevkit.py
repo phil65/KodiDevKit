@@ -126,7 +126,7 @@ class KodiDevKit(sublime_plugin.EventListener):
         region = view.sel()[0]
         folder = view.file_name().split(os.sep)[-2]
         flags = sublime.CLASS_WORD_START | sublime.CLASS_WORD_END
-        row, col = view.rowcol(view.sel()[0].begin())
+        row, _ = view.rowcol(view.sel()[0].begin())
         element = None
         for i in self.tree.iter():
             if i.sourceline >= row + 1:
@@ -187,7 +187,7 @@ class KodiDevKit(sublime_plugin.EventListener):
                 if result:
                     _, value = result["result"].popitem()
                     if value is not None:
-                        return value
+                        return str(value)
             elif "label" in line_contents or "<property" in line_contents or "localize" in line_contents:
                 label = INFOS.return_label(selected_content)
                 if label:
@@ -627,7 +627,7 @@ class PreviewImageCommand(sublime_plugin.TextCommand):
             return None
         if os.path.isdir(imagepath):
             self.files = []
-            for (_, __, filenames) in os.walk(imagepath):
+            for (_dirpath, _dirnames, filenames) in os.walk(imagepath):
                 self.files.extend(filenames)
                 break
             self.files = [imagepath + s for s in self.files]
