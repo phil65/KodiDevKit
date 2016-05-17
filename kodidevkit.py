@@ -277,9 +277,11 @@ class KodiDevKit(sublime_plugin.EventListener):
             self.root = None
             self.tree = None
             return None
-        self.root = Utils.get_root_from_file(self.filename)
-        self.tree = ET.ElementTree(self.root)
+        self.root = None
+        self.tree = None
         if INFOS.addon and self.filename and self.filename.endswith(".xml"):
+            self.root = Utils.get_root_from_file(self.filename)
+            self.tree = ET.ElementTree(self.root)
             view.assign_syntax('Packages/KodiDevKit/KodiSkinXML.sublime-syntax')
         if self.filename and self.filename.endswith(".po"):
             view.assign_syntax('Packages/KodiDevKit/Gettext.tmLanguage')
