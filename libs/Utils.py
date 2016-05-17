@@ -20,6 +20,7 @@ from threading import Thread
 from functools import wraps
 import time
 import logging
+import string
 from lxml import etree as ET
 
 from .include import Include
@@ -27,6 +28,18 @@ from .polib import polib
 from . import yattag
 
 PARSER = ET.XMLParser(remove_blank_text=True, remove_comments=True)
+
+
+def is_kodi_hex(s):
+    return len(s) == 8 and all(c in string.hexdigits for c in s)
+
+
+def is_number(s):
+    try:
+        float(s)
+        return True
+    except ValueError:
+        return False
 
 
 def save_xml(filename, root):
