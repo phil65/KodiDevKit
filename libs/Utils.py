@@ -302,7 +302,7 @@ def get_root_from_file(xml_file):
     return XML root node from file *filename
     """
     if not xml_file.endswith(".xml"):
-        logging.info("Tried to get root from non-xml file")
+        logging.info("Tried to get root from non-xml file: %s" % xml_file)
         return None
     if not os.path.exists(xml_file):
         return None
