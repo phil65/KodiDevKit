@@ -273,12 +273,10 @@ class KodiDevKit(sublime_plugin.EventListener):
         """
         view = sublime.active_window().active_view()
         self.filename = view.file_name()
-        if not self.filename:
-            self.root = None
-            self.tree = None
-            return None
         self.root = None
         self.tree = None
+        if not self.filename:
+            return None
         if INFOS.addon and self.filename and self.filename.endswith(".xml"):
             self.root = Utils.get_root_from_file(self.filename)
             self.tree = ET.ElementTree(self.root)
