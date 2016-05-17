@@ -338,6 +338,29 @@ class GetInfoLabelsPromptCommand(sublime_plugin.WindowCommand):
             logging.warning(str(value))
 
 
+class BrowseKodiVfsCommand(sublime_plugin.WindowCommand):
+
+    """
+    Allows to browse the Kodi VFS via JSON-RPC
+    """
+
+    def run(self):
+        self.nodes = [["root", "library://video"]]
+        self.on_done(0)
+
+    @Utils.run_async
+    def on_done(self, index):
+        if index == -1:
+            return None
+        node = self.nodes[index]
+        data = kodi.request(method="Files.GetDirectory",
+                            params={"directory": node[1], "media": "files"})
+        self.nodes = [[item["label"], item["file"]] for item in data["result"]["files"]]
+        self.window.show_quick_panel(items=self.nodes,
+                                     on_select=self.on_done,
+                                     selected_index=0)
+
+
 class GetInfoBooleansPromptCommand(sublime_plugin.WindowCommand):
 
     """
