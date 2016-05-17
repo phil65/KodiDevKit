@@ -185,9 +185,9 @@ class KodiDevKit(sublime_plugin.EventListener):
                 result = kodi.request(method="XBMC.GetInfoBooleans",
                                       params={"booleans": [selected_content]})
                 if result:
-                    _, value = result["result"].popitem()
+                    key, value = result["result"].popitem()
                     if value is not None:
-                        return str(value)
+                        return "%s: <b>%s</b>" % (key, value)
             elif "label" in line_contents or "<property" in line_contents or "localize" in line_contents:
                 label = INFOS.return_label(selected_content)
                 if label:
