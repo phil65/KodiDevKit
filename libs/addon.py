@@ -21,6 +21,7 @@ class Addon(object):
         self.type = "python"
         self.po_files = []
         self.colors = []
+        self.color_labels = set()
         self.fonts = {}
         self.xml_folders = []
         self.window_files = {}

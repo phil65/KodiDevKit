@@ -88,6 +88,7 @@ class Skin(addon.Addon):
                          "file": file_path}
                 self.colors.append(color)
             logging.info("found color file %s including %i colors" % (path, len(self.colors)))
+        self.color_labels = {i["name"] for i in self.colors}
 
     def get_fonts(self):
         """
