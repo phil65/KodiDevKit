@@ -198,7 +198,9 @@ class KodiDevKit(sublime_plugin.EventListener):
                 if label:
                     return label
             elif line_contents.startswith(("<texture", "<alttexture", "<bordertexture", "<icon", "<thumb")):
-                return INFOS.get_image_info(selected_content)
+                image_info = INFOS.get_image_info(selected_content)
+                if image_info:
+                    return image_info
             elif "<control " in line_contents:
                 # TODO: add positioning based on parent nodes
                 line, _ = view.rowcol(view.sel()[0].b)
