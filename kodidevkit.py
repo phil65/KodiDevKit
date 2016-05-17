@@ -153,6 +153,11 @@ class KodiDevKit(sublime_plugin.EventListener):
                 if text:
                     return text
         elif "text.xml" in scope_name:
+            if "constant.other.allcaps" in scope_name:
+                window_name = scope_content.lower()[1:-1]
+                if window_name in infoprovider.WINDOW_NAMES:
+                    window_index = infoprovider.WINDOW_NAMES.index(window_name)
+                    return infoprovider.WINDOW_FILENAMES[window_index]
             if info_type in ["VAR", "ESCVAR", "EXP"]:
                 node = INFOS.addon.return_node(info_id, folder=folder)
                 if node["content"]:
@@ -181,7 +186,7 @@ class KodiDevKit(sublime_plugin.EventListener):
                                                          language="xml")
                     else:
                         return "include too big for preview"
-            elif element is not None and element.tag in ["visible", "enable"]:
+            elif element is not None and element.tag in ["visible", "enable", "expression"]:
                 result = kodi.request(method="XBMC.GetInfoBooleans",
                                       params={"booleans": [selected_content]})
                 if result:
@@ -201,11 +206,6 @@ class KodiDevKit(sublime_plugin.EventListener):
             color = INFOS.addon.get_color_info(selected_content)
             if color:
                 return color
-            if "constant.other.allcaps" in scope_name:
-                window_name = scope_content.lower()[1:-1]
-                if window_name in infoprovider.WINDOW_NAMES:
-                    window_index = infoprovider.WINDOW_NAMES.index(window_name)
-                    return infoprovider.WINDOW_FILENAMES[window_index]
 
     def show_tooltip(self, view):
         """
