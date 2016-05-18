@@ -172,9 +172,15 @@ class KodiDevKit(sublime_plugin.EventListener):
                         return str(value)
             if info_type == "LOCALIZE":
                 return INFOS.return_label(info_id)
+            element = None
+            if self.tree:
+                for i in self.tree.iter():
+                    if i.sourceline >= row + 1:
+                        element = i
+                        break
             if "string.quoted.double.xml" in scope_name:
                 content = scope_content[1:-1]
-                if content.isdigit():
+                if content.isdigit() and any(k in element.attrib for k in set(["fallback", "label"])):
                     label_id = INFOS.return_label(content)
                     if label_id:
                         return label_id
@@ -182,12 +188,6 @@ class KodiDevKit(sublime_plugin.EventListener):
                     image_info = INFOS.get_image_info(content)
                     if image_info:
                         return image_info
-            element = None
-            if self.tree:
-                for i in self.tree.iter():
-                    if i.sourceline >= row + 1:
-                        element = i
-                        break
             if element is not None and (element.tag in CONST_NODES or element.tag == "font" or (element.tag == "include" and "name" not in element.attrib)):
                 content = Utils.get_node_content(view, flags)
                 node = INFOS.addon.return_node(content, folder=folder)
