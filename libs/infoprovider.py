@@ -136,6 +136,8 @@ TAG_CHECKS = [[".//content/*", set(["item", "include"])],
 BRACKET_TAGS = set(["visible", "enable", "usealttexture", "selected", "expression"])
 # check some nodes to use noop instead of "-" / empty
 NOOP_TAGS = set(["onclick", "onfocus", "onunfocus", "onup", "onleft", "onright", "ondown", "onback"])
+
+POS_TAGS = set(["posx", "posy", "left", "right", "top", "bottom", "centerleft", "centerright", "centertop", "centerbottom"])
 # check that some nodes only exist once on each level
 # TODO: special cases: label for fadelabel
 DOUBLE_TAGS = set(["camera", "posx", "posy", "top", "bottom", "left", "right", "centertop", "centerbottom", "centerleft", "centerright", "width", "height",
@@ -314,7 +316,7 @@ class InfoProvider(object):
         values = {}
         for anc in element.iterancestors():
             for sib in anc.iterchildren():
-                if sib.tag in ["posx", "posy", "left", "right", "top", "bottom"]:
+                if sib.tag in POS_TAGS:
                     if sib.tag in values:
                         values[sib.tag].append(sib.text)
                     else:
