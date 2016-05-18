@@ -178,6 +178,10 @@ class KodiDevKit(sublime_plugin.EventListener):
                     label_id = INFOS.return_label(content)
                     if label_id:
                         return label_id
+                if content.endswith((".png", ".jpg", ".gif")):
+                    image_info = INFOS.get_image_info(content)
+                    if image_info:
+                        return image_info
             element = None
             if self.tree:
                 for i in self.tree.iter():
