@@ -415,7 +415,7 @@
         <onfocus condition="condition">builtin</onfocus>
         <onunfocus condition="condition">builtin</onunfocus>
         <orientation>orientation</orientation>
-        <preloaditems>bool</preloaditems>
+        <preloaditems>int</preloaditems>
         <scrolltime tween="tween" easing="easing">int</scrolltime>
         <pagecontrol>int</pagecontrol>
         <viewtype label="label">viewtype</viewtype>

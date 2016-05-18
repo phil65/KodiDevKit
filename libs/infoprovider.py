@@ -144,26 +144,18 @@ DOUBLE_TAGS = set(["camera", "posx", "posy", "top", "bottom", "left", "right", "
                    "colordiffuse", "texturefocus", "texturenofocus", "font", "selected", "textcolor", "disabledcolor", "selectedcolor",
                    "shadowcolor", "align", "aligny", "textoffsetx", "textoffsety", "pulseonselect", "textwidth", "focusedcolor", "invalidcolor", "angle", "hitrect"])
 # check that some nodes only contain specific text
-ALLOWED_TEXT = {"align": set(["left", "center", "right", "justify"]),
-                "aligny": set(["top", "center", "bottom"]),
-                "aspectratio": set(["keep", "scale", "stretch", "center"]),
-                "orientation": set(["horizontal", "vertical"]),
-                "subtype": set(["page", "int", "float", "text"]),
-                "action": set(["volume", "seek"]),
-                "viewtype": set(["list", "icon", "biglist", "bigicon", "wide", "bigwide", "wrap", "bigwrap", "info", "biginfo"]),
-                "scroll": set(["false", "true", "yes", "no"]),
-                "randomize": set(["false", "true", "yes", "no"]),
-                "scrollout": set(["false", "true", "yes", "no"]),
-                "pulseonselect": set(["false", "true", "yes", "no"]),
-                "reverse": set(["false", "true", "yes", "no"]),
-                "usecontrolcoords": set(["false", "true", "yes", "no"])}
 # check that some attributes may only contain specific values
-ALLOWED_ATTR = {"align": set(["left", "center", "right", "justify"]),
-                "aligny": set(["top", "center", "bottom"]),
-                "background": set(["true", "false"]),
-                "scalediffuse": set(["true", "false"]),
-                "flipx": set(["true", "false"]),
-                "flipy": set(["true", "false"])}
+ALLOWED_VALUES = {"align": set(["left", "center", "right", "justify"]),
+                  "aligny": set(["top", "center", "bottom"]),
+                  "bool": set(["true", "false"]),
+                  "orientation": set(["horizontal", "vertical"]),
+                  "aspect": set(["scale", "stretch", "center", "keep"]),
+                  "pulseonselect": set(["false", "true", "yes", "no"]),
+                  "subtype": set(["page", "int", "float", "text"]),
+                  "action": set(["volume", "seek"]),
+                  "viewtype": set(["list", "icon", "biglist", "bigicon", "wide", "bigwide", "wrap", "bigwrap", "info", "biginfo"]),
+                  "tween": set(["quadratic", "linear", "sine", "cubic", "back"]),
+                  "easing": set(["inout", "in", "out"])}
 
 
 PARSER = ET.XMLParser(remove_blank_text=True, remove_comments=True)
@@ -210,8 +202,10 @@ class InfoProvider(object):
                     node.getparent().remove(node)
             self.template_root.remove(include)
         self.template_attribs = {}
+        self.template_values = {}
         for template in self.template_root:
             self.template_attribs[template.attrib.get("type")] = {i.tag: i.attrib for i in template.iterchildren()}
+            self.template_values[template.attrib.get("type")] = {i.tag: i.text for i in template.iterchildren()}
 
     def init_addon(self, path):
         """
@@ -648,8 +642,8 @@ class InfoProvider(object):
                         "message": "invalid tag for <%s>: <%s>" % (label, subnode.tag)}
                 listitems.append(item)
                 continue
-            if subnode.tag in ALLOWED_TEXT:
-                if subnode.text.lower() not in ALLOWED_TEXT[subnode.tag] and not subnode.text.startswith("$PARAM["):
+            if self.template_values[c_type][subnode.tag] in ALLOWED_VALUES:
+                if subnode.text.lower() not in ALLOWED_VALUES[self.template_values[c_type][subnode.tag]] and not subnode.text.startswith("$PARAM["):
                     item = {"line": subnode.sourceline,
                             "type": subnode.tag,
                             "identifier": subnode.text,
@@ -693,24 +687,26 @@ class InfoProvider(object):
                             "identifier": k,
                             "message": "invalid attribute for <%s>: %s" % (subnode.tag, k)}
                     listitems.append(item)
+                    continue
                 elif "$PARAM[" in v or "$VAR[" in v:
                     continue
-                elif subnodes[subnode.tag][k] == "int":
+                value_type = subnodes[subnode.tag][k]
+                if value_type == "int":
                     if not Utils.is_number(v):
                         item = {"line": subnode.sourceline,
                                 "type": subnode.tag,
                                 "identifier": v,
                                 "message": "invalid integer value for %s: %s" % (k, v)}
                         listitems.append(item)
-                elif subnodes[subnode.tag][k] == "color":
+                elif value_type == "color":
                     if v not in self.addon.color_labels and not Utils.is_kodi_hex(v):
                         item = {"line": subnode.sourceline,
                                 "type": subnode.tag,
                                 "identifier": v,
                                 "message": "Invalid color for %s: %s" % (k, v)}
                         listitems.append(item)
-                if k in ALLOWED_ATTR:
-                    if v not in ALLOWED_ATTR[k] and not v.startswith("$PARAM["):
+                elif value_type in ALLOWED_VALUES:
+                    if v not in ALLOWED_VALUES[value_type] and not v.startswith("$PARAM["):
                         item = {"line": subnode.sourceline,
                                 "type": subnode.tag,
                                 "identifier": v,
