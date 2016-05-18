@@ -163,14 +163,14 @@ class KodiDevKit(sublime_plugin.EventListener):
                     return mdpopups.syntax_highlight(view=view,
                                                      src=node["content"],
                                                      language="xml")
-            elif info_type in ["INFO", "ESCINFO"]:
+            if info_type in ["INFO", "ESCINFO"]:
                 result = kodi.request(method="XBMC.GetInfoLabels",
                                       params={"labels": [info_id]})
                 if result:
                     _, value = result["result"].popitem()
                     if value:
                         return str(value)
-            elif info_type == "LOCALIZE":
+            if info_type == "LOCALIZE":
                 return INFOS.return_label(info_id)
             if "string.quoted.double.xml" in scope_name:
                 content = scope_content[1:-1]
@@ -201,24 +201,24 @@ class KodiDevKit(sublime_plugin.EventListener):
                                                          language="xml")
                     else:
                         return "include too big for preview"
-            elif element is not None and element.tag in VISIBLE_TAGS:
+            if element is not None and element.tag in VISIBLE_TAGS:
                 result = kodi.request(method="XBMC.GetInfoBooleans",
                                       params={"booleans": [selected_content]})
                 if result:
                     key, value = result["result"].popitem()
                     if value is not None:
                         return "%s: <b>%s</b>" % (key, value)
-            elif element is not None and element.tag in LABEL_TAGS:
+            if element is not None and element.tag in LABEL_TAGS:
                 label = INFOS.return_label(selected_content)
                 if label:
                     return label
-            elif element is not None and (element.tag.find("texture") != -1 or element.tag in ["icon", "thumb"]):
+            if element is not None and (element.tag.find("texture") != -1 or element.tag in ["icon", "thumb"]):
                 image_info = INFOS.get_image_info(selected_content)
                 if image_info:
                     return image_info
-            elif element is not None and element.tag == "control":
+            if element is not None and element.tag == "control":
                 # TODO: add positioning based on parent nodes
-                return INFOS.get_ancestor_info(view.file_name(), row)
+                return INFOS.get_ancestor_info(element)
             color = INFOS.addon.get_color_info(selected_content)
             if color:
                 return color

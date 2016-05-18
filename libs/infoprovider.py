@@ -307,21 +307,14 @@ class InfoProvider(object):
             po_files.extend(self.addon.po_files)
         return po_files
 
-    def get_ancestor_info(self, path, line):
+    def get_ancestor_info(self, element):
         """
         iter through ancestors and return info about absolute position
         """
-        element = None
-        root = Utils.get_root_from_file(path)
-        tree = ET.ElementTree(root)
-        for e in tree.iter():
-            if line <= e.sourceline:
-                element = e
-                break
         values = {}
         for anc in element.iterancestors():
             for sib in anc.iterchildren():
-                if sib.tag in ["posx", "posy"]:
+                if sib.tag in ["posx", "posy", "left", "right", "top", "bottom"]:
                     if sib.tag in values:
                         values[sib.tag].append(sib.text)
                     else:
@@ -690,13 +683,15 @@ class InfoProvider(object):
                             "message": "Invalid multiple tags for %s: <%s>" % (subnode.getparent().tag, subnode.tag)}
                     listitems.append(item)
             for k, v in subnode.attrib.items():
-                if k not in subnodes[subnode.tag] and k != "description":
+                if k == "description":
+                    continue
+                if k not in subnodes[subnode.tag]:
                     item = {"line": subnode.sourceline,
                             "type": subnode.tag,
                             "identifier": k,
                             "message": "invalid attribute for <%s>: %s" % (subnode.tag, k)}
                     listitems.append(item)
-                elif k in ALLOWED_ATTR:
+                if k in ALLOWED_ATTR:
                     if v not in ALLOWED_ATTR[k] and not v.startswith("$PARAM["):
                         item = {"line": subnode.sourceline,
                                 "type": subnode.tag,
