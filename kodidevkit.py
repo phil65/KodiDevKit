@@ -130,34 +130,34 @@ class KodiDevKit(sublime_plugin.EventListener):
         region = view.sel()[0]
         folder = view.file_name().split(os.sep)[-2]
         flags = sublime.CLASS_WORD_START | sublime.CLASS_WORD_END
-        row, _ = view.rowcol(view.sel()[0].begin())
-        element = None
-        if self.tree:
-            for i in self.tree.iter():
-                if i.sourceline >= row + 1:
-                    element = i
-                    break
         info_type = ""
         info_id = ""
         scope_name = view.scope_name(region.b)
         scope_content = view.substr(view.extract_scope(region.b))
         line = view.line(region)
-        line_contents = view.substr(line).lower().strip()
         label_region = view.expand_by_class(region, flags, '$],')
         bracket_region = view.expand_by_class(region, flags, '<>')
-        selected_content = view.substr(view.expand_by_class(region, flags, '<>"[]'))
         if label_region.begin() > bracket_region.begin() and label_region.end() < bracket_region.end():
             info_list = view.substr(label_region).split("[", 1)
             info_type = info_list[0]
             if len(info_list) > 1:
                 info_id = info_list[1]
         if "source.python" in scope_name:
+            line_contents = view.substr(line).lower().strip()
             if "lang" in line_contents or "label" in line_contents or "string" in line_contents:
                 word = view.substr(view.word(region))
                 text = INFOS.return_label(word)
                 if text:
                     return text
         elif "text.xml" in scope_name:
+            element = None
+            row, _ = view.rowcol(view.sel()[0].begin())
+            selected_content = view.substr(view.expand_by_class(region, flags, '<>"[]'))
+            if self.tree:
+                for i in self.tree.iter():
+                    if i.sourceline >= row + 1:
+                        element = i
+                        break
             if "constant.other.allcaps" in scope_name:
                 window_name = scope_content.lower()[1:-1]
                 if window_name in infoprovider.WINDOW_NAMES:
@@ -212,10 +212,9 @@ class KodiDevKit(sublime_plugin.EventListener):
                 image_info = INFOS.get_image_info(selected_content)
                 if image_info:
                     return image_info
-            elif "<control " in line_contents:
+            elif element is not None and element.tag == "control":
                 # TODO: add positioning based on parent nodes
-                line, _ = view.rowcol(view.sel()[0].b)
-                return INFOS.get_ancestor_info(view.file_name(), line)
+                return INFOS.get_ancestor_info(view.file_name(), row)
             color = INFOS.addon.get_color_info(selected_content)
             if color:
                 return color
