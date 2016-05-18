@@ -20,6 +20,7 @@
     - aligny [top, center, bottom]
     - tween [quadratic, sine, ...]
     - easing [in, out, inout]
+    - viewtype [list, icon, bigicon, panel]
     - controls [when it is allowed to nest other controls in this element]
 
 
