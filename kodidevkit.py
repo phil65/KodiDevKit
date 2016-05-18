@@ -150,14 +150,8 @@ class KodiDevKit(sublime_plugin.EventListener):
                 if text:
                     return text
         elif "text.xml" in scope_name:
-            element = None
             row, _ = view.rowcol(view.sel()[0].begin())
             selected_content = view.substr(view.expand_by_class(region, flags, '<>"[]'))
-            if self.tree:
-                for i in self.tree.iter():
-                    if i.sourceline >= row + 1:
-                        element = i
-                        break
             if "constant.other.allcaps" in scope_name:
                 window_name = scope_content.lower()[1:-1]
                 if window_name in infoprovider.WINDOW_NAMES:
@@ -184,6 +178,12 @@ class KodiDevKit(sublime_plugin.EventListener):
                     label_id = INFOS.return_label(content)
                     if label_id:
                         return label_id
+            element = None
+            if self.tree:
+                for i in self.tree.iter():
+                    if i.sourceline >= row + 1:
+                        element = i
+                        break
             if element is not None and (element.tag in CONST_NODES or element.tag == "font" or (element.tag == "include" and "name" not in element.attrib)):
                 content = Utils.get_node_content(view, flags)
                 node = INFOS.addon.return_node(content, folder=folder)
