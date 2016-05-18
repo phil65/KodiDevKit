@@ -128,20 +128,8 @@ class KodiDevKit(sublime_plugin.EventListener):
         get correct tooltip based on context (veeery hacky atm)
         """
         region = view.sel()[0]
-        folder = view.file_name().split(os.sep)[-2]
-        flags = sublime.CLASS_WORD_START | sublime.CLASS_WORD_END
-        info_type = ""
-        info_id = ""
         scope_name = view.scope_name(region.b)
-        scope_content = view.substr(view.extract_scope(region.b))
         line = view.line(region)
-        label_region = view.expand_by_class(region, flags, '$],')
-        bracket_region = view.expand_by_class(region, flags, '<>')
-        if label_region.begin() > bracket_region.begin() and label_region.end() < bracket_region.end():
-            info_list = view.substr(label_region).split("[", 1)
-            info_type = info_list[0]
-            if len(info_list) > 1:
-                info_id = info_list[1]
         if "source.python" in scope_name:
             line_contents = view.substr(line).lower().strip()
             if "lang" in line_contents or "label" in line_contents or "string" in line_contents:
@@ -150,8 +138,20 @@ class KodiDevKit(sublime_plugin.EventListener):
                 if text:
                     return text
         elif "text.xml" in scope_name:
+            folder = view.file_name().split(os.sep)[-2]
+            flags = sublime.CLASS_WORD_START | sublime.CLASS_WORD_END
+            scope_content = view.substr(view.extract_scope(region.b))
+            label_region = view.expand_by_class(region, flags, '$],')
+            bracket_region = view.expand_by_class(region, flags, '<>')
             row, _ = view.rowcol(view.sel()[0].begin())
             selected_content = view.substr(view.expand_by_class(region, flags, '<>"[]'))
+            info_type = ""
+            info_id = ""
+            if label_region.begin() > bracket_region.begin() and label_region.end() < bracket_region.end():
+                info_list = view.substr(label_region).split("[", 1)
+                info_type = info_list[0]
+                if len(info_list) > 1:
+                    info_id = info_list[1]
             if "constant.other.allcaps" in scope_name:
                 window_name = scope_content.lower()[1:-1]
                 if window_name in infoprovider.WINDOW_NAMES:
