@@ -6,6 +6,7 @@
 import os
 import logging
 import time
+import string
 
 from . import Utils
 from .polib import polib
@@ -243,3 +244,13 @@ class Addon(object):
         contents = [version, "", "-", "-", "", ""] + contents
         with open(self.changelog_path, "w") as f:
             f.write("\n".join(contents))
+
+    def get_color_info(self, color_string):
+        """
+        return formatted info for *color_string, taken from color xmls (default + themes).
+        """
+        if all(c in string.hexdigits for c in color_string) and len(color_string) == 8:
+            color_hex = "#" + color_string[2:]
+            cont_color = Utils.get_cont_col(color_hex)
+            alpha_percent = round(int(color_string[:2], 16) / (16 * 16) * 100)
+            return '<a href="test" style="background-color:%s;color:%s">%d %% alpha</a>' % (color_hex, cont_color, alpha_percent)

@@ -124,11 +124,7 @@ class Skin(addon.Addon):
                 color_info += '%s&nbsp;<a href="test" style="background-color:%s;color:%s">%s</a> %d %% alpha<br>' % (os.path.basename(item["file"]), color_hex, cont_color, item["content"], alpha_percent)
         if color_info:
             return color_info
-        if all(c in string.hexdigits for c in color_string) and len(color_string) == 8:
-            color_hex = "#" + color_string[2:]
-            cont_color = Utils.get_cont_col(color_hex)
-            alpha_percent = round(int(color_string[:2], 16) / (16 * 16) * 100)
-            return '<a href="test" style="background-color:%s;color:%s">%d %% alpha</a>' % (color_hex, cont_color, alpha_percent)
+        return super().get_color_info(color_string)
 
     def get_media_files(self):
         """
