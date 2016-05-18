@@ -20,7 +20,8 @@
     - aligny [top, center, bottom]
     - tween [quadratic, sine, ...]
     - easing [in, out, inout]
-    - viewtype [list, icon, bigicon, panel]
+    - viewtype [list, icon, biglist, bigicon, wide, bigwide, wrap, bigwrap, info, biginfo]
+    - subtype [page, int, float, text]
     - controls [when it is allowed to nest other controls in this element]
 
 
@@ -201,7 +202,7 @@
         <textureupfocus colordiffuse="color">path</textureupfocus>
         <texturedown colordiffuse="color">path</texturedown>
         <texturedownfocus colordiffuse="color">path</texturedownfocus>
-        <subtype>page</subtype>
+        <subtype>subtype</subtype>
         <font>font</font>
         <range>range</range>
         <textcolor>color</textcolor>
