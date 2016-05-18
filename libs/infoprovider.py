@@ -693,6 +693,22 @@ class InfoProvider(object):
                             "identifier": k,
                             "message": "invalid attribute for <%s>: %s" % (subnode.tag, k)}
                     listitems.append(item)
+                elif "$PARAM[" in v or "$VAR[" in v:
+                    continue
+                elif subnodes[subnode.tag][k] == "int":
+                    if not Utils.is_number(v):
+                        item = {"line": subnode.sourceline,
+                                "type": subnode.tag,
+                                "identifier": v,
+                                "message": "invalid integer value for %s: %s" % (k, v)}
+                        listitems.append(item)
+                elif subnodes[subnode.tag][k] == "color":
+                    if v not in self.addon.color_labels and not Utils.is_kodi_hex(v):
+                        item = {"line": subnode.sourceline,
+                                "type": subnode.tag,
+                                "identifier": v,
+                                "message": "Invalid color for %s: %s" % (k, v)}
+                        listitems.append(item)
                 if k in ALLOWED_ATTR:
                     if v not in ALLOWED_ATTR[k] and not v.startswith("$PARAM["):
                         item = {"line": subnode.sourceline,
