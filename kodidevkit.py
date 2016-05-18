@@ -138,7 +138,6 @@ class KodiDevKit(sublime_plugin.EventListener):
                 if text:
                     return text
         elif "text.xml" in scope_name:
-            folder = view.file_name().split(os.sep)[-2]
             flags = sublime.CLASS_WORD_START | sublime.CLASS_WORD_END
             scope_content = view.substr(view.extract_scope(region.b))
             label_region = view.expand_by_class(region, flags, '$],')
@@ -158,11 +157,9 @@ class KodiDevKit(sublime_plugin.EventListener):
                     window_index = infoprovider.WINDOW_NAMES.index(window_name)
                     return infoprovider.WINDOW_FILENAMES[window_index]
             if info_type in ["VAR", "ESCVAR", "EXP"]:
-                node = INFOS.addon.return_node(info_id, folder=folder)
-                if node["content"]:
-                    return mdpopups.syntax_highlight(view=view,
-                                                     src=node["content"],
-                                                     language="xml")
+                content = self.get_formatted_include(selected_content, view)
+                if content:
+                    return content
             if info_type in ["INFO", "ESCINFO"]:
                 result = kodi.request(method="XBMC.GetInfoLabels",
                                       params={"labels": [info_id]})
@@ -189,18 +186,9 @@ class KodiDevKit(sublime_plugin.EventListener):
                     if image_info:
                         return image_info
             if element is not None and (element.tag in CONST_NODES or element.tag == "font" or (element.tag == "include" and "name" not in element.attrib)):
-                content = Utils.get_node_content(view, flags)
-                node = INFOS.addon.return_node(content, folder=folder)
-                if node:
-                    node_content = str(node["content"])
-                    if not node_content:
-                        pass
-                    elif len(node_content) < 10000:
-                        return mdpopups.syntax_highlight(view=view,
-                                                         src=node_content,
-                                                         language="xml")
-                    else:
-                        return "include too big for preview"
+                content = self.get_formatted_include(selected_content, view)
+                if content:
+                    return content
             if element is not None and element.tag in VISIBLE_TAGS:
                 result = kodi.request(method="XBMC.GetInfoBooleans",
                                       params={"booleans": [selected_content]})
@@ -222,6 +210,20 @@ class KodiDevKit(sublime_plugin.EventListener):
             color = INFOS.addon.get_color_info(selected_content)
             if color:
                 return color
+
+    def get_formatted_include(self, content, view):
+        folder = view.file_name().split(os.sep)[-2]
+        node = INFOS.addon.return_node(content, folder=folder)
+        if node:
+            node_content = str(node["content"])
+            if not node_content:
+                pass
+            elif len(node_content) < 10000:
+                return mdpopups.syntax_highlight(view=view,
+                                                 src=node_content,
+                                                 language="xml")
+            else:
+                return "include too big for preview"
 
     def show_tooltip(self, view):
         """
