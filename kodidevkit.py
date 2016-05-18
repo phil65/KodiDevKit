@@ -180,7 +180,7 @@ class KodiDevKit(sublime_plugin.EventListener):
                         break
             if "string.quoted.double.xml" in scope_name:
                 content = scope_content[1:-1]
-                if content.isdigit() and any(k in element.attrib for k in set(["fallback", "label"])):
+                if content.isdigit() and element is not None and any(k in element.attrib for k in set(["fallback", "label"])):
                     label_id = INFOS.return_label(content)
                     if label_id:
                         return label_id
