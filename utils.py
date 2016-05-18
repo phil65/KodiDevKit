@@ -29,6 +29,10 @@ SUBLIME_PATH = Utils.get_sublime_path()
 
 class OpenKodiLogCommand(sublime_plugin.WindowCommand):
 
+    """
+    open kodi log from its default location
+    """
+
     def run(self):
         filename = "%s.log" % APP_NAME.lower()
         self.log = Utils.check_paths([os.path.join(kodi.userdata_folder, filename),
@@ -375,14 +379,17 @@ class GetInfoBooleansPromptCommand(sublime_plugin.WindowCommand):
         self.settings = sublime.load_settings(SETTINGS_FILE)
         self.window.show_input_panel("Get boolean values (comma-separated)",
                                      self.settings.get("prev_boolean", ""),
-                                     self.show_info_boolean,
+                                     self.resolve_kodi_condition,
                                      None,
                                      None)
 
     @Utils.run_async
-    def show_info_boolean(self, label_string):
-        self.settings.set("prev_boolean", label_string)
-        words = label_string.split(",")
+    def resolve_kodi_condition(self, condition):
+        """
+        show OutputPanel with kodi JSON result for b
+        """
+        self.settings.set("prev_boolean", condition)
+        words = condition.split(",")
         logging.warning("send request...")
         result = kodi.request(method="XBMC.GetInfoBooleans",
                               params={"booleans": words})
