@@ -153,7 +153,7 @@ ALLOWED_VALUES = {"align": set(["left", "center", "right", "justify"]),
                   "subtype": set(["page", "int", "float", "text"]),
                   "action": set(["volume", "seek"]),
                   "viewtype": set(["list", "icon", "biglist", "bigicon", "wide", "bigwide", "wrap", "bigwrap", "info", "biginfo"]),
-                  "tween": set(["quadratic", "linear", "sine", "cubic", "back"]),
+                  "tween": set(["quadratic", "linear", "sine", "cubic", "back", "bounce", "circle", "elastic"]),
                   "easing": set(["inout", "in", "out"])}
 
 

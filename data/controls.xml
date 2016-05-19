@@ -93,6 +93,7 @@
         <selectedcolor>color</selectedcolor>
         <textoffsetx>int</textoffsetx>
         <textoffsety>int</textoffsety>
+        <randomize>bool</randomize>
         <resetonlabelchange>bool</resetonlabelchange>
     </control>
     <control type="scrollbar" id="int">
@@ -106,8 +107,8 @@
         <texturesliderbackground colordiffuse="color" border="coords">path</texturesliderbackground>
         <texturesliderbar colordiffuse="color" border="coords">path</texturesliderbar>
         <texturesliderbarfocus colordiffuse="color" border="coords">path</texturesliderbarfocus>
-        <textureslidernib colordiffuse="color" border="coords">-</textureslidernib>
-        <textureslidernibfocus colordiffuse="color" border="coords">-</textureslidernibfocus>
+        <textureslidernib colordiffuse="color" border="coords">path</textureslidernib>
+        <textureslidernibfocus colordiffuse="color" border="coords">path</textureslidernibfocus>
         <orientation>orientation</orientation>
         <showonepage>bool</showonepage>
     </control>
