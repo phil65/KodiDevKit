@@ -1,8 +1,10 @@
   Changes in 2.5.0
   =================
 
- - major rework: tests now based on XML templates (see https://github.com/phil65/KodiDevKit/blob/master/data/controls.xml)
+ - major rework: several tests now based on XML templates (see https://github.com/phil65/KodiDevKit/blob/master/data/controls.xml)
  - major tooltip improvements
  - new Command: browse Kodi VFS
  - new Command: bump addon version
+ - fixed language folder detection for core labels
+ - lot of stuff I forgot
 
