@@ -119,6 +119,8 @@ class Kodi(object):
         for item in self.settings.get("language_folders"):
             path = Utils.check_paths([os.path.join(folder, item, "strings.po"),
                                       os.path.join(folder, item, "resources", "strings.po")])
-            if os.path.exists(path):
-                po_files.append(Utils.get_po_file(path))
+            if path:
+                po_file = Utils.get_po_file(path)
+                po_file.language = item
+                po_files.append(po_file)
         return po_files

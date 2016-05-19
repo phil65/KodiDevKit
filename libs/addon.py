@@ -113,8 +113,10 @@ class Addon(object):
         for item in self.settings.get("language_folders"):
             path = Utils.check_paths([os.path.join(lang_folder_root, item, "strings.po"),
                                       os.path.join(lang_folder_root, item, "resources", "strings.po")])
-            if os.path.exists(path):
-                po_files.append(Utils.get_po_file(path))
+            if path:
+                po_file = Utils.get_po_file(path)
+                po_file.language = item
+                po_files.append(po_file)
         return po_files
 
     def update_xml_files(self):
