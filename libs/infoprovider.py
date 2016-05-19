@@ -542,8 +542,7 @@ class InfoProvider(object):
         # labels = [s.msgid for s in self.po_files]
         CHECKS = [[".//viewtype[(@label)]", "label"],
                   [".//fontset[(@idloc)]", "idloc"],
-                  [".//label[(@fallback)]", "fallback"]]
-        LABELS_CONTAINING_IDS = set(["label", "altlabel", "label2"])
+                  [".//label[(@fallback)] | .//label2[(@fallback)]", "fallback"]]
         for folder in self.addon.xml_folders:
             for xml_file in self.addon.window_files[folder]:
                 path = os.path.join(self.addon.path, folder, xml_file)
@@ -560,14 +559,14 @@ class InfoProvider(object):
                                 "file": path,
                                 "line": element.sourceline}
                         refs.append(item)
-                    if element.tag in LABELS_CONTAINING_IDS and element.text.isdigit():
+                    if element.text.isdigit():
                         item = {"name": element.text,
                                 "type": element.tag,
                                 "file": path,
                                 "line": element.sourceline}
                         refs.append(item)
                 # check for untranslated strings...
-                    elif "$" not in element.text and len(element.text.strip()) > 1 and not element.text.endswith(".xml"):
+                    elif not element.text.startswith(("$", "[")) and len(element.text.strip()) > 1 and not element.text.endswith(".xml"):
                         item = {"name": element.text,
                                 "type": element.tag,
                                 "file": path,
@@ -587,7 +586,7 @@ class InfoProvider(object):
                                         "line": element.sourceline}
                                 refs.append(item)
                         # find some more untranslated strings
-                        if "$" not in attr and not attr.isdigit() and len(attr.strip()) > 1:
+                        if not attr.startswith(("$", "[")) and not attr.isdigit() and len(attr.strip()) > 1:
                             item = {"name": attr,
                                     "type": element.tag,
                                     "file": path,
