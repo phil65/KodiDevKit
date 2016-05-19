@@ -285,10 +285,8 @@ class InfoProvider(object):
             hit = po_file.find("#" + selection, by="msgctxt")
             if not hit:
                 continue
-            folder = po_file.fpath.split(os.sep)[-2]
-            if folder == "resources":
-                folder = po_file.fpath.split(os.sep)[-3].replace("resource.language.", "")
-            tooltips += "<b>%s:</b> %s<br>" % (folder, hit.msgstr if hit.msgstr else hit.msgid)
+            language = po_file.language.replace("resource.language.", "")
+            tooltips += "<b>%s:</b> %s<br>" % (language, hit.msgstr if hit.msgstr else hit.msgid)
         return tooltips
 
     def get_po_files(self):

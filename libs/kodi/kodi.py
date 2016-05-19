@@ -107,9 +107,11 @@ class Kodi(object):
         """
         get core po files
         """
-        self.po_files = self.get_po_files(os.path.join(self.userdata_folder, "addons"))
-        if not self.po_files:
-            self.po_files = self.get_po_files(os.path.join(self.kodi_path, "addons"))
+        po_files = self.get_po_files(os.path.join(self.userdata_folder, "addons"))
+        languages = [i.language for i in po_files]
+        core_po_files = self.get_po_files(os.path.join(self.kodi_path, "addons"))
+        core_po_files = [i for i in core_po_files if i.language not in languages]
+        self.po_files = po_files + core_po_files
 
     def get_po_files(self, folder):
         """
