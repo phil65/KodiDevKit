@@ -539,7 +539,6 @@ class InfoProvider(object):
         listitems = []
         refs = []
         REGEXS = [r"\$LOCALIZE\[([0-9].*?)\]", r"^(\d+)$"]
-        LABEL_REGEX = r"[A-Za-z]+"
         # labels = [s.msgid for s in self.po_files]
         CHECKS = [[".//viewtype[(@label)]", "label"],
                   [".//fontset[(@idloc)]", "idloc"],
@@ -552,7 +551,7 @@ class InfoProvider(object):
                 if root is None:
                     continue
                 # find all referenced label ids (in element content)
-                for element in root.xpath(".//label | .//altlabel | .//label2 | .//value | .//onclick | .//property"):
+                for element in root.xpath(".//label | .//altlabel | .//label2 | .//hinttext"):
                     if not element.text:
                         continue
                     for match in re.finditer(REGEXS[0], element.text):
@@ -568,7 +567,7 @@ class InfoProvider(object):
                                 "line": element.sourceline}
                         refs.append(item)
                 # check for untranslated strings...
-                    elif "$" not in element.text and not len(element.text) == 1 and not element.text.endswith(".xml") and re.match(LABEL_REGEX, element.text):
+                    elif "$" not in element.text and len(element.text.strip()) > 1 and not element.text.endswith(".xml"):
                         item = {"name": element.text,
                                 "type": element.tag,
                                 "file": path,
@@ -588,7 +587,7 @@ class InfoProvider(object):
                                         "line": element.sourceline}
                                 refs.append(item)
                         # find some more untranslated strings
-                        if "$" not in attr and not attr.isdigit() and re.match(LABEL_REGEX, attr):
+                        if "$" not in attr and not attr.isdigit() and len(attr.strip()) > 1:
                             item = {"name": attr,
                                     "type": element.tag,
                                     "file": path,
