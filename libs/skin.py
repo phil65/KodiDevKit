@@ -8,7 +8,6 @@ from . import Utils
 from . import addon
 import logging
 from lxml import etree as ET
-import string
 
 
 class Skin(addon.Addon):
