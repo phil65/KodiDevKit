@@ -15,6 +15,11 @@ APP_NAME = "kodi"
 
 class Kodi(object):
 
+    """
+    Class representing a kodi installation
+    delivers core language files / paths / JSON answers / installed add-ons
+    """
+
     def __init__(self, *args, **kwargs):
         self.settings = None
         self.po_files = []
