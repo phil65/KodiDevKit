@@ -124,37 +124,37 @@ WINDOW_NAMES = [item[0] for item in WINDOW_MAP]
 WINDOW_IDS = [item[3] for item in WINDOW_MAP]
 
 # allowed child nodes for different control types (+ some other nodes)
-TAG_CHECKS = [[".//content/*", set(["item", "include"])],
-              [".//itemlayout/* | .//focusedlayout/*", set(["control", "include"])],
-              ["/includes/*", set(["include", "default", "constant", "variable", "expression"])],
-              ["/window/*", set(["include", "defaultcontrol", "depth", "menucontrol", "onload", "onunload", "controls", "allowoverlay", "views", "coordinates", "animation", "visible", "zorder", "fontset", "backgroundcolor"])],
-              ["/fonts/*", set(["fontset"])],
-              [".//variable/*", set(["value"])]]
+TAG_CHECKS = [[".//content/*", {"item", "include"}],
+              [".//itemlayout/* | .//focusedlayout/*", {"control", "include"}],
+              ["/includes/*", {"include", "default", "constant", "variable", "expression"}],
+              ["/window/*", {"include", "defaultcontrol", "depth", "menucontrol", "onload", "onunload", "controls", "allowoverlay", "views", "coordinates", "animation", "visible", "zorder", "fontset", "backgroundcolor"}],
+              ["/fonts/*", {"fontset"}],
+              [".//variable/*", {"value"}]]
 # allowed attributes for some specific nodes
 # all_tags = [d[0] for d in att_checks]
 # check correct parantheses for some nodes
-BRACKET_TAGS = set(["visible", "enable", "usealttexture", "selected", "expression"])
+BRACKET_TAGS = {"visible", "enable", "usealttexture", "selected", "expression"}
 # check some nodes to use noop instead of "-" / empty
-NOOP_TAGS = set(["onclick", "onfocus", "onunfocus", "onup", "onleft", "onright", "ondown", "onback"])
+NOOP_TAGS = {"onclick", "onfocus", "onunfocus", "onup", "onleft", "onright", "ondown", "onback"}
 
-POS_TAGS = set(["posx", "posy", "left", "right", "top", "bottom", "centerleft", "centerright", "centertop", "centerbottom"])
+POS_TAGS = {"posx", "posy", "left", "right", "top", "bottom", "centerleft", "centerright", "centertop", "centerbottom"}
 # check that some nodes only exist once on each level
 # TODO: special cases: label for fadelabel
-DOUBLE_TAGS = set(["camera", "posx", "posy", "top", "bottom", "left", "right", "centertop", "centerbottom", "centerleft", "centerright", "width", "height",
-                   "colordiffuse", "texturefocus", "texturenofocus", "font", "selected", "textcolor", "disabledcolor", "selectedcolor",
-                   "shadowcolor", "align", "aligny", "textoffsetx", "textoffsety", "pulseonselect", "textwidth", "focusedcolor", "invalidcolor", "angle", "hitrect"])
+DOUBLE_TAGS = {"camera", "posx", "posy", "top", "bottom", "left", "right", "centertop", "centerbottom", "centerleft", "centerright", "width", "height",
+               "colordiffuse", "texturefocus", "texturenofocus", "font", "selected", "textcolor", "disabledcolor", "selectedcolor",
+               "shadowcolor", "align", "aligny", "textoffsetx", "textoffsety", "pulseonselect", "textwidth", "focusedcolor", "invalidcolor", "angle", "hitrect"}
 # check that some nodes only contain specific text
 # check that some attributes may only contain specific values
-ALLOWED_VALUES = {"align": set(["left", "center", "right", "justify"]),
-                  "aligny": set(["top", "center", "bottom"]),
-                  "bool": set(["true", "false"]),
-                  "orientation": set(["horizontal", "vertical"]),
-                  "aspect": set(["scale", "stretch", "center", "keep"]),
-                  "subtype": set(["page", "int", "float", "text"]),
-                  "action": set(["volume", "seek"]),
-                  "viewtype": set(["list", "icon", "biglist", "bigicon", "wide", "bigwide", "wrap", "bigwrap", "info", "biginfo"]),
-                  "tween": set(["quadratic", "linear", "sine", "cubic", "back", "bounce", "circle", "elastic"]),
-                  "easing": set(["inout", "in", "out"])}
+ALLOWED_VALUES = {"align": {"left", "center", "right", "justify"},
+                  "aligny": {"top", "center", "bottom"},
+                  "bool": {"true", "false"},
+                  "orientation": {"horizontal", "vertical"},
+                  "aspect": {"scale", "stretch", "center", "keep"},
+                  "subtype": {"page", "int", "float", "text"},
+                  "action": {"volume", "seek"},
+                  "viewtype": {"list", "icon", "biglist", "bigicon", "wide", "bigwide", "wrap", "bigwrap", "info", "biginfo"},
+                  "tween": {"quadratic", "linear", "sine", "cubic", "back", "bounce", "circle", "elastic"},
+                  "easing": {"inout", "in", "out"}}
 
 
 PARSER = ET.XMLParser(remove_blank_text=True, remove_comments=True)
@@ -619,8 +619,7 @@ class InfoProvider(object):
             return []
         tree = ET.ElementTree(root)
         listitems = []
-        all_controls = set(self.template_attribs.keys())
-        xpath = " or ".join(["lower-case(string(@type))='{}'".format(c) for c in all_controls])
+        xpath = " or ".join(["lower-case(string(@type))='{}'".format(c) for c in self.template_attribs])
         xpath = ".//control[not({}) and @type[string()]]".format(xpath)
         for node in root.xpath(xpath):
             item = {"line": node.sourceline,

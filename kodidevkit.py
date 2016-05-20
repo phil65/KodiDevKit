@@ -33,20 +33,20 @@ SETTINGS_FILE = 'kodidevkit.sublime-settings'
 
 sublimelogger.config()
 
-CONST_ATTRIBUTES = set(["x", "y", "width", "height", "center", "max", "min", "w", "h", "time",
-                        "acceleration", "delay", "start", "end", "center", "border", "repeat"])
+CONST_ATTRIBUTES = {"x", "y", "width", "height", "center", "max", "min", "w", "h", "time",
+                    "acceleration", "delay", "start", "end", "center", "border", "repeat"}
 
 
-CONST_NODES = set(["posx", "posy", "left", "centerleft", "right", "centerright", "top", "centertop",
-                   "bottom", "centerbottom", "width", "height", "offsetx", "offsety", "textoffsetx",
-                   "textoffsety", "textwidth", "spinposx", "spinposy", "spinwidth", "spinheight",
-                   "radioposx", "radioposy", "radiowidth", "radioheight", "markwidth", "markheight",
-                   "sliderwidth", "sliderheight", "itemgap", "bordersize", "timeperimage", "fadetime",
-                   "pauseatend", "depth"])
+CONST_NODES = {"posx", "posy", "left", "centerleft", "right", "centerright", "top", "centertop",
+               "bottom", "centerbottom", "width", "height", "offsetx", "offsety", "textoffsetx",
+               "textoffsety", "textwidth", "spinposx", "spinposy", "spinwidth", "spinheight",
+               "radioposx", "radioposy", "radiowidth", "radioheight", "markwidth", "markheight",
+               "sliderwidth", "sliderheight", "itemgap", "bordersize", "timeperimage", "fadetime",
+               "pauseatend", "depth"}
 
-LABEL_TAGS = set(["label", "label2", "altlabel", "property", "hinttext"])
+LABEL_TAGS = {"label", "label2", "altlabel", "property", "hinttext"}
 
-VISIBLE_TAGS = set(["visible", "enable", "usealttexture", "expression", "autoscroll"])
+VISIBLE_TAGS = {"visible", "enable", "usealttexture", "expression", "autoscroll"}
 
 
 def plugin_loaded():
@@ -177,7 +177,7 @@ class KodiDevKit(sublime_plugin.EventListener):
                         break
             if "string.quoted.double.xml" in scope_name:
                 content = scope_content[1:-1]
-                if content.isdigit() and element is not None and any(k in element.attrib for k in set(["fallback", "label"])):
+                if content.isdigit() and element is not None and any(k in element.attrib for k in {"fallback", "label"}):
                     label_id = INFOS.return_label(content)
                     if label_id:
                         return label_id
