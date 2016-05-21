@@ -200,7 +200,7 @@ class KodiDevKit(sublime_plugin.EventListener):
                 label = INFOS.return_label(selected_content)
                 if label:
                     return label
-            if element is not None and (element.tag.find("texture") != -1 or element.tag in ["icon", "thumb"]):
+            if element is not None and (element.tag.find("texture") != -1 or element.tag in {"icon", "thumb"}):
                 image_info = INFOS.get_image_info(selected_content)
                 if image_info:
                     return image_info
@@ -781,7 +781,7 @@ class MoveToLanguageFile(sublime_plugin.TextCommand):
             label_id = INFOS.addon.create_new_label(word=self.view.substr(region),
                                                     filepath=rel_path)
         else:
-            label_id = self.label_ids[index]
+            label_id = self.label_ids[index][1:]
             INFOS.addon.attach_occurrence_to_label(label_id, rel_path)
         self.view.run_command("replace_text", {"label_id": label_id})
 
