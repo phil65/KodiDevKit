@@ -566,7 +566,7 @@ class InfoProvider(object):
                                 "line": element.sourceline}
                         refs.append(item)
                 # check for untranslated strings...
-                    elif not element.text.startswith(("$", "[")) and len(element.text.strip()) > 1 and not element.text.endswith(".xml"):
+                    elif len(element.text.strip()) > 1 and not element.text.endswith(".xml") and element.text.strip()[0].isalpha():
                         item = {"name": element.text,
                                 "type": element.tag,
                                 "file": path,
@@ -586,7 +586,7 @@ class InfoProvider(object):
                                         "line": element.sourceline}
                                 refs.append(item)
                         # find some more untranslated strings
-                        if not attr.startswith(("$", "[")) and not attr.isdigit() and len(attr.strip()) > 1:
+                        if not attr.isdigit() and len(attr.strip()) > 1 and attr.strip()[0].isalpha():
                             item = {"name": attr,
                                     "type": element.tag,
                                     "file": path,
