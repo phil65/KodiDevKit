@@ -1,0 +1,5 @@
+  Changes in 2.5.1
+  =================
+
+ - some test fixes and updates
+ - fix "replace-label" functionality
