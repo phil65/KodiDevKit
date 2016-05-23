@@ -9,9 +9,9 @@ import os
 
 class Include(dict):
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, node, *args, **kwargs):
         super(Include, self).__init__(*args, **kwargs)
-        self.node = kwargs.get("node")
+        self.node = node
         self.file = kwargs.get("file")
         if self.node.getnext() is not None:
             self.length = self.node.getnext().sourceline - self.node.sourceline
