@@ -27,25 +27,23 @@ contexts:
         - meta_scope: comment.block.xml
         - match: "-->"
           pop: true
-    - match: '(<)((?:([-_a-zA-Z0-9]+)((:)))?([-_a-zA-Z0-9:]+))(?=(\s[^>]*)?></\2>)'
+    - match: '(<)?([-_a-zA-Z0-9:]+)(?=(\s[^>]*)?></\2>)'
       captures:
         1: punctuation.definition.tag.begin.xml
-        3: entity.name.tag.namespace.xml
-        4: entity.name.tag.xml
-        5: punctuation.separator.namespace.xml
-        6: entity.name.tag.localname.xml
+        2: entity.name.tag.xml
+        3: punctuation.separator.namespace.xml
+        4: entity.name.tag.localname.xml
       push:
         - meta_scope: meta.tag.no-content.xml
-        - match: "(>)(<)(/)(?:([-_a-zA-Z0-9]+)((:)))?([-_a-zA-Z0-9:]+)(>)"
+        - match: "(>)(<)(/)?([-_a-zA-Z0-9:]+)(>)"
           captures:
             1: punctuation.definition.tag.end.xml
             2: punctuation.definition.tag.begin.xml meta.scope.between-tag-pair.xml
             3: punctuation.definition.tag.begin.xml
-            4: entity.name.tag.namespace.xml
-            5: entity.name.tag.xml
-            6: punctuation.separator.namespace.xml
-            7: entity.name.tag.localname.xml
-            8: punctuation.definition.tag.end.xml
+            4: entity.name.tag.xml
+            5: punctuation.separator.namespace.xml
+            6: entity.name.tag.localname.xml
+            7: punctuation.definition.tag.end.xml
           pop: true
         - include: tagStuff
 
@@ -66,13 +64,10 @@ contexts:
     - include: bare-ampersand
 
     # xml tags
-    - match: "(</?)(?:([-_a-zA-Z0-9]+)((:)))?([-_a-zA-Z0-9:]+)"
+    - match: "(</?)([-_a-zA-Z0-9:]+)"
       captures:
         1: punctuation.definition.tag.begin.xml
-        2: entity.name.tag.namespace.xml
-        3: entity.name.tag.xml
-        4: punctuation.separator.namespace.xml
-        5: entity.name.tag.localname.xml
+        2: entity.name.tag.xml
       push:
         - meta_scope: meta.tag.xml
         - match: (/?>)
@@ -136,55 +131,33 @@ contexts:
   koditranslation:
     - match: '(\$)(LOCALIZE)(\[)([0-9]+)(\])'
       name: variable.parameter text.kodi.translation.xml
-      captures:
-        1: variable.parameter entity.kodi.label.dollar
-        2: variable.parameter entity.kodi.label.localize
-        3: variable.parameter entity.kodi.label.begin
-        4: variable.parameter entity.kodi.label.id
-        5: variable.parameter entity.kodi.label.end
+      scope: variable.parameter entity.kodi.label
+
 
   kodiaddontranslation:
     - match: '(\$)(ADDON)(\[)(.*?)([0-9]+)(\])'
       name: variable.parameter text.kodi.translation.xml
-      captures:
-        1: variable.parameter entity.kodi.label.dollar
-        2: variable.parameter entity.kodi.label.localize
-        3: variable.parameter entity.kodi.label.begin
-        4: variable.parameter entity.kodi.label.scriptname
-        5: variable.parameter entity.kodi.label.id
-        6: variable.parameter entity.kodi.label.end
-
+      scope: variable.parameter entity.kodi.label
 
   kodinumber:
     - match: '(\$)(NUMBER)(\[)([0-9]+)(\])'
       name: variable.parameter text.kodi.number.xml
-      captures:
-        1: variable.parameter entity.kodi.number.dollar
-        2: variable.parameter entity.kodi.number.number
-        3: variable.parameter entity.kodi.number.begin
-        4: variable.parameter entity.kodi.number.id
-        5: variable.parameter entity.kodi.number.end
+      scope: variable.parameter entity.kodi.number
 
   kodiparam:
     - match: '(\$)(PARAM)(\[)(.*?)(\])'
       name: variable.parameter text.kodi.param.xml
-      captures:
-        1: entity.kodi.param.dollar
-        2: entity.kodi.param.param
-        3: entity.kodi.param.begin
-        4: entity.kodi.param.id
-        5: entity.kodi.param.end
-
+      scope: entity.kodi.param
 
   kodiinfolabel:
     - match: '(\$)((?:ESC)?INFO)(\[)'
       name: variable.parameter text.kodi.infolabel.xml
       captures:
         1: entity.kodi.infolabel.dollar
-        2: entity.kodi.infolabel.localize
+        2: entity.kodi.infolabel.info
         3: entity.kodi.infolabel.begin
       push:
-        - meta_scope: support.function
+        - meta_scope: support.function kodi.infolabel
         - match: '(\])'
           captures:
             1: entity.kodi.infolabel.end
@@ -201,10 +174,10 @@ contexts:
       name: variable.parameter text.kodi.includeparam.xml
       captures:
         1: entity.kodi.includeparam.dollar
-        2: entity.kodi.includeparam.localize
+        2: entity.kodi.includeparam.param
         3: entity.kodi.includeparam.begin
       push:
-        - meta_scope: support.function
+        - meta_scope: support.function kodi.includeparam
         - match: '(\])'
           captures:
             1: entity.kodi.includeparam.end
@@ -224,10 +197,10 @@ contexts:
       name: variable.parameter text.kodi.variable.xml
       captures:
         1: entity.kodi.variable.dollar
-        2: entity.kodi.variable.localize
+        2: entity.kodi.variable.var
         3: entity.kodi.variable.begin
       push:
-        - meta_scope: storage.type
+        - meta_scope: storage.type kodi.variable
         - match: '(\])'
           captures:
             1: entity.kodi.variable.end
@@ -239,10 +212,10 @@ contexts:
       name: expression.parameter text.kodi.expression.xml
       captures:
         1: entity.kodi.expression.dollar
-        2: entity.kodi.expression.localize
+        2: entity.kodi.expression.exp
         3: entity.kodi.expression.begin
       push:
-        - meta_scope: storage.type
+        - meta_scope: storage.type kodi.expression
         - match: '(\])'
           captures:
             1: entity.kodi.expression.end
