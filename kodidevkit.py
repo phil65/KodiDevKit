@@ -190,12 +190,13 @@ class KodiDevKit(sublime_plugin.EventListener):
                 if content:
                     return content
             if element is not None and element.tag in VISIBLE_TAGS:
-                result = kodi.request(method="XBMC.GetInfoBooleans",
-                                      params={"booleans": [selected_content]})
-                if result:
-                    key, value = result["result"].popitem()
-                    if value is not None:
-                        return "%s: <b>%s</b>" % (key, value)
+                if re.search('[a-zA-Z]', selected_content):
+                    result = kodi.request(method="XBMC.GetInfoBooleans",
+                                          params={"booleans": [selected_content]})
+                    if result:
+                        key, value = result["result"].popitem()
+                        if value is not None:
+                            return "%s: <b>%s</b>" % (key, value)
             if element is not None and element.tag in LABEL_TAGS:
                 label = INFOS.return_label(selected_content)
                 if label:
