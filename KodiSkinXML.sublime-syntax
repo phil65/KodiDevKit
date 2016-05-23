@@ -41,13 +41,12 @@ contexts:
             2: punctuation.definition.tag.begin.xml meta.scope.between-tag-pair.xml
             3: punctuation.definition.tag.begin.xml
             4: entity.name.tag.xml
-            5: punctuation.separator.namespace.xml
-            6: entity.name.tag.localname.xml
-            7: punctuation.definition.tag.end.xml
+            5: entity.name.tag.localname.xml
+            6: punctuation.definition.tag.end.xml
           pop: true
         - include: tagStuff
 
-    - match: '(</?)(include|variable|constant|color) (name)="([-_a-zA-Z0-9]+)"'
+    - match: '(</?)(include|variable|constant|color|expression) (name)="([-_a-zA-Z0-9]+)"'
       captures:
         1: punctuation.definition.tag.begin.xml
         2: entity.name.tag.localname.xml
