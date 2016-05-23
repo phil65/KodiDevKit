@@ -316,7 +316,6 @@ def get_refs_from_file(path, xpath):
     load xml file from *path and return dict list for nodes which match *xpath
     """
     matches = []
-    xml_file = os.path.basename(path)
     root = get_root_from_file(path)
     if root is None:
         return None
@@ -324,7 +323,6 @@ def get_refs_from_file(path, xpath):
         if node.getchildren():
             continue
         item = Include(node=node,
-                       filename=xml_file,
                        file=path)
         matches.append(item)
     return matches
