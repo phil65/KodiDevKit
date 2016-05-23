@@ -133,7 +133,7 @@ class Addon(object):
                 filename = os.path.basename(xml_file)
                 if not filename.endswith(".xml"):
                     continue
-                if filename.lower() not in ["script-skinshortcuts-includes.xml", "font.xml"]:
+                if filename.lower() not in ["font.xml"]:
                     self.window_files[path].append(xml_file)
             logging.info("found %i XMLs in %s" % (len(self.window_files[path]), xml_folder))
 
