@@ -272,13 +272,8 @@ def get_tags_from_file(path, node_tags):
     xpath = ".//" + " | .//".join(node_tags)
     for node in root.xpath(xpath):
         if "name" in node.attrib:
-            include = {"name": node.attrib["name"],
-                       "file": path,
-                       "type": node.tag,
-                       "content": ET.tostring(node, pretty_print=True, encoding="unicode"),
-                       "line": node.sourceline}
-            if node.getnext() is not None:
-                include["length"] = node.getnext().sourceline - node.sourceline
+            include = Include(node=node,
+                              file=path)
             nodes.append(include)
     return nodes
 

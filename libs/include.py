@@ -33,7 +33,7 @@ class Include(dict):
             return ET.tostring(self.node, pretty_print=True, encoding="unicode")
         if key == "length":
             return self.length
-        super(Include, self).__getitem__(key)
+        return super(Include, self).__getitem__(key)
 
     def get(self, key):
         return self.__getitem__(key)
