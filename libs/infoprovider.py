@@ -612,7 +612,6 @@ class InfoProvider(object):
         return listitems
 
     def check_file(self, path):
-        xml_file = os.path.basename(path)
         # tags allowed for all controls
         root = Utils.get_root_from_file(path)
         if root is None:
@@ -714,7 +713,7 @@ class InfoProvider(object):
                             "message": "Brackets do not match: %s" % (condition)}
                     listitems.append(item)
         for item in listitems:
-            item["filename"] = xml_file
+            item["filename"] = os.path.basename(path)
             item["file"] = path
         return listitems
 
