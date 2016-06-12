@@ -127,7 +127,7 @@
         <onunfocus condition="condition">builtin</onunfocus>
     </control>
     <control type="image" id="int">
-        <width>int</width>
+        <width min="int" max="int">int</width>
         <height>int</height>
         <include>common</include>
         <colordiffuse>color</colordiffuse>
