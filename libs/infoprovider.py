@@ -692,7 +692,7 @@ class InfoProvider(object):
                                 "message": "invalid integer value for %s: %s" % (k, v)}
                         listitems.append(item)
                 elif value_type == "color":
-                    if v not in self.addon.color_labels and not Utils.is_kodi_hex(v):
+                    if v not in self.addon.color_labels and not Utils.is_kodi_hex(v) and not v.startswith("$"):
                         item = {"line": subnode.sourceline,
                                 "type": subnode.tag,
                                 "identifier": v,
