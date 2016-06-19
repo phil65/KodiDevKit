@@ -116,9 +116,9 @@ class AdbDevice(object):
                 continue
             if not all_file and os.path.basename(root) not in ['1080i', '720p']:
                 continue
-            target = '%saddons/%s%s'.format(self.userdata_folder,
-                                            os.path.basename(addon),
-                                            root.replace(addon, "").replace('\\', '/'))
+            target = '%s/addons/%s%s'.format(self.userdata_folder,
+                                             os.path.basename(addon),
+                                             root.replace(addon, "").replace('\\', '/'))
             self.cmd("adb", ["shell", "mkdir", target])
             for f in files:
                 if f.endswith(('.pyc', '.pyo')):
@@ -131,7 +131,7 @@ class AdbDevice(object):
     @Utils.run_async
     def get_log(self, open_function, target):
         logging.warning("Pull logs from remote")
-        self.adb_pull("%stemp/xbmc.log" % self.userdata_folder, target)
+        self.adb_pull("%s/temp/xbmc.log" % self.userdata_folder, target)
         # self.adb_pull("%stemp/xbmc.old.log" % self.userdata_folder)
         logging.warning("Finished pulling logs")
         open_function(os.path.join(target, "xbmc.log"))
