@@ -418,6 +418,7 @@
         <enable>condition</enable>
         <onfocus condition="condition">builtin</onfocus>
         <onunfocus condition="condition">builtin</onunfocus>
+        <onclick condition="condition">builtin</onclick>
         <orientation>orientation</orientation>
         <preloaditems>int</preloaditems>
         <scrolltime tween="tween" easing="easing">int</scrolltime>
