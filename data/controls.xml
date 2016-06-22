@@ -166,6 +166,8 @@
         <textureradioofffocus colordiffuse="color">path</textureradioofffocus>
         <textureradiooffnofocus colordiffuse="color">path</textureradiooffnofocus>
         <textureradiooffdisabled colordiffuse="color">path</textureradiooffdisabled>
+        <textureradioon colordiffuse="color">path</textureradioon>
+        <textureradiooff colordiffuse="color">path</textureradiooff>
         <selected>condition</selected>
         <onclick condition="condition">builtin</onclick>
         <onback condition="condition">builtin</onback>
