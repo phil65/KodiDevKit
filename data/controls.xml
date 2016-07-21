@@ -50,6 +50,7 @@
         <defaultcontrol always="bool">int</defaultcontrol>
         <scrolltime tween="tween" easing="easing">int</scrolltime>
         <usecontrolcoords>bool</usecontrolcoords>
+        <renderfocusedlast>bool</renderfocusedlast>
         <control type="controltype" id="int">controls</control>
     </control>
     <control type="label" id="int">
@@ -421,6 +422,7 @@
         <onfocus condition="condition">builtin</onfocus>
         <onunfocus condition="condition">builtin</onunfocus>
         <onclick condition="condition">builtin</onclick>
+        <oninfo condition="condition">builtin</oninfo>
         <orientation>orientation</orientation>
         <preloaditems>int</preloaditems>
         <scrolltime tween="tween" easing="easing">int</scrolltime>
