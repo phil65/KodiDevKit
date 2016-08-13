@@ -1,5 +1,5 @@
 {
-	"scope": "source.xml - source - meta.tag, punctuation.definition.tag.begin",
+	"scope": "text.xml - source - meta.tag, punctuation.definition.tag.begin",
 
 	"completions":
 	[
