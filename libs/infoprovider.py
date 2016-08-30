@@ -313,6 +313,9 @@ class InfoProvider(object):
         return colors
 
     def get_color_labels(self):
+        """
+        get list of all color names (core + addon)
+        """
         colors = self.get_colors()
         return {i["name"] for i in colors}
 
