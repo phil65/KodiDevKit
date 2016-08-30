@@ -73,7 +73,6 @@ def is_progressive(filename):
             blockStart = struct.unpack('B', f.read(1))[0]
             if blockStart != 0xff:
                 raise ValueError('Invalid char code ' + blockStart + ' - not a JPEG file: ' + filename)
-                return False
 
             blockType = struct.unpack('B', f.read(1))[0]
             if blockType == 0xd8:   # Start Of Image
