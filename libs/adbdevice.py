@@ -21,7 +21,6 @@ class AdbDevice(object):
 
     def __init__(self):
         self.is_busy = False
-        pass
 
     def setup(self, settings):
         self.settings = settings
@@ -110,13 +109,13 @@ class AdbDevice(object):
     @Utils.check_busy
     def push_to_box(self, addon, all_file=False):
         logging.warning("push %s to remote" % addon)
-        for root, dirs, files in os.walk(addon):
+        for root, _, files in os.walk(addon):
             # ignore git files
             if ".git" in root.split(os.sep):
                 continue
             if not all_file and os.path.basename(root) not in ['1080i', '720p']:
                 continue
-            target = '%s/addons/%s%s'.format(self.userdata_folder,
+            target = '{}/addons/{}{}'.format(self.userdata_folder,
                                              os.path.basename(addon),
                                              root.replace(addon, "").replace('\\', '/'))
             self.cmd("adb", ["shell", "mkdir", target])
