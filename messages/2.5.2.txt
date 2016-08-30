@@ -1,0 +1,6 @@
+  Changes in 2.5.2
+  =================
+
+ - updated skin validation XML
+ - fix autocompletion
+ - add support for core color file
