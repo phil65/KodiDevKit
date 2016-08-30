@@ -12,6 +12,7 @@ import os
 import re
 from lxml import etree as ET
 import logging
+import string
 import copy
 from . import Utils
 from .addon import Addon
@@ -260,8 +261,8 @@ class InfoProvider(object):
                 if node["name"] == keyword:
                     path = os.path.join(self.addon.path, folder, "Font.xml")
                     return "%s:%s" % (path, node["line"])
-            for node in self.addon.colors:
-                if node["name"] == keyword and node["file"].endswith("defaults.xml"):
+            for node in self.get_colors():
+                if node["name"] == keyword and node["file"].endswith(("defaults.xml", "colors.xml")):
                     return "%s:%s" % (node["file"], node["line"])
             logging.info("no node with name %s found" % keyword)
         return False
@@ -299,6 +300,41 @@ class InfoProvider(object):
         if self.addon.po_files:
             po_files.extend(self.addon.po_files)
         return po_files
+
+    def get_colors(self):
+        """
+        get list of all colors (core + addon)
+        """
+        colors = []
+        if kodi.colors:
+            colors.extend(kodi.colors)
+        if self.addon.colors:
+            colors.extend(self.addon.colors)
+        return colors
+
+    def get_color_labels(self):
+        colors = self.get_colors()
+        return {i["name"] for i in colors}
+
+    def get_color_info_html(self, color_string):
+        """
+        return formatted info for *color_string, taken from color xmls (default + themes + core).
+        """
+        color_info = ""
+        colors = self.get_colors()
+        for item in colors:
+            if item["name"] == color_string:
+                color_hex = "#" + item["content"][2:]
+                cont_color = Utils.get_cont_col(color_hex)
+                alpha_percent = round(int(item["content"][:2], 16) / (16 * 16) * 100)
+                color_info += '%s&nbsp;<a href="test" style="background-color:%s;color:%s">%s</a> %d %% alpha<br>' % (os.path.basename(item["file"]), color_hex, cont_color, item["content"], alpha_percent)
+        if color_info:
+            return color_info
+        if all(c in string.hexdigits for c in color_string) and len(color_string) == 8:
+            color_hex = "#" + color_string[2:]
+            cont_color = Utils.get_cont_col(color_hex)
+            alpha_percent = round(int(color_string[:2], 16) / (16 * 16) * 100)
+            return '<a href="test" style="background-color:%s;color:%s">%d %% alpha</a>' % (color_hex, cont_color, alpha_percent)
 
     def get_ancestor_info(self, element):
         """
@@ -692,7 +728,7 @@ class InfoProvider(object):
                                 "message": "invalid integer value for %s: %s" % (k, v)}
                         listitems.append(item)
                 elif value_type == "color":
-                    if v not in self.addon.color_labels and not Utils.is_kodi_hex(v) and not v.startswith("$"):
+                    if v not in self.get_color_labels() and not Utils.is_kodi_hex(v) and not v.startswith("$"):
                         item = {"line": subnode.sourceline,
                                 "type": subnode.tag,
                                 "identifier": v,

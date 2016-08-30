@@ -88,7 +88,7 @@ class KodiDevKit(sublime_plugin.EventListener):
             return []
         if "text.xml" in scope_name:
             colors = []
-            for node in INFOS.addon.colors:
+            for node in INFOS.get_colors():
                 if node["name"] not in colors:
                     colors.append(node["name"])
                     completions.append(["%s (%s)" % (node["name"], node["content"]), node["name"]])
@@ -208,7 +208,7 @@ class KodiDevKit(sublime_plugin.EventListener):
             if element is not None and element.tag == "control":
                 # TODO: add positioning based on parent nodes
                 return INFOS.get_ancestor_info(element)
-            color = INFOS.addon.get_color_info(selected_content)
+            color = INFOS.get_color_info_html(selected_content)
             if color:
                 return color
 

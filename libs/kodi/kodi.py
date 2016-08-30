@@ -26,7 +26,6 @@ class Kodi(object):
         self.po_files = []
         self.kodi_path = None
         self.userdata_folder = None
-        self.get_colors()
 
     @Utils.run_async
     def request_async(self, method, params):
@@ -70,17 +69,16 @@ class Kodi(object):
         create color list by parsing core color file
         """
         self.colors = []
-        file_path = os.path.join(self.kodi_path, "system", "colors.xml")
-        if not self.xml_file or not os.path.exists(file_path):
+        if not os.path.exists(self.color_file_path):
             return False
-        root = Utils.get_root_from_file(file_path)
+        root = Utils.get_root_from_file(self.color_file_path)
         for node in root.findall("color"):
             color = {"name": node.attrib["name"],
                      "line": node.sourceline,
                      "content": node.text,
-                     "file": file_path}
+                     "file": self.color_file_path}
             self.colors.append(color)
-        logging.info("found color file %s including %i colors" % (file_path, len(self.colors)))
+        logging.info("found color file %s including %i colors" % (self.color_file_path, len(self.colors)))
         self.color_labels = {i["name"] for i in self.colors}
 
     def get_userdata_folder(self):
@@ -111,6 +109,13 @@ class Kodi(object):
         """
         return os.path.join(self.kodi_path, "addons")
 
+    @property
+    def color_file_path(self):
+        """
+        get path to core color xml
+        """
+        return os.path.join(self.kodi_path, "system", "colors.xml")
+
     def get_userdata_addons(self):
         """
         get list of folders from userdata addon dir
@@ -126,6 +131,7 @@ class Kodi(object):
         self.settings = settings
         self.kodi_path = settings.get("kodi_path")
         self.userdata_folder = self.get_userdata_folder()
+        self.get_colors()
         self.update_labels()
 
     def update_labels(self):

@@ -110,21 +110,6 @@ class Skin(addon.Addon):
                         "filename": node.find("filename").text}
                 self.fonts[folder].append(font)
 
-    def get_color_info(self, color_string):
-        """
-        return formatted info for *color_string, taken from color xmls (default + themes).
-        """
-        color_info = ""
-        for item in self.colors:
-            if item["name"] == color_string:
-                color_hex = "#" + item["content"][2:]
-                cont_color = Utils.get_cont_col(color_hex)
-                alpha_percent = round(int(item["content"][:2], 16) / (16 * 16) * 100)
-                color_info += '%s&nbsp;<a href="test" style="background-color:%s;color:%s">%s</a> %d %% alpha<br>' % (os.path.basename(item["file"]), color_hex, cont_color, item["content"], alpha_percent)
-        if color_info:
-            return color_info
-        return super().get_color_info(color_string)
-
     def get_media_files(self):
         """
         yields relative paths of all files in "media" directory
