@@ -9,6 +9,7 @@ from .. import Utils
 from urllib.request import Request, urlopen
 import json
 import base64
+import logging
 
 APP_NAME = "kodi"
 
@@ -25,6 +26,7 @@ class Kodi(object):
         self.po_files = []
         self.kodi_path = None
         self.userdata_folder = None
+        self.get_colors()
 
     @Utils.run_async
     def request_async(self, method, params):
@@ -62,6 +64,24 @@ class Kodi(object):
             return result
         except Exception:
             return None
+
+    def get_colors(self):
+        """
+        create color list by parsing core color file
+        """
+        self.colors = []
+        file_path = os.path.join(self.kodi_path, "system", "colors.xml")
+        if not self.xml_file or not os.path.exists(file_path):
+            return False
+        root = Utils.get_root_from_file(file_path)
+        for node in root.findall("color"):
+            color = {"name": node.attrib["name"],
+                     "line": node.sourceline,
+                     "content": node.text,
+                     "file": file_path}
+            self.colors.append(color)
+        logging.info("found color file %s including %i colors" % (file_path, len(self.colors)))
+        self.color_labels = {i["name"] for i in self.colors}
 
     def get_userdata_folder(self):
         """
