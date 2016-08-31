@@ -71,7 +71,7 @@ class Skin(addon.Addon):
         create color list by parsing all color files
         """
         self.colors = []
-        color_path = os.path.join(self.path, "colors")
+        color_path = os.path.join(self.path, "colors") if self.path else None
         if not self.xml_file or not os.path.exists(color_path):
             return False
         for path in os.listdir(color_path):
