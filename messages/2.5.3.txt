@@ -1,0 +1,4 @@
+  Changes in 2.5.3
+  =================
+
+ - quick follow-up fix for init error
