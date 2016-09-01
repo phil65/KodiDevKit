@@ -145,7 +145,7 @@
         <width>int</width>
         <height>int</height>
         <include>common</include>
-        <imagepath background="bool" diffuse="path" colordiffuse="color" fallback="path">path</imagepath>
+        <imagepath background="bool" diffuse="path" colordiffuse="color" fallback="path" border="coords">path</imagepath>
         <colordiffuse>color</colordiffuse>
         <info></info>
         <timeperimage>int</timeperimage>
@@ -161,14 +161,14 @@
         <include>common</include>
         <include>nav_common</include>
         <include>button_common</include>
-        <textureradioonfocus colordiffuse="color">path</textureradioonfocus>
-        <textureradioonnofocus colordiffuse="color">path</textureradioonnofocus>
-        <textureradioondisabled colordiffuse="color">path</textureradioondisabled>
-        <textureradioofffocus colordiffuse="color">path</textureradioofffocus>
-        <textureradiooffnofocus colordiffuse="color">path</textureradiooffnofocus>
-        <textureradiooffdisabled colordiffuse="color">path</textureradiooffdisabled>
-        <textureradioon colordiffuse="color">path</textureradioon>
-        <textureradiooff colordiffuse="color">path</textureradiooff>
+        <textureradioonfocus colordiffuse="color" border="coords">path</textureradioonfocus>
+        <textureradioonnofocus colordiffuse="color" border="coords">path</textureradioonnofocus>
+        <textureradioondisabled colordiffuse="color" border="coords">path</textureradioondisabled>
+        <textureradioofffocus colordiffuse="color" border="coords">path</textureradioofffocus>
+        <textureradiooffnofocus colordiffuse="color" border="coords">path</textureradiooffnofocus>
+        <textureradiooffdisabled colordiffuse="color" border="coords">path</textureradiooffdisabled>
+        <textureradioon colordiffuse="color" border="coords">path</textureradioon>
+        <textureradiooff colordiffuse="color" border="coords">path</textureradiooff>
         <selected>condition</selected>
         <onclick condition="condition">builtin</onclick>
         <onback condition="condition">builtin</onback>
@@ -202,10 +202,10 @@
         <include>common</include>
         <include>nav_common</include>
         <colordiffuse>color</colordiffuse>
-        <textureup colordiffuse="color">path</textureup>
-        <textureupfocus colordiffuse="color">path</textureupfocus>
-        <texturedown colordiffuse="color">path</texturedown>
-        <texturedownfocus colordiffuse="color">path</texturedownfocus>
+        <textureup colordiffuse="color" border="coords">path</textureup>
+        <textureupfocus colordiffuse="color" border="coords">path</textureupfocus>
+        <texturedown colordiffuse="color" border="coords">path</texturedown>
+        <texturedownfocus colordiffuse="color" border="coords">path</texturedownfocus>
         <subtype>subtype</subtype>
         <font>font</font>
         <range>range</range>
@@ -230,10 +230,10 @@
         <spinwidth>int</spinwidth>
         <spinheight>int</spinheight>
         <reverse>bool</reverse>
-        <textureup colordiffuse="color">path</textureup>
-        <textureupfocus colordiffuse="color">path</textureupfocus>
-        <texturedown colordiffuse="color">path</texturedown>
-        <texturedownfocus colordiffuse="color">path</texturedownfocus>
+        <textureup colordiffuse="color" border="coords">path</textureup>
+        <textureupfocus colordiffuse="color" border="coords">path</textureupfocus>
+        <texturedown colordiffuse="color" border="coords">path</texturedown>
+        <texturedownfocus colordiffuse="color" border="coords">path</texturedownfocus>
         <onback condition="condition">builtin</onback>
         <onfocus condition="condition">builtin</onfocus>
         <onunfocus condition="condition">builtin</onunfocus>
@@ -243,9 +243,9 @@
         <height>int</height>
         <include>common</include>
         <include>nav_common</include>
-        <texturesliderbar colordiffuse="color">path</texturesliderbar>
-        <textureslidernib colordiffuse="color">path</textureslidernib>
-        <textureslidernibfocus colordiffuse="color">path</textureslidernibfocus>
+        <texturesliderbar colordiffuse="color" border="coords">path</texturesliderbar>
+        <textureslidernib colordiffuse="color" border="coords">path</textureslidernib>
+        <textureslidernibfocus colordiffuse="color" border="coords">path</textureslidernibfocus>
         <info>info</info>
         <action>action</action>
         <pulseonselect>bool</pulseonselect>
