@@ -307,6 +307,7 @@
         <aligny>aligny</aligny>
         <autoscroll delay="int" time="int" repeat="int">condition</autoscroll>
         <label fallback="label">label</label>
+        <info>label</info>
     </control>
     <control type="rss" id="int">
         <width min="int" max="int">int</width>
