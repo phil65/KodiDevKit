@@ -406,7 +406,7 @@ class BuildThemeCommand(sublime_plugin.WindowCommand):
     """
 
     def is_visible(self):
-        return bool(INFOS.addon) and os.path.exists(INFOS.addon.theme_path)
+        return bool(INFOS.addon) and INFOS.addon.type == "skin" and os.path.exists(INFOS.addon.theme_path)
 
     def run(self, pack_textures=True):
         self.themes = INFOS.addon.get_themes()
