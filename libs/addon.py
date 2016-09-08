@@ -225,6 +225,12 @@ class Addon(object):
                     return node
         return None
 
+    def reload(self, path):
+        """
+        update include, color and font infos (not needed yet for python)
+        """
+        pass
+
     def get_xml_files(self):
         """
         yields absolute paths of all window files

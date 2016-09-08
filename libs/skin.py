@@ -158,7 +158,7 @@ class Skin(addon.Addon):
                 xml_file = os.path.join(self.path, folder, node.attrib["file"])
                 self.update_includes(xml_file)
 
-    def reload_after_save(self, path):
+    def reload(self, path):
         """
         update include, color and font infos, depending on open file
         """

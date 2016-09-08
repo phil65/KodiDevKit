@@ -266,7 +266,7 @@ class KodiDevKit(sublime_plugin.EventListener):
             INFOS.addon.update_xml_files()
             filename = os.path.basename(view.file_name())
             folder = view.file_name().split(os.sep)[-2]
-            INFOS.addon.reload_after_save(view.file_name())
+            INFOS.addon.reload(view.file_name())
             self.root = Utils.get_root_from_file(view.file_name())
             self.tree = ET.ElementTree(self.root)
             if folder in INFOS.addon.window_files and filename in INFOS.addon.window_files[folder]:
