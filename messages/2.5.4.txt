@@ -1,0 +1,5 @@
+  Changes in 2.5.4
+  =================
+
+ - improve skin sanity checks, update control definitions in controls.xml
+ - correctly deal with some errors / exceptions
