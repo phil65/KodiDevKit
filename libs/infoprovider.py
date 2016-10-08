@@ -142,7 +142,7 @@ POS_TAGS = {"posx", "posy", "left", "right", "top", "bottom", "centerleft", "cen
 # check that some nodes only exist once on each level
 # TODO: special cases: label for fadelabel
 DOUBLE_TAGS = {"camera", "posx", "posy", "top", "bottom", "left", "right", "centertop", "centerbottom", "centerleft", "centerright", "width", "height",
-               "colordiffuse", "texturefocus", "texturenofocus", "font", "selected", "textcolor", "disabledcolor", "selectedcolor",
+               "colordiffuse", "texturefocus", "texturenofocus", "font", "selected", "textcolor", "disabledcolor", "selectedcolor", "usecontrolcoords",
                "shadowcolor", "align", "aligny", "textoffsetx", "textoffsety", "pulseonselect", "textwidth", "focusedcolor", "invalidcolor", "angle", "hitrect", "orientation"}
 # check that some nodes only contain specific text
 # check that some attributes may only contain specific values
