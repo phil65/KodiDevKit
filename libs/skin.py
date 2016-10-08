@@ -153,6 +153,8 @@ class Skin(addon.Addon):
         self.includes[folder] += Utils.get_tags_from_file(path=xml_file,
                                                           node_tags=tags)
         root = Utils.get_root_from_file(xml_file)
+        if not root:
+            return None
         for node in root.findall("include"):
             if "file" in node.attrib and node.attrib["file"] != "script-skinshortcuts-includes.xml":
                 xml_file = os.path.join(self.path, folder, node.attrib["file"])
