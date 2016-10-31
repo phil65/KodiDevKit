@@ -41,6 +41,22 @@ class OpenKodiLogCommand(sublime_plugin.WindowCommand):
         self.window.open_file(self.log)
 
 
+class OpenAltKodiLogCommand(sublime_plugin.WindowCommand):
+
+    """
+    open alternative kodi log from its default location
+    (visible for windows portable mode)
+    """
+
+    def visible(self):
+        return platform.system() == "Windows" and self.settings.get("portable_mode")
+
+    def run(self):
+        filename = "%s.log" % APP_NAME.lower()
+        self.log = os.path.join(os.getenv('APPDATA'), APP_NAME, filename)
+        self.window.open_file(self.log)
+
+
 class OpenSourceFromLog(sublime_plugin.TextCommand):
 
     """
