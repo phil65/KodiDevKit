@@ -4,6 +4,7 @@
     {"caption": "KodiDevKit: Build Theme", "command": "build_theme", "args": { "pack_textures": true}},
     {"caption": "KodiDevKit: Remote Actions", "command": "remote_actions"},
     {"caption": "KodiDevKit: Open Log", "command": "open_kodi_log"},
+    {"caption": "KodiDevKit: Open Userdata Log", "command": "open_alt_kodi_log"},
     {"caption": "KodiDevKit: Bump addon version", "command": "bump_version"},
     {"caption": "KodiDevKit: Choose color", "command": "color_picker"},
     {"caption": "KodiDevKit: Reload Language Files", "command": "reload_kodi_language_files"},
