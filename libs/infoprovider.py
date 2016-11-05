@@ -660,6 +660,8 @@ class InfoProvider(object):
         xpath = " or ".join(["lower-case(string(@type))='{}'".format(c) for c in self.template_attribs])
         xpath = ".//control[not({}) and @type[string()]]".format(xpath)
         for node in root.xpath(xpath):
+            if node.attrib.get("type").startswith("$PARAM["):
+                pass
             item = {"line": node.sourceline,
                     "type": node.tag,
                     "identifier": node.attrib.get("type"),
