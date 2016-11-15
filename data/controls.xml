@@ -320,6 +320,8 @@
         <title>xxx</title>
         <shadowcolor>color</shadowcolor>
         <urlset>xxx</urlset>
+        <hitrect x="int" y="int" w="int" h="int"></hitrect>
+        <hitrectcolor>color</hitrectcolor>
     </control>
     <control type="renderaddon" id="int">
         <width>int</width>
