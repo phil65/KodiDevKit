@@ -741,7 +741,7 @@ class InfoProvider(object):
                                 "message": "Invalid color for %s: %s" % (k, v)}
                         listitems.append(item)
                 elif value_type in ALLOWED_VALUES:
-                    if v not in ALLOWED_VALUES[value_type] and not v.startswith("$PARAM["):
+                    if v not in ALLOWED_VALUES[value_type.lower()] and not v.startswith("$PARAM["):
                         item = {"line": subnode.sourceline,
                                 "type": subnode.tag,
                                 "identifier": v,
