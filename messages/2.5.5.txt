@@ -1,0 +1,6 @@
+  Changes in 2.5.5
+  =================
+
+ - improve skin sanity checks
+ - open userdata log (windows-only)
+ - snippet work
