@@ -77,6 +77,8 @@ class Skin(addon.Addon):
         for path in os.listdir(color_path):
             file_path = os.path.join(color_path, path)
             root = Utils.get_root_from_file(file_path)
+            if root is None:
+                continue
             for node in root.findall("color"):
                 color = {"name": node.attrib["name"],
                          "line": node.sourceline,
