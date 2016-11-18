@@ -78,6 +78,7 @@ class Skin(addon.Addon):
             file_path = os.path.join(color_path, path)
             root = Utils.get_root_from_file(file_path)
             if root is None:
+                logging.info("Invalid color file: {}".format(file_path))
                 continue
             for node in root.findall("color"):
                 color = {"name": node.attrib["name"],
