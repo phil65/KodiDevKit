@@ -232,6 +232,7 @@ contexts:
             1: constant.other.allcaps
           pop: true
         - include: brackets
+        - include: koditranslation
 
 
   # brackets:
