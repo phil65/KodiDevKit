@@ -474,11 +474,10 @@ class InfoProvider(object):
         estuary_font_file = os.path.join(self.kodi_path, "addons", "skin.estuary", "1080i", "Font.xml")
         root = Utils.get_root_from_file(estuary_font_file)
         if root is not None:
-            for node in root.find("fontset").findall("font"):
-                estuary_fonts.append(node.find("name").text)
+            estuary_fonts = [node.find("name").text for node in root.find("fontset").findall("font")]
             # check fonts from each folder independently....
         for folder in self.addon.xml_folders:
-            fontlist = ["-"]
+            fontlist = [""]
             # create a list with all font names from default fontset
             if folder in self.addon.fonts:
                 for item in self.addon.fonts[folder]:
