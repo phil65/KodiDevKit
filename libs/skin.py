@@ -31,8 +31,7 @@ class Skin(addon.Addon):
         """
         get all xml folders from addon.xml
         """
-        for node in self.root.findall('.//res'):
-            self.xml_folders.append(node.attrib["folder"])
+        self.xml_folders = {node.attrib["folder"] for node in self.root.findall('.//res')}
 
     @property
     def lang_path(self):
