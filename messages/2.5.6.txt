@@ -1,0 +1,6 @@
+  Changes in 2.5.6
+  =================
+
+ - fixed: non-color files in colors folder causing issues
+ - fix for multiple aspect ratio definitions pointing to same folder
+ - fix for KodiSkinXml syntax definiton
