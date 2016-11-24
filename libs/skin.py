@@ -211,3 +211,6 @@ class Skin(addon.Addon):
                 if new_include is not None:
                     node.getparent().replace(node, new_include)
         return xml_source
+
+    def get_constants(self, folder):
+        return [i["name"] for i in self.includes[folder] if i["type"] == "constant"]

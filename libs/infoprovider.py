@@ -655,6 +655,7 @@ class InfoProvider(object):
         root = Utils.get_root_from_file(path)
         if root is None:
             return []
+        folder = path.split(os.sep)[-2]
         tree = ET.ElementTree(root)
         listitems = []
         xpath = " or ".join(["lower-case(string(@type))='{}'".format(c) for c in self.template_attribs])
@@ -726,7 +727,7 @@ class InfoProvider(object):
                     continue
                 value_type = subnodes[subnode.tag][k]
                 if value_type == "int":
-                    if not Utils.is_number(v):
+                    if not Utils.is_number(v) and v not in self.addon.get_constants(folder):
                         item = {"line": subnode.sourceline,
                                 "type": subnode.tag,
                                 "identifier": v,
