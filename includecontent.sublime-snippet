@@ -1,0 +1,9 @@
+<snippet>
+	<content><![CDATA[
+<include content="{1}">
+	${2}
+</include>
+]]></content>
+	<tabTrigger>includecontent</tabTrigger>
+	<scope>text.xml</scope>
+</snippet>
