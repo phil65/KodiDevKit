@@ -252,5 +252,5 @@ class Addon(object):
         with open(self.changelog_path, "w") as f:
             f.write("\n".join(contents))
 
-    def get_constants(self):
+    def get_constants(self, folder):
         return []
