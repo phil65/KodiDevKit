@@ -173,20 +173,21 @@ class InfoProvider(object):
         as well as builtins including their help string (data.xml)
         """
         # TODO: clean this up
+        kodi_version = "krypton"
         try:
             # since we get packaged we need to use load_resource() to load external files
             import sublime
-            text = sublime.load_resource("Packages/KodiDevKit/data/controls.xml").encode("utf-8")
-            self.template_root = ET.fromstring(text, PARSER)
+            text = sublime.load_resource("Packages/KodiDevKit/data/%s/controls.xml" % kodi_version)
+            self.template_root = ET.fromstring(text.encode("utf-8"), PARSER)
             # resolve includes
-            text = sublime.load_resource("Packages/KodiDevKit/data/data.xml").encode("utf-8")
-            root = ET.fromstring(text, PARSER)
+            text = sublime.load_resource("Packages/KodiDevKit/%s/data/data.xml" % kodi_version)
+            root = ET.fromstring(text.encode("utf-8"), PARSER)
         except Exception:
             # fallback to old method so that class still can get used without sublime import
             path = os.path.normpath(os.path.abspath(__file__))
             folder = os.path.split(path)[0]
-            self.template_root = Utils.get_root_from_file(os.path.join(folder, "..", "data", "controls.xml"))
-            root = Utils.get_root_from_file(os.path.join(folder, "..", "data", "data.xml"))
+            self.template_root = Utils.get_root_from_file(os.path.join(folder, "..", "data", kodi_version, "controls.xml"))
+            root = Utils.get_root_from_file(os.path.join(folder, "..", "data", kodi_version, "data.xml"))
         self.builtins = []
         self.conditions = []
         for item in root.find("builtins"):
