@@ -201,7 +201,7 @@ class KodiDevKit(sublime_plugin.EventListener):
                 label = INFOS.return_label(selected_content)
                 if label:
                     return label
-            if element is not None and (element.tag.find("texture") != -1 or element.tag in {"icon", "thumb"}):
+            if selected_content.endswith((".png", ".gif", ".jpg")):
                 image_info = INFOS.get_image_info(selected_content)
                 if image_info:
                     return image_info
@@ -298,7 +298,10 @@ class KodiDevKit(sublime_plugin.EventListener):
             view.assign_syntax('Packages/KodiDevKit/Gettext.tmLanguage')
         if self.filename and self.filename.endswith(".log"):
             view.assign_syntax('Packages/KodiDevKit/KodiLog.sublime-syntax')
-        if view and view.window() is not None:
+        if view:
+            wnd = view.window()
+            if wnd is None:
+                return None
             variables = view.window().extract_variables()
             if "folder" in variables:
                 project_folder = variables["folder"]
