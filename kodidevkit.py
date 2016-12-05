@@ -302,7 +302,7 @@ class KodiDevKit(sublime_plugin.EventListener):
             wnd = view.window()
             if wnd is None:
                 return None
-            variables = view.window().extract_variables()
+            variables = wnd.extract_variables()
             if "folder" in variables:
                 project_folder = variables["folder"]
                 if project_folder and project_folder != self.actual_project:
