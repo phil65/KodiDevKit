@@ -1,0 +1,5 @@
+  Changes in 2.5.7
+  =================
+
+ - improved check when to show tooltip with image dimensions
+ - allow constants for int attributes
