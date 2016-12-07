@@ -73,6 +73,7 @@ class KodiDevKit(sublime_plugin.EventListener):
         self.root = None
         self.tree = None
         self.timer = None
+        self.settings = {}
 
     def on_query_completions(self, view, prefix, locations):
         """
