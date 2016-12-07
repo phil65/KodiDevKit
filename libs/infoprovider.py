@@ -180,7 +180,7 @@ class InfoProvider(object):
             text = sublime.load_resource("Packages/KodiDevKit/data/%s/controls.xml" % kodi_version)
             self.template_root = ET.fromstring(text.encode("utf-8"), PARSER)
             # resolve includes
-            text = sublime.load_resource("Packages/KodiDevKit/%s/data/data.xml" % kodi_version)
+            text = sublime.load_resource("Packages/KodiDevKit/data/%s/data.xml" % kodi_version)
             root = ET.fromstring(text.encode("utf-8"), PARSER)
         except Exception:
             # fallback to old method so that class still can get used without sublime import
