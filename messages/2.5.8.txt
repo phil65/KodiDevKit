@@ -1,0 +1,4 @@
+  Changes in 2.5.8
+  =================
+
+ - Hotfix for broken loading of data files
