@@ -88,9 +88,11 @@ class KodiDevKit(sublime_plugin.EventListener):
         if folder not in INFOS.addon.includes:
             return []
         if "text.xml" in scope_name:
-            path = os.listdir(INFOS.addon.media_path)
-            completions = list(zip(path, path))
-            print(completions)
+            for dir_, _, files in os.walk(INFOS.addon.media_path):
+                for fileName in files:
+                    relDir = os.path.relpath(dir_, INFOS.addon.media_path)
+                    relFile = os.path.join(relDir, fileName).lstrip("./")
+                    completions.append([relFile, relFile])
             colors = []
             for node in INFOS.get_colors():
                 if node["name"] not in colors:
