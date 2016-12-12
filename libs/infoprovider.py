@@ -472,7 +472,7 @@ class InfoProvider(object):
         font_refs = self.addon.get_font_refs()
         # get estuary fonts..
         estuary_fonts = []
-        estuary_font_file = os.path.join(self.kodi_path, "addons", "skin.estuary", "1080i", "Font.xml")
+        estuary_font_file = os.path.join(self.kodi_path, "addons", "skin.estuary", "xml", "Font.xml")
         root = Utils.get_root_from_file(estuary_font_file)
         if root is not None:
             estuary_fonts = [node.find("name").text for node in root.find("fontset").findall("font")]
