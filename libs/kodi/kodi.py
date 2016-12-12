@@ -24,6 +24,7 @@ class Kodi(object):
     def __init__(self, *args, **kwargs):
         self.settings = None
         self.po_files = []
+        self.json_url = None
         self.kodi_path = None
         self.userdata_folder = None
 
@@ -41,8 +42,7 @@ class Kodi(object):
         send JSON command *data to Kodi,
         also needs *settings for remote ip etc.
         """
-        address = self.settings.get("kodi_address", "http://localhost:8080")
-        if not address:
+        if not self.json_url:
             return None
         data = {"jsonrpc": "2.0",
                 "method": method,
@@ -53,7 +53,7 @@ class Kodi(object):
                                      self.settings.get("kodi_password", ""))
         headers = {'Content-Type': 'application/json',
                    'Authorization': b'Basic ' + base64.b64encode(credentials.encode('UTF-8'))}
-        request = Request(url=address + "/jsonrpc",
+        request = Request(url=self.json_url + "/jsonrpc",
                           data=json.dumps(data).encode('utf-8'),
                           headers=headers)
         try:
@@ -89,7 +89,7 @@ class Kodi(object):
             return os.path.join(os.path.expanduser("~"), ".%s" % APP_NAME)
         elif platform.system() == "Windows":
             if self.settings.get("portable_mode"):
-                return os.path.join(self.settings.get("kodi_path"), "portable_data")
+                return os.path.join(self.kodi_path, "portable_data")
             else:
                 return os.path.join(os.getenv('APPDATA'), APP_NAME)
         elif platform.system() == "Darwin":
@@ -116,6 +116,13 @@ class Kodi(object):
         """
         return os.path.join(self.kodi_path, "system", "colors.xml")
 
+    @property
+    def default_skin_path(self):
+        """
+        get path to userdata addon dir
+        """
+        return os.path.join(self.user_addons_path, "skin.estuary", "xml")
+
     def get_userdata_addons(self):
         """
         get list of folders from userdata addon dir
@@ -129,7 +136,8 @@ class Kodi(object):
         init instance with *settings
         """
         self.settings = settings
-        self.kodi_path = settings.get("kodi_path")
+        self.json_url = self.settings.get("kodi_address", "http://localhost:8080")
+        self.kodi_path = self.settings.get("kodi_path")
         self.userdata_folder = self.get_userdata_folder()
         self.get_colors()
         self.update_labels()
