@@ -88,6 +88,9 @@ class KodiDevKit(sublime_plugin.EventListener):
         if folder not in INFOS.addon.includes:
             return []
         if "text.xml" in scope_name:
+            path = os.listdir(INFOS.addon.media_path)
+            completions = list(zip(path, path))
+            print(completions)
             colors = []
             for node in INFOS.get_colors():
                 if node["name"] not in colors:
@@ -102,7 +105,7 @@ class KodiDevKit(sublime_plugin.EventListener):
             for item in completions:
                 for i, match in enumerate(re.findall(r"\([a-z,\]\[]+\)", item[1])):
                     item[1] = item[1].replace(match, "($%i)" % (i + 1))
-            return completions.sort()
+            return completions
             # return (completions, sublime.INHIBIT_WORD_COMPLETIONS | sublime.INHIBIT_EXPLICIT_COMPLETIONS)
 
     def on_selection_modified_async(self, view):
