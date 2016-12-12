@@ -6,6 +6,6 @@
     "auto_complete_selector": "source, text",
     "auto_complete_triggers":
     [
-        {"selector": "text.xml", "characters": ".<["},
+        {"selector": "text.xml", "characters": ".<[/"},
     ]
 }
