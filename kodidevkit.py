@@ -270,7 +270,7 @@ class KodiDevKit(sublime_plugin.EventListener):
             INFOS.addon.reload(view.file_name())
             self.root = Utils.get_root_from_file(view.file_name())
             self.tree = ET.ElementTree(self.root)
-            if folder in INFOS.addon.window_files and filename in INFOS.addon.window_files[folder]:
+            if (folder in INFOS.addon.window_files and filename in INFOS.addon.window_files[folder]) or folder == "colors":
                 if self.settings.get("auto_reload_skin", True):
                     self.is_modified = False
                     view.window().run_command("execute_builtin",
