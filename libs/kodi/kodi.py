@@ -24,6 +24,7 @@ class Kodi(object):
     def __init__(self, *args, **kwargs):
         self.settings = None
         self.po_files = []
+        self.colors = []
         self.json_url = None
         self.kodi_path = None
         self.userdata_folder = None
