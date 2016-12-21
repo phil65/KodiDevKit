@@ -191,10 +191,9 @@ class KodiDevKit(sublime_plugin.EventListener):
                     image_info = INFOS.get_image_info(content)
                     if image_info:
                         return image_info
-            if element is not None and (element.tag in CONST_NODES or element.tag == "font" or (element.tag == "include" and "name" not in element.attrib)):
-                content = self.get_formatted_include(selected_content, view)
-                if content:
-                    return content
+            content = self.get_formatted_include(selected_content, view)
+            if content:
+                return content
             if element is not None and element.tag in VISIBLE_TAGS:
                 if re.search('[a-zA-Z]', selected_content):
                     result = kodi.request(method="XBMC.GetInfoBooleans",
