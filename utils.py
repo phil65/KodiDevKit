@@ -233,9 +233,10 @@ class EvaluateMathExpressionCommand(sublime_plugin.TextCommand):
     def run(self, edit, equation):
         for i, region in enumerate(self.view.sel()):
             text = self.view.substr(region)
+            temp_equation = equation.replace("i", str(i))
             if text.replace('-', '').isdigit():
-                new_text = eval(equation.replace("x", text).replace("i", str(i)))
-                self.view.replace(edit, region, str(new_text).replace(".0", ""))
+                temp_equation = temp_equation.replace("x", text)
+            self.view.replace(edit, region, str(eval(temp_equation)).replace(".0", ""))
 
 
 class ColorPickerCommand(sublime_plugin.WindowCommand):
