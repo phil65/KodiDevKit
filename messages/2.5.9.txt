@@ -1,0 +1,7 @@
+  Changes in 2.5.9
+  =================
+
+ - improved Evaluate-Math-Expression command
+ - improved tooltips
+ - show texture paths for autocompletion
+ - misc fixes
