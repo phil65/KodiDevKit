@@ -235,7 +235,6 @@ class KodiDevKit(sublime_plugin.EventListener):
         """
         show tooltip using mdpopups
         """
-        view.hide_popup()
         if not view.file_name():
             return None
         tooltip = self.get_tooltip(view)
