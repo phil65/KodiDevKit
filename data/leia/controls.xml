@@ -1,0 +1,469 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+    <!--deprecated: mover, select, multiselect-->
+
+    <!-- available types:
+
+    - bool [true,false]
+    - condition [kodi visible condition]
+    - position [some number or %value]
+    - coords [one or more numbers, comma-separated]
+    - int [some number]
+    - depth [float number, 0.0 - 1.0]
+    - font [font from font file]
+    - color [color from color file, or hex value]
+    - label [some string]
+    - builtin [kodi builtin]
+    - path [file path]
+    - aspect [scale, stretch, center, keep]
+    - align [left, center, right]
+    - aligny [top, center, bottom]
+    - tween [quadratic, sine, ...]
+    - easing [in, out, inout]
+    - viewtype [list, icon, biglist, bigicon, wide, bigwide, wrap, bigwrap, info, biginfo]
+    - subtype [page, int, float, text]
+    - controls [when it is allowed to nest other controls in this element]
+
+
+    always allowed tags: description, include
+    always allowed attributes: description
+
+    -->
+    <control type="group" id="int">
+        <width>int</width>
+        <height>int</height>
+        <include>common</include>
+        <defaultcontrol always="bool">int</defaultcontrol>
+        <renderfocusedlast>bool</renderfocusedlast>
+        <control type="controltype" id="int">controls</control>
+    </control>
+    <control type="grouplist" id="int">
+        <width>int</width>
+        <height min="int" max="int">int</height>
+        <include>common</include>
+        <include>nav_common</include>
+        <onback condition="condition">builtin</onback>
+        <itemgap>int</itemgap>
+        <align>align</align>
+        <pagecontrol>int</pagecontrol>
+        <orientation>int</orientation>
+        <defaultcontrol always="bool">int</defaultcontrol>
+        <scrolltime tween="tween" easing="easing">int</scrolltime>
+        <usecontrolcoords>bool</usecontrolcoords>
+        <renderfocusedlast>bool</renderfocusedlast>
+        <control type="controltype" id="int">controls</control>
+    </control>
+    <control type="label" id="int">
+        <width min="int" max="int">int</width>
+        <height>int</height>
+        <include>common</include>
+        <font>font</font>
+        <textcolor>color</textcolor>
+        <align>align</align>
+        <aligny>aligny</aligny>
+        <label fallback="label">label</label>
+        <scroll>bool</scroll>
+        <info>label</info>
+        <number></number>
+        <angle>int</angle>
+        <textoffsetx>int</textoffsetx>
+        <textoffsety>int</textoffsety>
+        <haspath>bool</haspath>
+        <selectedcolor>color</selectedcolor>
+        <shadowcolor>color</shadowcolor>
+        <wrapmultiline>bool</wrapmultiline>
+        <scrollspeed>int</scrollspeed>
+        <scrollsuffix>label</scrollsuffix>
+    </control>
+    <control type="fadelabel" id="int">
+        <width>int</width>
+        <height>int</height>
+        <include>common</include>
+        <scroll>bool</scroll>
+        <scrollspeed>int</scrollspeed>
+        <scrollout>bool</scrollout>
+        <pauseatend>int</pauseatend>
+        <align>align</align>
+        <aligny>aligny</aligny>
+        <angle>int</angle>
+        <label fallback="label">label</label>
+        <info>label</info>
+        <font>font</font>
+        <textcolor>color</textcolor>
+        <shadowcolor>color</shadowcolor>
+        <selectedcolor>color</selectedcolor>
+        <textoffsetx>int</textoffsetx>
+        <textoffsety>int</textoffsety>
+        <randomize>bool</randomize>
+        <resetonlabelchange>bool</resetonlabelchange>
+    </control>
+    <control type="scrollbar" id="int">
+        <width>int</width>
+        <height>int</height>
+        <include>common</include>
+        <include>nav_common</include>
+        <hitrect x="int" y="int" w="int" h="int"></hitrect>
+        <hitrectcolor>color</hitrectcolor>
+        <onback condition="condition">builtin</onback>
+        <texturesliderbackground colordiffuse="color" border="coords">path</texturesliderbackground>
+        <texturesliderbar colordiffuse="color" border="coords">path</texturesliderbar>
+        <texturesliderbarfocus colordiffuse="color" border="coords">path</texturesliderbarfocus>
+        <textureslidernib colordiffuse="color" border="coords">path</textureslidernib>
+        <textureslidernibfocus colordiffuse="color" border="coords">path</textureslidernibfocus>
+        <orientation>orientation</orientation>
+        <showonepage>bool</showonepage>
+    </control>
+    <control type="button" id="int">
+        <width min="int" max="int">int</width>
+        <height>int</height>
+        <include>common</include>
+        <include>button_common</include>
+        <include>nav_common</include>
+        <label2>label</label2>
+        <wrapmultiline>bool</wrapmultiline>
+        <selectedcolor>color</selectedcolor>
+        <onclick condition="condition">builtin</onclick>
+        <onback condition="condition">builtin</onback>
+        <onfocus condition="condition">builtin</onfocus>
+        <onunfocus condition="condition">builtin</onunfocus>
+    </control>
+    <control type="image" id="int">
+        <width min="int" max="int">int</width>
+        <height>int</height>
+        <include>common</include>
+        <colordiffuse>color</colordiffuse>
+        <fadetime>int</fadetime>
+        <align>align</align>
+        <aligny>aligny</aligny>
+        <texture border="coords" flipy="bool" flipx="bool" background="bool" diffuse="path" colordiffuse="color" fallback="path">path</texture>
+        <bordertexture border="coords" colordiffuse="color">path</bordertexture>
+        <bordersize>int</bordersize>
+        <info>info</info>
+        <aspectratio align="align" aligny="aligny" scalediffuse="bool">aspect</aspectratio>
+    </control>
+    <control type="multiimage" id="int">
+        <width>int</width>
+        <height>int</height>
+        <include>common</include>
+        <imagepath background="bool" diffuse="path" colordiffuse="color" fallback="path" border="coords">path</imagepath>
+        <colordiffuse>color</colordiffuse>
+        <info></info>
+        <timeperimage>int</timeperimage>
+        <fadetime>int</fadetime>
+        <pauseatend>int</pauseatend>
+        <randomize>bool</randomize>
+        <loop>bool</loop>
+        <aspectratio align="align" aligny="aligny">aspect</aspectratio>
+    </control>
+    <control type="radiobutton" id="int">
+        <width>int</width>
+        <height>int</height>
+        <include>common</include>
+        <include>nav_common</include>
+        <include>button_common</include>
+        <textureradioonfocus colordiffuse="color" border="coords">path</textureradioonfocus>
+        <textureradioonnofocus colordiffuse="color" border="coords">path</textureradioonnofocus>
+        <textureradioondisabled colordiffuse="color" border="coords">path</textureradioondisabled>
+        <textureradioofffocus colordiffuse="color" border="coords">path</textureradioofffocus>
+        <textureradiooffnofocus colordiffuse="color" border="coords">path</textureradiooffnofocus>
+        <textureradiooffdisabled colordiffuse="color" border="coords">path</textureradiooffdisabled>
+        <textureradioon colordiffuse="color" border="coords">path</textureradioon>
+        <textureradiooff colordiffuse="color" border="coords">path</textureradiooff>
+        <selected>condition</selected>
+        <onclick condition="condition">builtin</onclick>
+        <onback condition="condition">builtin</onback>
+        <onfocus condition="condition">builtin</onfocus>
+        <onunfocus condition="condition">builtin</onunfocus>
+        <radioposx>int</radioposx>
+        <radioposy>int</radioposy>
+        <radiowidth>int</radiowidth>
+        <radioheight>int</radioheight>
+    </control>
+    <control type="togglebutton" id="int">
+        <width>int</width>
+        <height>int</height>
+        <include>common</include>
+        <include>nav_common</include>
+        <include>button_common</include>
+        <alttexturefocus colordiffuse="color" flipx="bool" flipy="bool" border="coords">path</alttexturefocus>
+        <alttexturenofocus colordiffuse="color" flipx="bool" flipy="bool" border="coords">path</alttexturenofocus>
+        <wrapmultiline>bool</wrapmultiline>
+        <usealttexture>condition</usealttexture>
+        <altclick condition="condition">builtin</altclick>
+        <altlabel>label</altlabel>
+        <onclick condition="condition">builtin</onclick>
+        <onback condition="condition">builtin</onback>
+        <onfocus condition="condition">builtin</onfocus>
+        <onunfocus condition="condition">builtin</onunfocus>
+    </control>
+    <control type="spincontrol" id="int">
+        <width>int</width>
+        <height>int</height>
+        <include>common</include>
+        <include>nav_common</include>
+        <colordiffuse>color</colordiffuse>
+        <textureup colordiffuse="color" border="coords">path</textureup>
+        <textureupfocus colordiffuse="color" border="coords">path</textureupfocus>
+        <texturedown colordiffuse="color" border="coords">path</texturedown>
+        <texturedownfocus colordiffuse="color" border="coords">path</texturedownfocus>
+        <subtype>subtype</subtype>
+        <font>font</font>
+        <range>range</range>
+        <textcolor>color</textcolor>
+        <disabledcolor>color</disabledcolor>
+        <align>align</align>
+        <aligny>aligny</aligny>
+        <textoffsetx>int</textoffsetx>
+        <textoffsety>int</textoffsety>
+        <reverse>bool</reverse>
+        <pulseonselect>bool</pulseonselect>
+        <showonepage>bool</showonepage>
+    </control>
+    <control type="spincontrolex" id="int">
+        <width>int</width>
+        <height>int</height>
+        <include>common</include>
+        <include>nav_common</include>
+        <include>button_common</include>
+        <spinposx>int</spinposx>
+        <spinposy>int</spinposy>
+        <spinwidth>int</spinwidth>
+        <spinheight>int</spinheight>
+        <reverse>bool</reverse>
+        <textureup colordiffuse="color" border="coords">path</textureup>
+        <textureupfocus colordiffuse="color" border="coords">path</textureupfocus>
+        <texturedown colordiffuse="color" border="coords">path</texturedown>
+        <texturedownfocus colordiffuse="color" border="coords">path</texturedownfocus>
+        <onback condition="condition">builtin</onback>
+        <onfocus condition="condition">builtin</onfocus>
+        <onunfocus condition="condition">builtin</onunfocus>
+    </control>
+    <control type="slider" id="int">
+        <width>int</width>
+        <height>int</height>
+        <include>common</include>
+        <include>nav_common</include>
+        <texturesliderbar colordiffuse="color" border="coords">path</texturesliderbar>
+        <textureslidernib colordiffuse="color" border="coords">path</textureslidernib>
+        <textureslidernibfocus colordiffuse="color" border="coords">path</textureslidernibfocus>
+        <info>info</info>
+        <action>action</action>
+        <pulseonselect>bool</pulseonselect>
+        <orientation>orientation</orientation>
+    </control>
+    <control type="sliderex" id="int">
+        <width>int</width>
+        <height>int</height>
+        <include>common</include>
+        <include>nav_common</include>
+        <include>button_common</include>
+        <sliderwidth>int</sliderwidth>
+        <sliderheight>int</sliderheight>
+        <texturesliderbar colordiffuse="color" border="coords">path</texturesliderbar>
+        <textureslidernib colordiffuse="color" border="coords">path</textureslidernib>
+        <textureslidernibfocus colordiffuse="color" border="coords">path</textureslidernibfocus>
+        <onback condition="condition">builtin</onback>
+        <onfocus condition="condition">builtin</onfocus>
+        <onunfocus condition="condition">builtin</onunfocus>
+    </control>
+    <control type="mover" id="int">
+        <width>int</width>
+        <height>int</height>
+        <include>common</include>
+        <texturefocus colordiffuse="color" flipx="bool" flipy="bool" border="coords">path</texturefocus>
+        <texturenofocus colordiffuse="color" flipx="bool" flipy="bool" border="coords">path</texturenofocus>
+    </control>
+    <control type="gamecontroller" id="int">
+        <width>int</width>
+        <height>int</height>
+        <include>common</include>
+    </control>
+    <control type="progress" id="int">
+        <width>int</width>
+        <height>int</height>
+        <include>common</include>
+        <reveal>bool</reveal>
+        <texturebg colordiffuse="color" border="coords">path</texturebg>
+        <colordiffuse>color</colordiffuse>
+        <lefttexture border="coords" colordiffuse="color">path</lefttexture>
+        <midtexture border="coords" colordiffuse="color">path</midtexture>
+        <righttexture border="coords" colordiffuse="color">path</righttexture>
+        <overlaytexture colordiffuse="color" border="coords">path</overlaytexture>
+        <info>info</info>
+    </control>
+    <control type="textbox" id="int">
+        <width>int</width>
+        <height min="int" max="int">int</height>
+        <include>common</include>
+        <colordiffuse>color</colordiffuse>
+        <font>font</font>
+        <textcolor>color</textcolor>
+        <shadowcolor>color</shadowcolor>
+        <selectedcolor>color</selectedcolor>
+        <pulseonselect>bool</pulseonselect>
+        <pagecontrol>int</pagecontrol>
+        <scrolltime tween="tween" easing="easing">int</scrolltime>
+        <align>align</align>
+        <aligny>aligny</aligny>
+        <autoscroll delay="int" time="int" repeat="int">condition</autoscroll>
+        <label fallback="label">label</label>
+        <info>label</info>
+    </control>
+    <control type="rss" id="int">
+        <width min="int" max="int">int</width>
+        <height>int</height>
+        <include>common</include>
+        <font>font</font>
+        <textcolor>color</textcolor>
+        <headlinecolor>color</headlinecolor>
+        <titlecolor>color</titlecolor>
+        <title>xxx</title>
+        <shadowcolor>color</shadowcolor>
+        <urlset>xxx</urlset>
+        <hitrect x="int" y="int" w="int" h="int"></hitrect>
+        <hitrectcolor>color</hitrectcolor>
+    </control>
+    <control type="renderaddon" id="int">
+        <width>int</width>
+        <height>int</height>
+        <include>common</include>
+    </control>
+    <control type="visualisation" id="int">
+        <width>int</width>
+        <height>int</height>
+        <include>common</include>
+    </control>
+    <control type="videowindow" id="int">
+        <width>int</width>
+        <height>int</height>
+        <include>common</include>
+    </control>
+    <control type="resize" id="int">
+        <width>int</width>
+        <height>int</height>
+        <include>common</include>
+        <texturefocus colordiffuse="color" flipx="bool" flipy="bool" border="coords">path</texturefocus>
+        <texturenofocus colordiffuse="color" flipx="bool" flipy="bool" border="coords">path</texturenofocus>
+        <pulseonselect>bool</pulseonselect>
+    </control>
+    <control type="edit" id="int">
+        <width>int</width>
+        <height>int</height>
+        <include>common</include>
+        <include>nav_common</include>
+        <include>button_common</include>
+        <ontextchange>builtin</ontextchange>
+        <hinttext>label</hinttext>
+        <password>bool</password>
+    </control>
+    <control type="epggrid" id="int">
+        <width>int</width>
+        <height>int</height>
+        <include>common</include>
+        <include>nav_common</include>
+        <pagecontrol>int</pagecontrol>
+        <scrolltime tween="tween" easing="easing">int</scrolltime>
+        <timeblocks>int</timeblocks>
+        <rulerunit>int</rulerunit>
+        <onback condition="condition">builtin</onback>
+        <viewtype label="label">viewtype</viewtype>
+        <progresstexture colordiffuse="color" border="coords">path</progresstexture>
+        <rulerlayout height="int" width="int" condition="condition"></rulerlayout>
+        <channellayout height="int" width="int" condition="condition"></channellayout>
+        <focusedchannellayout height="int" width="int" condition="condition"></focusedchannellayout>
+        <itemlayout height="int" width="int" condition="condition"></itemlayout>
+        <focusedlayout height="int" width="int" condition="condition"></focusedlayout>
+    </control>
+    <control type="list" id="int">
+        <include>common</include>
+        <include>list_common</include>
+    </control>
+    <control type="wraplist" id="int">
+        <include>common</include>
+        <include>list_common</include>
+        <focusposition>int</focusposition>
+    </control>
+    <control type="fixedlist" id="int">
+        <include>common</include>
+        <include>list_common</include>
+        <focusposition>int</focusposition>
+        <movement>int</movement>
+    </control>
+    <control type="panel" id="int">
+        <include>common</include>
+        <include>list_common</include>
+    </control>
+    <include name="common">
+        <description>label</description>
+        <camera x="int" y="int">int</camera>
+        <depth>depth</depth>
+        <posx>int</posx>
+        <posy>int</posy>
+        <left>int</left>
+        <right>int</right>
+        <top>int</top>
+        <animation effect="effect" type="effect" start="coords" end="coords" time="int" tween="tween" easing="easing" condition="condition" center="coords" delay="int" reversible="bool" loop="bool" pulse="bool" acceleration="int">xxx</animation>
+        <centertop>int</centertop>
+        <centerbottom>int</centerbottom>
+        <centerleft>int</centerleft>
+        <centerright>int</centerright>
+        <bottom>int</bottom>
+        <visible allowhiddenfocus="bool">condition</visible>
+        <include content="include" file="path" condition="condition">include</include>
+    </include>
+    <include name="list_common">
+        <width>int</width>
+        <height>int</height>
+        <onup condition="condition">builtin</onup>
+        <ondown condition="condition">builtin</ondown>
+        <onleft condition="condition">builtin</onleft>
+        <onright condition="condition">builtin</onright>
+        <onback condition="condition">builtin</onback>
+        <offsetx>int</offsetx>
+        <offsety>int</offsety>
+        <enable>condition</enable>
+        <onfocus condition="condition">builtin</onfocus>
+        <onunfocus condition="condition">builtin</onunfocus>
+        <onclick condition="condition">builtin</onclick>
+        <oninfo condition="condition">builtin</oninfo>
+        <orientation>orientation</orientation>
+        <preloaditems>int</preloaditems>
+        <scrolltime tween="tween" easing="easing">int</scrolltime>
+        <pagecontrol>int</pagecontrol>
+        <viewtype label="label">viewtype</viewtype>
+        <autoscroll delay="int" time="int" repeat="int" reverse="bool">condition</autoscroll>
+        <hitrect x="int" y="int" w="int" h="int"></hitrect>
+        <hitrectcolor>color</hitrectcolor>
+        <itemlayout width="int" height="int" condition="condition"></itemlayout>
+        <focusedlayout height="int" width="int" condition="condition"></focusedlayout>
+        <content sortby="sort" sortorder="order" target="target" limit="int"></content>
+    </include>
+    <include name="nav_common">
+        <onup condition="condition">builtin</onup>
+        <ondown condition="condition">builtin</ondown>
+        <onleft condition="condition">builtin</onleft>
+        <onright condition="condition">builtin</onright>
+    </include>
+    <include name="button_common">
+        <label fallback="label">label</label>
+        <colordiffuse>color</colordiffuse>
+        <texturefocus colordiffuse="color" flipx="bool" flipy="bool" border="coords">path</texturefocus>
+        <texturenofocus colordiffuse="color" flipx="bool" flipy="bool" border="coords">path</texturenofocus>
+        <hitrect x="int" y="int" w="int" h="int"></hitrect>
+        <hitrectcolor>color</hitrectcolor>
+        <angle>int</angle>
+        <font>font</font>
+        <textcolor>color</textcolor>
+        <disabledcolor>color</disabledcolor>
+        <focusedcolor>color</focusedcolor>
+        <shadowcolor>color</shadowcolor>
+        <invalidcolor>color</invalidcolor>
+        <align>align</align>
+        <aligny>aligny</aligny>
+        <textoffsetx>int</textoffsetx>
+        <textoffsety>int</textoffsety>
+        <pulseonselect>bool</pulseonselect>
+        <textwidth>int</textwidth>
+        <enable>condition</enable>
+    </include>
+</root>
