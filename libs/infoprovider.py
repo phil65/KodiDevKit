@@ -13,6 +13,7 @@ import re
 from lxml import etree as ET
 import logging
 import string
+import json
 import copy
 from . import Utils
 from .addon import Addon
@@ -21,108 +22,6 @@ from . import ImageParser
 
 ns = ET.FunctionNamespace(None)
 ns['lower-case'] = lambda context, s: str.lower(s)
-
-# c&p from wiki
-WINDOW_MAP = [("home", 0, "Home.xml"),
-              ("programs", 1, "MyPrograms.xml"),
-              ("pictures", 2, "MyPics.xml"),
-              ("filemanager", 3, "FileManager.xml"),
-              ("settings", 4, "Settings.xml"),
-              ("systeminfo", 7, "SettingsSystemInfo.xml"),
-              ("screencalibration", 11, "SettingsScreenCalibration.xml"),
-              ("picturessettings", 12, "SettingsCategory.xml"),
-              ("programssettings", 13, "SettingsCategory.xml"),
-              ("musicsettings", 15, "SettingsCategory.xml"),
-              ("systemsettings", 16, "SettingsCategory.xml"),
-              ("videossettings", 17, "SettingsCategory.xml"),
-              ("servicesettings", 18, "SettingsCategory.xml"),
-              ("appearancesettings", 19, "SettingsCategory.xml"),
-              ("interfacesettings", 19, "SettingsCategory.xml"),
-              ("pvrsettings", 21, "SettingsCategory.xml"),
-              ("videos", 25, "MyVideoNav.xml"),
-              ("videoplaylist", 28, "MyVideoPlaylist.xml"),
-              ("loginscreen", 29, "LoginScreen.xml"),
-              ("profiles", 34, "SettingsProfile.xml"),
-              ("addonbrowser", 40, "AddonBrowser.xml"),
-              ("yesnodialog", 100, "DialogConfirm.xml"),
-              ("progressdialog", 101, "DialogConfirm.xml"),
-              ("virtualkeyboard", 103, "DialogKeyboard.xml"),
-              ("volumebar", 104, "DialogVolumeBar.xml"),
-              ("contextmenu", 106, "DialogContextMenu.xml"),
-              # ("infodialog", 107, "DialogKaiToast.xml"),
-              ("notification", 107, "DialogNotification.xml"),
-              ("numericinput", 109, "DialogNumeric.xml"),
-              ("shutdownmenu", 111, "DialogButtonMenu.xml"),
-              ("mutebug", 113, "DialogMuteBug.xml"),
-              ("playercontrols", 114, "PlayerControls.xml"),
-              ("seekbar", 115, "DialogSeekBar.xml"),
-              ("musicosd", 120, "MusicOSD.xml"),
-              ("visualisationpresetlist", 122, "DialogSelect.xml"),
-              ("osdvideosettings", 123, "VideoOSDSettings.xml"),
-              ("osdaudiosettings", 124, "VideoOSDSettings.xml"),
-              ("videobookmarks", 125, "VideoOSDBookmarks.xml"),
-              ("filebrowser", 126, "FileBrowser.xml"),
-              ("networksetup", 128, "DialogSettings.xml"),
-              ("mediasource", 129, "DialogMediaSource.xml"),
-              ("profilesettings", 130, "ProfileSettings.xml"),
-              ("locksettings", 131, "LockSettings.xml"),
-              ("contentsettings", 132, "DialogSettings.xml"),
-              ("favourites", 134, "DialogFavourites.xml"),
-              ("songinformation", 135, "DialogMusicInfo.xml"),
-              ("smartplaylisteditor", 136, "SmartPlaylistEditor.xml"),
-              ("smartplaylistrule", 137, "SmartPlaylistRule.xml"),
-              ("busydialog", 138, "DialogBusy.xml"),
-              ("pictureinfo", 139, "DialogPictureInfo.xml"),
-              ("addonsettings", 140, "DialogAddonSettings.xml"),
-              ("fullscreeninfo", 142, "DialogFullScreenInfo.xml"),
-              ("sliderdialog", 145, "DialogSlider.xml"),
-              ("addoninformation", 146, "DialogAddonInfo.xml"),
-              ("textviewer", 147, "DialogTextViewer.xml"),
-              ("peripherals", 149, "DialogSelect.xml"),
-              ("peripheralsettings", 150, "DialogSettings.xml"),
-              ("extendedprogressdialog", 151, "DialogExtendedProgressBar.xml"),
-              ("mediafilter", 152, "DialogMediaFilter.xml"),
-              ("subtitlesearch", 153, "DialogSubtitles.xml"),
-              ("musicplaylist", 500, "MyMusicPlaylist.xml"),
-              ("musicfiles", 501, "MyMusicSongs.xml"),
-              ("musiclibrary", 502, "MyMusicNav.xml"),
-              ("musicplaylisteditor", 503, "MyMusicPlaylistEditor.xml"),
-              ("tvchannels", 615, "MyPVRChannels.xml"),
-              ("tvrecordings", 616, "MyPVRRecordings.xml"),
-              ("tvguide", 617, "MyPVRGuide.xml"),
-              ("tvtimers", 618, "MyPVRTimers.xml"),
-              ("tvsearch", 619, "MyPVRSearch.xml"),
-              ("radiochannels", 620, "MyPVRChannels.xml"),
-              ("radiorecordings", 621, "MyPVRRecordings.xml"),
-              ("radioguide", 622, "MyPVRGuide.xml"),
-              ("radiotimers", 623, "MyPVRTimers.xml"),
-              ("radiosearch", 624, "MyPVRSearch.xml"),
-              ("pvrguideinfo", 602, "DialogPVRGuideInfo.xml"),
-              ("pvrrecordinginfo", 603, "DialogPVRRecordingInfo.xml"),
-              ("pvrtimersetting", 604, "DialogPVRTimerSettings.xml"),
-              ("pvrgroupmanager", 605, "DialogPVRGroupManager.xml"),
-              ("pvrchannelmanager", 606, "DialogPVRChannelManager.xml"),
-              ("pvrguidesearch", 607, "DialogPVRGuideSearch.xml"),
-              ("pvrosdchannels", 610, "DialogPVRChannelsOSD.xml"),
-              ("pvrosdguide", 611, "DialogPVRGuideOSD.xml"),
-              ("selectdialog", 2000, "DialogSelect.xml"),
-              ("musicinformation", 2001, "DialogAlbumInfo.xml"),
-              ("okdialog", 2002, "DialogConfirm.xml"),
-              ("movieinformation", 2003, "DialogVideoInfo.xml"),
-              ("fullscreenvideo", 2005, "VideoFullScreen.xml"),
-              ("visualisation", 2006, "MusicVisualisation.xml"),
-              ("slideshow", 2007, "SlideShow.xml"),
-              ("filestackingdialog", 2008, "DialogFileStacking.xml"),
-              ("weather", 2600, "MyWeather.xml"),
-              ("videoosd", 2901, "VideoOSD.xml"),
-              ("startup", 2999, "Startup.xml"),
-              ("skinsettings", 35, "SkinSettings.xml"),
-              ("pointer", 105, "Pointer.xml"),
-              ("musicoverlay", 2903, "MusicOverlay.xml"),
-              ("videooverlay", 2904, "VideoOverlay.xml")]
-WINDOW_FILENAMES = [item[2] for item in WINDOW_MAP]
-WINDOW_NAMES = [item[0] for item in WINDOW_MAP]
-WINDOW_IDS = [str(item[1]) for item in WINDOW_MAP]
 
 # allowed child nodes for different control types (+ some other nodes)
 TAG_CHECKS = [[".//content/*", {"item", "include"}],
@@ -177,17 +76,23 @@ class InfoProvider(object):
         try:
             # since we get packaged we need to use load_resource() to load external files
             import sublime
-            text = sublime.load_resource("Packages/KodiDevKit/data/%s/controls.xml" % kodi_version)
-            self.template_root = ET.fromstring(text.encode("utf-8"), PARSER)
+            controls = sublime.load_resource("Packages/KodiDevKit/data/%s/controls.xml" % kodi_version)
+            self.template_root = ET.fromstring(controls.encode("utf-8"), PARSER)
             # resolve includes
-            text = sublime.load_resource("Packages/KodiDevKit/data/%s/data.xml" % kodi_version)
-            root = ET.fromstring(text.encode("utf-8"), PARSER)
+            data = sublime.load_resource("Packages/KodiDevKit/data/%s/data.xml" % kodi_version)
+            root = ET.fromstring(data.encode("utf-8"), PARSER)
+            WINDOW_MAP = json.loads(sublime.load_resource("Packages/KodiDevKit/data/%s/windows.json" % kodi_version))
         except Exception:
             # fallback to old method so that class still can get used without sublime import
             path = os.path.normpath(os.path.abspath(__file__))
             folder = os.path.split(path)[0]
             self.template_root = Utils.get_root_from_file(os.path.join(folder, "..", "data", kodi_version, "controls.xml"))
             root = Utils.get_root_from_file(os.path.join(folder, "..", "data", kodi_version, "data.xml"))
+            WINDOW_MAP = json.load(os.path.join(folder, "..", "data", kodi_version, "windows.json"))
+        self.WINDOW_FILENAMES = [item[2] for item in WINDOW_MAP]
+        self.WINDOW_NAMES = [item[0] for item in WINDOW_MAP]
+        self.WINDOW_IDS = [str(item[1]) for item in WINDOW_MAP]
+
         self.builtins = []
         self.conditions = []
         for item in root.find("builtins"):
@@ -238,7 +143,7 @@ class InfoProvider(object):
         Checks if the skin contains all core xml window files
         """
         for folder in self.addon.xml_folders:
-            for item in WINDOW_FILENAMES:
+            for item in self.WINDOW_FILENAMES:
                 if item not in self.addon.window_files[folder]:
                     logging.info("Skin does not include %s" % item)
 
@@ -561,8 +466,8 @@ class InfoProvider(object):
             for item in window_refs:
                 if item["name"] in window_ids:
                     pass
-                elif item["name"] in WINDOW_IDS:
-                    windowname = WINDOW_NAMES[WINDOW_IDS.index(item["name"])]
+                elif item["name"] in self.WINDOW_IDS:
+                    windowname = self.WINDOW_NAMES[self.WINDOW_IDS.index(item["name"])]
                     item["message"] = "Window id: Please use %s instead of %s" % (windowname, item["name"])
                     listitems.append(item)
                 else:

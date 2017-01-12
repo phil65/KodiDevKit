@@ -102,7 +102,7 @@ class KodiDevKit(sublime_plugin.EventListener):
                 completions.append([node["name"], node["name"]])
             for node in chain(INFOS.builtins, INFOS.conditions):
                 completions.append([node[0], node[0]])
-            for item in infoprovider.WINDOW_NAMES:
+            for item in INFOS.WINDOW_NAMES:
                 completions.append([item, item])
             for item in completions:
                 for i, match in enumerate(re.findall(r"\([a-z,\]\[]+\)", item[1])):
@@ -159,9 +159,9 @@ class KodiDevKit(sublime_plugin.EventListener):
                     info_id = info_list[1]
             if "constant.other.allcaps" in scope_name:
                 window_name = scope_content.lower()[1:-1]
-                if window_name in infoprovider.WINDOW_NAMES:
-                    window_index = infoprovider.WINDOW_NAMES.index(window_name)
-                    return infoprovider.WINDOW_FILENAMES[window_index]
+                if window_name in INFOS.WINDOW_NAMES:
+                    window_index = INFOS.WINDOW_NAMES.index(window_name)
+                    return INFOS.WINDOW_FILENAMES[window_index]
             if info_type in ["VAR", "ESCVAR", "EXP"]:
                 content = self.get_formatted_include(selected_content, view)
                 if content:
