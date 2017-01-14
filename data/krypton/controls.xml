@@ -185,8 +185,8 @@
         <include>common</include>
         <include>nav_common</include>
         <include>button_common</include>
-        <alttexturefocus colordiffuse="color" flipx="bool" flipy="bool" border="coords">path</alttexturefocus>
-        <alttexturenofocus colordiffuse="color" flipx="bool" flipy="bool" border="coords">path</alttexturenofocus>
+        <alttexturefocus colordiffuse="color" flipx="bool" flipy="bool" border="coords" diffuse="path">path</alttexturefocus>
+        <alttexturenofocus colordiffuse="color" flipx="bool" flipy="bool" border="coords" diffuse="path">path</alttexturenofocus>
         <wrapmultiline>bool</wrapmultiline>
         <usealttexture>condition</usealttexture>
         <altclick condition="condition">builtin</altclick>
@@ -342,8 +342,8 @@
         <width>int</width>
         <height>int</height>
         <include>common</include>
-        <texturefocus colordiffuse="color" flipx="bool" flipy="bool" border="coords">path</texturefocus>
-        <texturenofocus colordiffuse="color" flipx="bool" flipy="bool" border="coords">path</texturenofocus>
+        <texturefocus colordiffuse="color" flipx="bool" flipy="bool" border="coords" diffuse="path">path</texturefocus>
+        <texturenofocus colordiffuse="color" flipx="bool" flipy="bool" border="coords" diffuse="path">path</texturenofocus>
         <pulseonselect>bool</pulseonselect>
     </control>
     <control type="edit" id="int">
