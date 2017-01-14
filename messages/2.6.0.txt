@@ -1,0 +1,6 @@
+  Changes in 2.6.0
+  =================
+
+ - fix non-workin settings for some parts
+ - fix interaction with other add-ons concerning tooltips
+ - some more preparations to support different versions
