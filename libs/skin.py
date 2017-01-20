@@ -194,7 +194,7 @@ class Skin(addon.Addon):
                     item = Font(node=node,
                                 file=path)
                     matches.append(item)
-                font_refs[folder].extend(Utils.get_refs_from_file(path, ".//font"))
+                font_refs[folder].extend(matches)
         return font_refs
 
     def get_themes(self):
