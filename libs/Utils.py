@@ -304,20 +304,3 @@ def get_root_from_file(xml_file):
     except Exception as e:
         logging.warning("Error in %s:\n %s" % (xml_file, e))
         return None
-
-
-def get_refs_from_file(path, xpath):
-    """
-    load xml file from *path and return dict list for nodes which match *xpath
-    """
-    matches = []
-    root = get_root_from_file(path)
-    if root is None:
-        return None
-    for node in root.xpath(xpath):
-        if node.getchildren():
-            continue
-        item = Include(node=node,
-                       file=path)
-        matches.append(item)
-    return matches
