@@ -6,6 +6,7 @@
 import os
 from . import Utils
 from . import addon
+from .font import Font
 import logging
 from lxml import etree as ET
 
@@ -184,17 +185,16 @@ class Skin(addon.Addon):
             font_refs[folder] = []
             for xml_file in self.window_files[folder]:
                 path = os.path.join(self.path, folder, xml_file)
-                matches = []
                 root = Utils.get_root_from_file(path)
                 if root is None:
                     return None
                 for node in root.xpath(".//font"):
                     if node.getchildren():
                         continue
-                    item = Font(node=node,
-                                file=path)
-                    matches.append(item)
-                font_refs[folder].extend(matches)
+                    item = {"file": path,
+                            "name": node.text if node.text else "",
+                            "line": node.sourceline}
+                    font_refs[folder].append(item)
         return font_refs
 
     def get_themes(self):
