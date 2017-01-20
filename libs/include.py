@@ -26,17 +26,17 @@ class Include(dict):
     def __getitem__(self, key):
         if key == "line":
             return self.line
-        if key == "type":
+        elif key == "type":
             return self.tag
-        if key == "name":
+        elif key == "name":
             return self.name
-        if key == "filename":
+        elif key == "filename":
             return self.filename
-        if key == "file":
+        elif key == "file":
             return self.file
-        if key == "content":
+        elif key == "content":
             return ET.tostring(self.node, pretty_print=True, encoding="unicode")
-        if key == "length":
+        elif key == "length":
             return self.length
         return super(Include, self).__getitem__(key)
 
