@@ -20,7 +20,7 @@ class Skin(addon.Addon):
     LANG_OFFSET = 0
 
     def __init__(self, *args, **kwargs):
-        super(Skin, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.kodi_version = self.root.find(".//import[@addon='xbmc.gui']")
         self.type = "skin"
         self.update_include_list()

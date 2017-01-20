@@ -15,7 +15,7 @@ class Include(dict):
     exp_attribs = {"condition"}
 
     def __init__(self, node, *args, **kwargs):
-        super(Include, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.node = node
         self.file = kwargs.get("file")
         if self.node.getnext() is not None:
@@ -38,7 +38,7 @@ class Include(dict):
             return ET.tostring(self.node, pretty_print=True, encoding="unicode")
         elif key == "length":
             return self.length
-        return super(Include, self).__getitem__(key)
+        return super().__getitem__(key)
 
     def get(self, key):
         return self.__getitem__(key)
