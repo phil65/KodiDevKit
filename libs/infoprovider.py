@@ -18,7 +18,7 @@ import copy
 from . import utils
 from .addon import Addon
 from .kodi import kodi
-from . import ImageParser
+from . import imageparser
 
 ns = ET.FunctionNamespace(None)
 ns['lower-case'] = lambda context, s: str.lower(s)
@@ -369,7 +369,7 @@ class InfoProvider(object):
         imagepath = self.addon.translate_path(path)
         if not os.path.exists(imagepath) or os.path.isdir(imagepath):
             return ""
-        info = ImageParser.get_image_info(imagepath)
+        info = imageparser.get_image_info(imagepath)
         text = ["<b>%s</b>: %s" % (k, v) for k, v in info]
         return "<br>".join(text)
 
