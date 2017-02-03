@@ -304,3 +304,23 @@ def get_root_from_file(xml_file):
     except Exception as e:
         logging.warning("Error in %s:\n %s" % (xml_file, e))
         return None
+
+def create_new_po_file(self):
+    """
+    creates a new pofile and returns it (doesnt save yet)
+    """
+    po = polib.POFile()
+    mail = ""
+    actual_date = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
+    po.metadata = {
+        'Project-Id-Version': '1.0',
+        'Report-Msgid-Bugs-To': '%s' % mail,
+        'POT-Creation-Date': actual_date,
+        'PO-Revision-Date': actual_date,
+        'Last-Translator': 'you <%s>' % mail,
+        'Language-Team': 'English <%s>' % mail,
+        'MIME-Version': '1.0',
+        'Content-Type': 'text/plain; charset=utf-8',
+        'Content-Transfer-Encoding': '8bit',
+    }
+    return po

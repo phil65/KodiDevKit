@@ -5,7 +5,6 @@
 
 import os
 import logging
-import time
 
 from . import Utils
 from .polib import polib
@@ -136,32 +135,12 @@ class Addon(object):
                     self.window_files[path].append(xml_file)
             logging.info("found %i XMLs in %s" % (len(self.window_files[path]), xml_folder))
 
-    def create_new_po_file(self):
-        """
-        creates a new pofile and returns it (doesnt save yet)
-        """
-        po = polib.POFile()
-        mail = ""
-        actual_date = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
-        po.metadata = {
-            'Project-Id-Version': '1.0',
-            'Report-Msgid-Bugs-To': '%s' % mail,
-            'POT-Creation-Date': actual_date,
-            'PO-Revision-Date': actual_date,
-            'Last-Translator': 'you <%s>' % mail,
-            'Language-Team': 'English <%s>' % mail,
-            'MIME-Version': '1.0',
-            'Content-Type': 'text/plain; charset=utf-8',
-            'Content-Transfer-Encoding': '8bit',
-        }
-        return po
-
     def create_new_label(self, word, filepath):
         """
         adds a label to the first pofile from settings (or creates new one if non-existing)
         """
         if not self.po_files:
-            po = self.create_new_po_file()
+            po = Utils.create_new_po_file()
             lang_folder = self.settings.get("language_folders")[0]
             if self.type == "skin":
                 lang_path = os.path.join(self.path, "language", lang_folder)
