@@ -246,7 +246,8 @@ class InfoProvider(object):
             alpha_percent = round(int(color_string[:2], 16) / (16 * 16) * 100)
             return '<a href="test" style="background-color:%s;color:%s">%d %% alpha</a>' % (color_hex, cont_color, alpha_percent)
 
-    def get_ancestor_info(self, element):
+    @staticmethod
+    def get_ancestor_info(element):
         """
         iter through ancestors and return info about absolute position
         """
