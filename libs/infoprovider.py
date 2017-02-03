@@ -88,7 +88,8 @@ class InfoProvider(object):
             folder = os.path.split(path)[0]
             self.template_root = utils.get_root_from_file(os.path.join(folder, "..", "data", kodi_version, "controls.xml"))
             root = utils.get_root_from_file(os.path.join(folder, "..", "data", kodi_version, "data.xml"))
-            WINDOW_MAP = json.load(os.path.join(folder, "..", "data", kodi_version, "windows.json"))
+            with open(os.path.join(folder, "..", "data", kodi_version, "windows.json")) as f:
+                WINDOW_MAP = json.load(f)
         self.WINDOW_FILENAMES = [item[2] for item in WINDOW_MAP]
         self.WINDOW_NAMES = [item[0] for item in WINDOW_MAP]
         self.WINDOW_IDS = [str(item[1]) for item in WINDOW_MAP]
