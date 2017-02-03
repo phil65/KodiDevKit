@@ -63,17 +63,17 @@ PARSER = ET.XMLParser(remove_blank_text=True, remove_comments=True)
 
 class InfoProvider(object):
 
-    RELEASES = [{"version": '5.0.1',
+    RELEASES = [{"gui_version": '5.0.1',
                  "name": "gotham"},
-                {"version": '5.3.0',
+                {"gui_version": '5.3.0',
                  "name": "helix"},
-                {"version": '5.9.0',
+                {"gui_version": '5.9.0',
                  "name": "isengard"},
-                {"version": '5.10.0',
+                {"gui_version": '5.10.0',
                  "name": "jarvis"},
-                {"version": '5.12.0',
+                {"gui_version": '5.12.0',
                  "name": "krypton"},
-                {"version": '5.13.0',
+                {"gui_version": '5.13.0',
                  "name": "leia"}]
 
     def __init__(self):
@@ -132,8 +132,8 @@ class InfoProvider(object):
         scan addon folder and parse skin content etc
         """
         self.addon = None
-        addon_xml = utils.check_paths([os.path.join(path, "addon.xml")])
-        if addon_xml:
+        addon_xml = os.path.join(path, "addon.xml")
+        if os.path.exists(addon_xml):
             self.addon = Addon.by_project(path, self.settings)
             logging.info("Kodi project detected: " + path)
             # sublime.status_message("KodiDevKit: successfully loaded addon")
@@ -147,7 +147,7 @@ class InfoProvider(object):
         addons = []
         for release in self.RELEASES:
             if repo == release["name"]:
-                if imports['xbmc.gui'] > release["version"]:
+                if imports['xbmc.gui'] > release["gui_version"]:
                     logging.info('xbmc.gui version incorrect')
                 addons = utils.get_addons(release["name"])
                 break
