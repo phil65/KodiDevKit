@@ -328,18 +328,17 @@ def create_new_po_file():
     return po
 
 
-def get_addons(reponames):
+def get_addons(reponame):
     """
     get available addons from the kodi addon repository
     """
     repo_list = 'http://mirrors.kodi.tv/addons/%s/addons.xml'
     addons = {}
-    for reponame in reponames:
-        logging.info("Downloading %s addon list" % reponame)
-        req = urllib.request.urlopen(repo_list % reponame)
-        data = req.read()
-        req.close()
-        root = ET.fromstring(data)
-        for item in root.iter('addon'):
-            addons[item.get('id')] = item.get('version')
+    logging.info("Downloading %s addon list" % reponame)
+    req = urllib.request.urlopen(repo_list % reponame)
+    data = req.read()
+    req.close()
+    root = ET.fromstring(data)
+    for item in root.iter('addon'):
+        addons[item.get('id')] = item.get('version')
     return addons

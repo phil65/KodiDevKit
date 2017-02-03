@@ -22,7 +22,7 @@ def check_tags(check_type):
     for e in errors:
         logging.info(e["message"])
         path = "/".join(e["file"].split(os.sep)[-2:])
-        logging.info("%s: line %s\n" % (path, str(e["line"])))
+        logging.info("%s: line %s\n" % (path, e["line"]))
 
 
 def check_dependencies(skinpath):
@@ -30,23 +30,19 @@ def check_dependencies(skinpath):
     validate the addon dependencies
     """
     RELEASES = [{"version": '5.0.1',
-                 "name": "gotham",
-                 "allowed_addons": ['gotham']},
+                 "name": "gotham"},
                 {"version": '5.3.0',
-                 "name": "helix",
-                 "allowed_addons": ['gotham', 'helix']},
+                 "name": "helix"},
                 {"version": '5.9.0',
-                 "name": "isengard",
-                 "allowed_addons": ['gotham', 'helix', 'isengard']},
+                 "name": "isengard"},
                 {"version": '5.10.0',
-                 "name": "jarvis",
-                 "allowed_addons": ['gotham', 'helix', 'isengard', 'jarvis']},
+                 "name": "jarvis"},
                 {"version": '5.12.0',
-                 "name": "krypton",
-                 "allowed_addons": ['gotham', 'helix', 'isengard', 'jarvis', 'krypton']}]
+                 "name": "krypton"},
+                {"version": '5.13.0',
+                 "name": "leia"}]
     imports = {}
-    str_releases = " / ".join([item["name"] for item in RELEASES])
-    repo = input('Enter Kodi version (%s): ' % str_releases)
+    repo = input('Enter Kodi version (%s): ' % " / ".join([item["name"] for item in RELEASES]))
     root = utils.get_root_from_file(os.path.join(skinpath, 'addon.xml'))
     for item in root.iter('import'):
         imports[item.get('addon')] = item.get('version')
@@ -54,7 +50,7 @@ def check_dependencies(skinpath):
         if repo == release["name"]:
             if imports['xbmc.gui'] > release["version"]:
                 logging.info('xbmc.gui version incorrect')
-            addons = utils.get_addons(release["allowed_addons"])
+            addons = utils.get_addons(release["name"])
             break
     else:
         logging.info('You entered an invalid Kodi version')
