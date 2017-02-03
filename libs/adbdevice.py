@@ -28,7 +28,8 @@ class AdbDevice(object):
         self.userdata_folder = self.settings.get("remote_userdata_folder")
         self.ip = self.settings.get("remote_ip")
 
-    def cmd(self, program, args):
+    @staticmethod
+    def cmd(program, args):
         command = [program]
         for arg in args:
             command.append(arg)

@@ -217,7 +217,8 @@ class KodiDevKit(sublime_plugin.EventListener):
             if color:
                 return color
 
-    def get_formatted_include(self, content, view):
+    @staticmethod
+    def get_formatted_include(content, view):
         folder = view.file_name().split(os.sep)[-2]
         node = INFOS.addon.return_node(content, folder=folder)
         if node:
@@ -351,8 +352,8 @@ class QuickPanelCommand(sublime_plugin.WindowCommand):
         self.window.open_file("%s:%i" % (node["file"], node["line"]),
                               sublime.ENCODED_POSITION | sublime.TRANSIENT)
 
-    @Utils.run_async
-    def select_text(self, view, node):
+    @staticmethod
+    def select_text(view, node):
         while view.is_loading():
             time.sleep(0.01)
         view.sel().clear()
