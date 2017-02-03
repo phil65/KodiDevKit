@@ -4,7 +4,7 @@
 # This program is Free Software see LICENSE file for details
 
 import os
-from . import Utils
+from . import utils
 from . import addon
 import logging
 from lxml import etree as ET
@@ -75,7 +75,7 @@ class Skin(addon.Addon):
             return False
         for path in os.listdir(color_path):
             file_path = os.path.join(color_path, path)
-            root = Utils.get_root_from_file(file_path)
+            root = utils.get_root_from_file(file_path)
             if root is None:
                 logging.info("Invalid color file: {}".format(file_path))
                 continue
@@ -98,11 +98,11 @@ class Skin(addon.Addon):
         for folder in self.xml_folders:
             paths = [os.path.join(self.path, folder, "Font.xml"),
                      os.path.join(self.path, folder, "font.xml")]
-            self.font_file = Utils.check_paths(paths)
+            self.font_file = utils.check_paths(paths)
             if not self.font_file:
                 return False
             self.fonts[folder] = []
-            root = Utils.get_root_from_file(self.font_file)
+            root = utils.get_root_from_file(self.font_file)
             for node in root.find("fontset").findall("font"):
                 font = {"name": node.find("name").text,
                         "size": node.find("size").text,
@@ -137,7 +137,7 @@ class Skin(addon.Addon):
                      os.path.join(xml_folder, "includes.xml")]
             self.include_files[folder] = []
             self.includes[folder] = []
-            include_file = Utils.check_paths(paths)
+            include_file = utils.check_paths(paths)
             self.update_includes(include_file)
             logging.info("Include List: %i nodes found in '%s' folder." % (len(self.includes[folder]), folder))
 
@@ -152,9 +152,9 @@ class Skin(addon.Addon):
         logging.info("found include file: " + xml_file)
         self.include_files[folder].append(xml_file)
         tags = ["include", "variable", "constant", "expression"]
-        self.includes[folder] += Utils.get_tags_from_file(path=xml_file,
+        self.includes[folder] += utils.get_tags_from_file(path=xml_file,
                                                           node_tags=tags)
-        root = Utils.get_root_from_file(xml_file)
+        root = utils.get_root_from_file(xml_file)
         if root is None:
             return None
         for node in root.findall("include"):
@@ -184,7 +184,7 @@ class Skin(addon.Addon):
             font_refs[folder] = []
             for xml_file in self.window_files[folder]:
                 path = os.path.join(self.path, folder, xml_file)
-                root = Utils.get_root_from_file(path)
+                root = utils.get_root_from_file(path)
                 if root is None:
                     return None
                 for node in root.xpath(".//font"):

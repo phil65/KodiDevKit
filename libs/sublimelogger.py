@@ -14,7 +14,7 @@ import logging
 class SublimeLogHandler(logging.StreamHandler):
 
     def __init__(self):
-        logging.StreamHandler.__init__(self)
+        super().__init__()
         formatter = logging.Formatter('[KodiDevKit] %(asctime)s: %(message)s',
                                       datefmt='%Y-%m-%d %H:%M:%S')
         self.setFormatter(formatter)
@@ -43,7 +43,8 @@ class SublimeLogHandler(logging.StreamHandler):
         wnd = sublime.active_window()
         wnd.run_command("log", {"label": self.format(record).strip()})
 
-    def message(self, record):
+    @staticmethod
+    def message(record):
         sublime.message_dialog(record.msg)
 
 

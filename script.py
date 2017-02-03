@@ -66,7 +66,7 @@ def check_dependencies(skinpath):
     imports = {}
     str_releases = " / ".join([item["name"] for item in RELEASES])
     repo = input('Enter Kodi version (%s): ' % str_releases)
-    root = Utils.get_root_from_file(os.path.join(skinpath, 'addon.xml'))
+    root = utils.get_root_from_file(os.path.join(skinpath, 'addon.xml'))
     for item in root.iter('import'):
         imports[item.get('addon')] = item.get('version')
     for release in RELEASES:
@@ -88,7 +88,7 @@ def check_dependencies(skinpath):
 
 
 if __name__ == "__main__":
-    from libs import Utils
+    from libs import utils
     from libs.infoprovider import InfoProvider
     from libs import chardet
     from libs.eol import eol
@@ -108,7 +108,7 @@ if __name__ == "__main__":
     INFOS.init_addon(project_folder)
     INFOS.check_xml_files()
     for path in INFOS.addon.get_xml_files():
-        if Utils.check_bom(path):
+        if utils.check_bom(path):
             logging.info("found BOM. File: " + path)
         try:
             with codecs.open(path, "rb", encoding='utf-8', errors="strict") as f:

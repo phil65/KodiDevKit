@@ -17,14 +17,14 @@ from lxml import etree as ET
 import sublime
 import sublime_plugin
 
-from .libs import Utils
+from .libs import utils
 from .libs.kodi import kodi
 
 import subprocess
 
 APP_NAME = "Kodi"
 SETTINGS_FILE = 'kodidevkit.sublime-settings'
-SUBLIME_PATH = Utils.get_sublime_path()
+SUBLIME_PATH = utils.get_sublime_path()
 
 
 class OpenKodiLogCommand(sublime_plugin.WindowCommand):
@@ -35,7 +35,7 @@ class OpenKodiLogCommand(sublime_plugin.WindowCommand):
 
     def run(self):
         filename = "%s.log" % APP_NAME.lower()
-        self.log = Utils.check_paths([os.path.join(kodi.userdata_folder, filename),
+        self.log = utils.check_paths([os.path.join(kodi.userdata_folder, filename),
                                       os.path.join(kodi.userdata_folder, "temp", filename),
                                       os.path.join(os.path.expanduser("~"), "Library", "Logs", filename)])
         self.window.open_file(self.log)
@@ -347,7 +347,7 @@ class GetInfoLabelsPromptCommand(sublime_plugin.WindowCommand):
                                      None,
                                      None)
 
-    @Utils.run_async
+    @utils.run_async
     def show_info_label(self, label_string):
         self.settings.set("prev_infolabel", label_string)
         words = label_string.split(",")
@@ -373,7 +373,7 @@ class BrowseKodiVfsCommand(sublime_plugin.WindowCommand):
                                      on_select=self.on_done,
                                      selected_index=0)
 
-    @Utils.run_async
+    @utils.run_async
     def on_done(self, index):
         if index == -1:
             return None
@@ -401,7 +401,7 @@ class GetInfoBooleansPromptCommand(sublime_plugin.WindowCommand):
                                      None,
                                      None)
 
-    @Utils.run_async
+    @utils.run_async
     def resolve_kodi_condition(self, condition):
         """
         show OutputPanel with kodi JSON result for b

@@ -8,7 +8,7 @@ KodiDevKit is a plugin to assist with Kodi skinning / scripting using Sublime Te
 """
 
 import subprocess
-from . import Utils
+from . import utils
 import os
 import logging
 
@@ -47,67 +47,67 @@ class AdbDevice(object):
         #                     stdout=subprocess.PIPE)
         # stdout_value = proc.communicate()[0]
 
-    # @Utils.check_busy
+    # @utils.check_busy
     def adb_connect(self, ip):
         self.ip = ip
         logging.warning("Connect to remote with ip %s" % ip)
         self.cmd("adb", ["connect", ip])
         self.connected = True
 
-    @Utils.run_async
-    @Utils.check_busy
+    @utils.run_async
+    @utils.check_busy
     def adb_connect_async(self, ip):
         self.adb_connect(ip)
 
-    @Utils.check_busy
+    @utils.check_busy
     def adb_reconnect(self, ip=""):
         if not ip:
             ip = self.ip
         self.adb_disconnect()
         self.adb_connect(ip)
 
-    @Utils.run_async
+    @utils.run_async
     def adb_reconnect_async(self, ip=""):
         self.adb_reconnect(ip)
 
-    # @Utils.check_busy
+    # @utils.check_busy
     def adb_disconnect(self):
         logging.warning("Disconnect from remote")
         self.cmd("adb", ["disconnect"])
         self.connected = False
 
-    @Utils.run_async
-    @Utils.check_busy
+    @utils.run_async
+    @utils.check_busy
     def adb_disconnect_async(self):
         self.adb_disconnect()
 
-    @Utils.check_busy
+    @utils.check_busy
     def adb_push(self, source, target):
         if not target.endswith('/'):
             target += '/'
         self.cmd("adb", ["push", source.replace('\\', '/'), target.replace('\\', '/')])
 
-    @Utils.run_async
-    @Utils.check_busy
+    @utils.run_async
+    @utils.check_busy
     def adb_push_async(self, source, target):
         self.adb_push(source, target)
 
-    @Utils.check_busy
+    @utils.check_busy
     def adb_pull(self, path, target):
         self.cmd("adb", ["pull", path, target])
 
-    @Utils.run_async
-    @Utils.check_busy
+    @utils.run_async
+    @utils.check_busy
     def adb_pull_async(self, path, target):
         self.adb_pull(path, target)
 
-    @Utils.run_async
-    @Utils.check_busy
+    @utils.run_async
+    @utils.check_busy
     def adb_restart_server(self):
         pass
 
-    @Utils.run_async
-    @Utils.check_busy
+    @utils.run_async
+    @utils.check_busy
     def push_to_box(self, addon, all_file=False):
         logging.warning("push %s to remote" % addon)
         for root, _, files in os.walk(addon):
@@ -128,7 +128,7 @@ class AdbDevice(object):
                                  target.replace('\\', '/')])
         logging.warning("All files pushed")
 
-    @Utils.run_async
+    @utils.run_async
     def get_log(self, open_function, target):
         logging.warning("Pull logs from remote")
         self.adb_pull("%s/temp/xbmc.log" % self.userdata_folder, target)
@@ -136,8 +136,8 @@ class AdbDevice(object):
         logging.warning("Finished pulling logs")
         open_function(os.path.join(target, "xbmc.log"))
 
-    @Utils.run_async
-    @Utils.check_busy
+    @utils.run_async
+    @utils.check_busy
     def get_screenshot(self, f_open, target):
         logging.warning("Pull screenshot from remote")
         self.cmd("adb", ["shell", "screencap", "-p", "/sdcard/screen.png"])
@@ -147,11 +147,11 @@ class AdbDevice(object):
         logging.warning("Finished pulling screenshot")
         f_open(os.path.join(target, "screen.png"))
 
-    @Utils.run_async
-    @Utils.check_busy
+    @utils.run_async
+    @utils.check_busy
     def clear_cache(self):
         self.cmd("adb", ["shell", "rm", "-rf", os.path.join(self.userdata_folder, "temp")])
 
-    @Utils.run_async
+    @utils.run_async
     def reboot(self):
         self.cmd("adb", ["reboot"])

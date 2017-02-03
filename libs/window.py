@@ -7,13 +7,13 @@
 KodiDevKit is a tool to assist with Kodi skinning / scripting using Sublime Text 3
 """
 
-from . import Utils
+from . import utils
 
 
 class Window(object):
 
     def __init__(self, path, *args, **kwargs):
-        self.root = Utils.get_root_from_file(path)
+        self.root = utils.get_root_from_file(path)
 
     def get_controls(self, control_type):
         for node in self.root.xpath(".//control[@type='%s']" % control_type):

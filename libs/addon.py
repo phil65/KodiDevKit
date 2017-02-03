@@ -6,7 +6,7 @@
 import os
 import logging
 
-from . import Utils
+from . import utils
 from .polib import polib
 
 SETTINGS_FILE = 'kodidevkit.sublime-settings'
@@ -30,7 +30,7 @@ class Addon(object):
         self.settings = kwargs.get("settings")
         self.path = kwargs.get("project_path")
         self.xml_file = os.path.join(self.path, "addon.xml")
-        self.root = Utils.get_root_from_file(self.xml_file)
+        self.root = utils.get_root_from_file(self.xml_file)
         self.kodi_version = self.root.find(".//import[@addon='xbmc.python']")
         self.version = self.root.attrib.get("version")
         for item in self.root.xpath("/addon[@id]"):
@@ -46,7 +46,7 @@ class Addon(object):
         """
         paths = [os.path.join(self.path, "resources", "skins", "Default", "720p"),
                  os.path.join(self.path, "resources", "skins", "Default", "1080i")]
-        folder = Utils.check_paths(paths)
+        folder = utils.check_paths(paths)
         self.xml_folders.append(folder)
 
     @property
@@ -87,7 +87,7 @@ class Addon(object):
         factory, return proper instance based on addon.xml
         """
         xml_file = os.path.join(project_path, "addon.xml")
-        root = Utils.get_root_from_file(xml_file)
+        root = utils.get_root_from_file(xml_file)
         if root.find(".//import[@addon='xbmc.python']") is None:
             from . import skin
             return skin.Skin(project_path=project_path,
@@ -109,10 +109,10 @@ class Addon(object):
         """
         po_files = []
         for item in self.settings.get("language_folders"):
-            path = Utils.check_paths([os.path.join(lang_folder_root, item, "strings.po"),
+            path = utils.check_paths([os.path.join(lang_folder_root, item, "strings.po"),
                                       os.path.join(lang_folder_root, item, "resources", "strings.po")])
             if path:
-                po_file = Utils.get_po_file(path)
+                po_file = utils.get_po_file(path)
                 po_file.language = item
                 po_files.append(po_file)
         return po_files
@@ -140,7 +140,7 @@ class Addon(object):
         adds a label to the first pofile from settings (or creates new one if non-existing)
         """
         if not self.po_files:
-            po = Utils.create_new_po_file()
+            po = utils.create_new_po_file()
             lang_folder = self.settings.get("language_folders")[0]
             if self.type == "skin":
                 lang_path = os.path.join(self.path, "language", lang_folder)
@@ -224,7 +224,7 @@ class Addon(object):
         bump addon.xml version and create changelog entry
         """
         self.root.attrib["version"] = version
-        Utils.save_xml(self.xml_file, self.root)
+        utils.save_xml(self.xml_file, self.root)
         with open(self.changelog_path, "r") as f:
             contents = f.readlines()
         contents = [version, "", "-", "-", "", ""] + contents

@@ -22,7 +22,7 @@ from lxml import etree as ET
 from threading import Timer
 import mdpopups
 
-from .libs import Utils
+from .libs import utils
 from .libs import sublimelogger
 from .libs import infoprovider
 from .libs.kodi import kodi
@@ -246,7 +246,7 @@ class KodiDevKit(sublime_plugin.EventListener):
                             flags=sublime.COOPERATE_WITH_AUTO_COMPLETE,
                             max_width=self.settings.get("tooltip_width", 1000),
                             max_height=self.settings.get("height", 400),
-                            on_navigate=lambda label_id, view=view: Utils.jump_to_label_declaration(view, tooltip))
+                            on_navigate=lambda label_id, view=view: utils.jump_to_label_declaration(view, tooltip))
 
     def on_modified_async(self, view):
         if INFOS.addon and INFOS.addon.path:
@@ -272,7 +272,7 @@ class KodiDevKit(sublime_plugin.EventListener):
             filename = os.path.basename(view.file_name())
             folder = view.file_name().split(os.sep)[-2]
             INFOS.addon.reload(view.file_name())
-            self.root = Utils.get_root_from_file(view.file_name())
+            self.root = utils.get_root_from_file(view.file_name())
             self.tree = ET.ElementTree(self.root)
             if (folder in INFOS.addon.window_files and filename in INFOS.addon.window_files[folder]) or folder == "colors":
                 if self.settings.get("auto_reload_skin", True):
@@ -296,7 +296,7 @@ class KodiDevKit(sublime_plugin.EventListener):
         if not self.filename:
             return None
         if INFOS.addon and self.filename and self.filename.endswith(".xml"):
-            self.root = Utils.get_root_from_file(self.filename)
+            self.root = utils.get_root_from_file(self.filename)
             self.tree = ET.ElementTree(self.root)
             view.assign_syntax('Packages/KodiDevKit/KodiSkinXML.sublime-syntax')
         if self.filename and self.filename.endswith(".po"):
@@ -377,9 +377,9 @@ class OpenSkinImageCommand(sublime_plugin.WindowCommand):
     def is_visible(self):
         return bool(INFOS.addon) and os.path.exists(INFOS.addon.media_path)
 
-    @Utils.run_async
+    @utils.run_async
     def run(self, pack_textures=True):
-        path = Utils.get_node_content(view=self.window.active_view(),
+        path = utils.get_node_content(view=self.window.active_view(),
                                       flags=sublime.CLASS_WORD_START | sublime.CLASS_WORD_END)
         imagepath = INFOS.addon.translate_path(path)
         if not os.path.exists(imagepath):
@@ -396,12 +396,12 @@ class BuildAddonCommand(sublime_plugin.WindowCommand):
     def is_visible(self):
         return bool(INFOS.addon) and INFOS.addon.type == "skin"
 
-    @Utils.run_async
+    @utils.run_async
     def run(self, pack_textures=True):
         path = INFOS.addon.media_path
-        Utils.texturepacker(media_path=path,
+        utils.texturepacker(media_path=path,
                             settings=sublime.load_settings(SETTINGS_FILE))
-        Utils.make_archive(folderpath=path,
+        utils.make_archive(folderpath=path,
                            archive=os.path.join(path, os.path.basename(path) + ".zip"))
         if sublime.ok_cancel_dialog("Zip file created!\nDo you want to show it with a file browser?"):
             webbrowser.open(path)
@@ -422,12 +422,12 @@ class BuildThemeCommand(sublime_plugin.WindowCommand):
                                      on_select=self.on_done,
                                      selected_index=0)
 
-    @Utils.run_async
+    @utils.run_async
     def on_done(self, index):
         if index == -1:
             return None
         media_path = os.path.join(INFOS.addon.theme_path, self.themes[index])
-        Utils.texturepacker(media_path=media_path,
+        utils.texturepacker(media_path=media_path,
                             settings=sublime.load_settings(SETTINGS_FILE),
                             xbt_filename=self.themes[index] + ".xbt")
         if sublime.ok_cancel_dialog("Theme file created!\nDo you want to show it with a file browser?"):
@@ -515,7 +515,7 @@ class OpenActiveWindowXmlFromRemoteCommand(sublime_plugin.WindowCommand):
     checks currently active window via JSON and opens corresponding XML file
     """
 
-    @Utils.run_async
+    @utils.run_async
     def run(self):
         folder = self.window.active_view().file_name().split(os.sep)[-2]
         result = kodi.request(method="XBMC.GetInfoLabels",
@@ -616,7 +616,7 @@ class SearchForJsonCommand(sublime_plugin.WindowCommand):
     search through JSONRPC Introspect results
     """
 
-    @Utils.run_async
+    @utils.run_async
     def run(self):
         result = kodi.request(method="JSONRPC.Introspect")
         self.listitems = [[k, str(v)] for k, v in result["result"]["types"].items()]
@@ -643,12 +643,12 @@ class PreviewImageCommand(sublime_plugin.TextCommand):
         if not INFOS.addon or not INFOS.addon.media_path:
             return False
         flags = sublime.CLASS_WORD_START | sublime.CLASS_WORD_END
-        content = Utils.get_node_content(self.view, flags)
+        content = utils.get_node_content(self.view, flags)
         return "/" in content or "\\" in content
 
     def run(self, edit):
         flags = sublime.CLASS_WORD_START | sublime.CLASS_WORD_END
-        path = Utils.get_node_content(self.view, flags)
+        path = utils.get_node_content(self.view, flags)
         imagepath = INFOS.addon.translate_path(path)
         if not os.path.exists(imagepath):
             return None
@@ -683,7 +683,7 @@ class GoToTagCommand(sublime_plugin.WindowCommand):
     def run(self):
         flags = sublime.CLASS_WORD_START | sublime.CLASS_WORD_END
         view = self.window.active_view()
-        position = INFOS.go_to_tag(keyword=Utils.get_node_content(view, flags),
+        position = INFOS.go_to_tag(keyword=utils.get_node_content(view, flags),
                                    folder=view.file_name().split(os.sep)[-2])
         if position:
             self.window.open_file(position, sublime.ENCODED_POSITION)

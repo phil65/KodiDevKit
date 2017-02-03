@@ -5,7 +5,7 @@
 
 import os
 import platform
-from .. import Utils
+from .. import utils
 from urllib.request import Request, urlopen
 import json
 import base64
@@ -29,7 +29,7 @@ class Kodi(object):
         self.kodi_path = None
         self.userdata_folder = None
 
-    @Utils.run_async
+    @utils.run_async
     def request_async(self, method, params):
         """
         send JSON command *data to Kodi in separate thread,
@@ -60,7 +60,7 @@ class Kodi(object):
         try:
             result = urlopen(request).read()
             result = json.loads(result.decode("utf-8"))
-            Utils.prettyprint(result)
+            utils.prettyprint(result)
             return result
         except Exception:
             return None
@@ -72,7 +72,7 @@ class Kodi(object):
         self.colors = []
         if not os.path.exists(self.color_file_path):
             return False
-        root = Utils.get_root_from_file(self.color_file_path)
+        root = utils.get_root_from_file(self.color_file_path)
         for node in root.findall("color"):
             color = {"name": node.attrib["name"],
                      "line": node.sourceline,
@@ -159,10 +159,10 @@ class Kodi(object):
         """
         po_files = []
         for item in self.settings.get("language_folders"):
-            path = Utils.check_paths([os.path.join(folder, item, "strings.po"),
+            path = utils.check_paths([os.path.join(folder, item, "strings.po"),
                                       os.path.join(folder, item, "resources", "strings.po")])
             if path:
-                po_file = Utils.get_po_file(path)
+                po_file = utils.get_po_file(path)
                 po_file.language = item
                 po_files.append(po_file)
         return po_files

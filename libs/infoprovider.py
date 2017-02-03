@@ -15,7 +15,7 @@ import logging
 import string
 import json
 import copy
-from . import Utils
+from . import utils
 from .addon import Addon
 from .kodi import kodi
 from . import ImageParser
@@ -86,8 +86,8 @@ class InfoProvider(object):
             # fallback to old method so that class still can get used without sublime import
             path = os.path.normpath(os.path.abspath(__file__))
             folder = os.path.split(path)[0]
-            self.template_root = Utils.get_root_from_file(os.path.join(folder, "..", "data", kodi_version, "controls.xml"))
-            root = Utils.get_root_from_file(os.path.join(folder, "..", "data", kodi_version, "data.xml"))
+            self.template_root = utils.get_root_from_file(os.path.join(folder, "..", "data", kodi_version, "controls.xml"))
+            root = utils.get_root_from_file(os.path.join(folder, "..", "data", kodi_version, "data.xml"))
             WINDOW_MAP = json.load(os.path.join(folder, "..", "data", kodi_version, "windows.json"))
         self.WINDOW_FILENAMES = [item[2] for item in WINDOW_MAP]
         self.WINDOW_NAMES = [item[0] for item in WINDOW_MAP]
@@ -119,7 +119,7 @@ class InfoProvider(object):
         scan addon folder and parse skin content etc
         """
         self.addon = None
-        addon_xml = Utils.check_paths([os.path.join(path, "addon.xml")])
+        addon_xml = utils.check_paths([os.path.join(path, "addon.xml")])
         if addon_xml:
             self.addon = Addon.by_project(path, self.settings)
             logging.info("Kodi project detected: " + path)
@@ -235,14 +235,14 @@ class InfoProvider(object):
         for item in colors:
             if item["name"] == color_string:
                 color_hex = "#" + item["content"][2:]
-                cont_color = Utils.get_cont_col(color_hex)
+                cont_color = utils.get_cont_col(color_hex)
                 alpha_percent = round(int(item["content"][:2], 16) / (16 * 16) * 100)
                 color_info += '%s&nbsp;<a href="test" style="background-color:%s;color:%s">%s</a> %d %% alpha<br>' % (os.path.basename(item["file"]), color_hex, cont_color, item["content"], alpha_percent)
         if color_info:
             return color_info
         if all(c in string.hexdigits for c in color_string) and len(color_string) == 8:
             color_hex = "#" + color_string[2:]
-            cont_color = Utils.get_cont_col(color_hex)
+            cont_color = utils.get_cont_col(color_hex)
             alpha_percent = round(int(color_string[:2], 16) / (16 * 16) * 100)
             return '<a href="test" style="background-color:%s;color:%s">%d %% alpha</a>' % (color_hex, cont_color, alpha_percent)
 
@@ -308,7 +308,7 @@ class InfoProvider(object):
             # get all include refs
             for xml_file in self.addon.window_files[folder]:
                 path = os.path.join(self.addon.path, folder, xml_file)
-                root = Utils.get_root_from_file(path)
+                root = utils.get_root_from_file(path)
                 if root is None:
                     continue
                 for node in root.xpath(".//include"):
@@ -379,7 +379,7 @@ class InfoProvider(object):
         # get estuary fonts..
         estuary_fonts = []
         estuary_font_file = os.path.join(self.kodi_path, "addons", "skin.estuary", "xml", "Font.xml")
-        root = Utils.get_root_from_file(estuary_font_file)
+        root = utils.get_root_from_file(estuary_font_file)
         if root is not None:
             estuary_fonts = [node.find("name").text for node in root.find("fontset").findall("font")]
             # check fonts from each folder independently....
@@ -416,7 +416,7 @@ class InfoProvider(object):
             defines = []
             for xml_file in self.addon.window_files[folder]:
                 path = os.path.join(self.addon.path, folder, xml_file)
-                root = Utils.get_root_from_file(path)
+                root = utils.get_root_from_file(path)
                 if root is None:
                     continue
                 if "id" in root.attrib:
@@ -492,7 +492,7 @@ class InfoProvider(object):
         for folder in self.addon.xml_folders:
             for xml_file in self.addon.window_files[folder]:
                 path = os.path.join(self.addon.path, folder, xml_file)
-                root = Utils.get_root_from_file(path)
+                root = utils.get_root_from_file(path)
                 if root is None:
                     continue
                 # find all referenced label ids (in element content)
@@ -559,7 +559,7 @@ class InfoProvider(object):
 
     def check_file(self, path):
         # tags allowed for all controls
-        root = Utils.get_root_from_file(path)
+        root = utils.get_root_from_file(path)
         if root is None:
             return []
         folder = path.split(os.sep)[-2]
@@ -605,7 +605,7 @@ class InfoProvider(object):
                             "identifier": "",
                             "message": "Empty condition: %s" % (subnode.tag)}
                     listitems.append(item)
-                elif not Utils.check_brackets(subnode.text):
+                elif not utils.check_brackets(subnode.text):
                     condition = str(subnode.text).replace("  ", "").replace("\t", "")
                     item = {"line": subnode.sourceline,
                             "type": subnode.tag,
@@ -634,14 +634,14 @@ class InfoProvider(object):
                     continue
                 value_type = subnodes[subnode.tag][k]
                 if value_type == "int":
-                    if not Utils.is_number(v) and v not in self.addon.get_constants(folder):
+                    if not utils.is_number(v) and v not in self.addon.get_constants(folder):
                         item = {"line": subnode.sourceline,
                                 "type": subnode.tag,
                                 "identifier": v,
                                 "message": "invalid integer value for %s: %s" % (k, v)}
                         listitems.append(item)
                 elif value_type == "color":
-                    if v not in self.get_color_labels() and not Utils.is_kodi_hex(v) and not v.startswith("$"):
+                    if v not in self.get_color_labels() and not utils.is_kodi_hex(v) and not v.startswith("$"):
                         item = {"line": subnode.sourceline,
                                 "type": subnode.tag,
                                 "identifier": v,
@@ -654,7 +654,7 @@ class InfoProvider(object):
                                 "identifier": v,
                                 "message": "invalid value for %s attribute: %s" % (k, v)}
                         listitems.append(item)
-                if k == "condition" and not Utils.check_brackets(subnode.attrib["condition"]):
+                if k == "condition" and not utils.check_brackets(subnode.attrib["condition"]):
                     condition = str(v).replace("  ", "").replace("\t", "")
                     item = {"line": subnode.sourceline,
                             "type": subnode.tag,
