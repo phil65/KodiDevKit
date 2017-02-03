@@ -142,8 +142,7 @@ class InfoProvider(object):
         """
         validate the addon dependencies
         """
-        root = utils.get_root_from_file(os.path.join(skinpath, 'addon.xml'))
-        imports = {item.get('addon'): item.get('version') for item in root.iter('import')}
+        imports = {i.get('addon'): i.get('version') for i in self.addon.root.iter('import')}
         addons = []
         for release in self.RELEASES:
             if repo == release["name"]:
