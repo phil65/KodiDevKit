@@ -16,7 +16,8 @@ import zipfile
 import subprocess
 import re
 import platform
-from threading import Thread
+import urllib
+import threading
 from functools import wraps
 import time
 import logging
@@ -81,7 +82,7 @@ def run_async(func):
     """
     @wraps(func)
     def async_func(*args, **kwargs):
-        func_hl = Thread(target=func, args=args, kwargs=kwargs)
+        func_hl = threading.Thread(target=func, args=args, kwargs=kwargs)
         func_hl.start()
         return func_hl
 
@@ -325,3 +326,20 @@ def create_new_po_file():
         'Content-Transfer-Encoding': '8bit',
     }
     return po
+
+
+def get_addons(reponames):
+    """
+    get available addons from the kodi addon repository
+    """
+    repo_list = 'http://mirrors.kodi.tv/addons/%s/addons.xml'
+    addons = {}
+    for reponame in reponames:
+        logging.info("Downloading %s addon list" % reponame)
+        req = urllib.request.urlopen(repo_list % reponame)
+        data = req.read()
+        req.close()
+        root = ET.fromstring(data)
+        for item in root.iter('addon'):
+            addons[item.get('id')] = item.get('version')
+    return addons
