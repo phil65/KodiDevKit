@@ -6,7 +6,6 @@
 import os
 from . import Utils
 from . import addon
-from .font import Font
 import logging
 from lxml import etree as ET
 
