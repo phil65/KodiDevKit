@@ -333,12 +333,10 @@ def get_addons(reponame):
     get available addons from the kodi addon repository
     """
     repo_list = 'http://mirrors.kodi.tv/addons/%s/addons.xml'
-    addons = {}
     logging.info("Downloading %s addon list" % reponame)
     req = urllib.request.urlopen(repo_list % reponame)
     data = req.read()
     req.close()
     root = ET.fromstring(data)
-    for item in root.iter('addon'):
-        addons[item.get('id')] = item.get('version')
+    addons = {item.get('id'): item.get('version') for item in root.iter('addon')}
     return addons

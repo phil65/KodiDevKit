@@ -63,6 +63,19 @@ PARSER = ET.XMLParser(remove_blank_text=True, remove_comments=True)
 
 class InfoProvider(object):
 
+    RELEASES = [{"version": '5.0.1',
+                 "name": "gotham"},
+                {"version": '5.3.0',
+                 "name": "helix"},
+                {"version": '5.9.0',
+                 "name": "isengard"},
+                {"version": '5.10.0',
+                 "name": "jarvis"},
+                {"version": '5.12.0',
+                 "name": "krypton"},
+                {"version": '5.13.0',
+                 "name": "leia"}]
+
     def __init__(self):
         self.addon = None
 
@@ -125,18 +138,42 @@ class InfoProvider(object):
             logging.info("Kodi project detected: " + path)
             # sublime.status_message("KodiDevKit: successfully loaded addon")
 
-    def get_check_listitems(self, check_type):
+    def check_dependencies(self, skinpath, repo):
         """
-        starts check with type check_type and returns result nodes
+        validate the addon dependencies
         """
-        self.addon.update_xml_files()
-        checks = {"variable": self.check_variables,
-                  "include": self.check_includes,
-                  "font": self.check_fonts,
-                  "label": self.check_labels,
-                  "id": self.check_ids,
-                  "general": self.check_values}
-        return checks[check_type]()
+        root = utils.get_root_from_file(os.path.join(skinpath, 'addon.xml'))
+        imports = {item.get('addon'): item.get('version') for item in root.iter('import')}
+        addons = []
+        for release in self.RELEASES:
+            if repo == release["name"]:
+                if imports['xbmc.gui'] > release["version"]:
+                    logging.info('xbmc.gui version incorrect')
+                addons = utils.get_addons(release["name"])
+                break
+        else:
+            logging.info('You entered an invalid Kodi version')
+            return None
+        del imports['xbmc.gui']
+        for dep, ver in imports.items():
+            if dep in addons:
+                if ver > addons[dep]:
+                    logging.info('%s version higher than in Kodi repository' % dep)
+            else:
+                logging.info('%s not available in Kodi repository' % dep)
+
+        def get_check_listitems(self, check_type):
+            """
+            starts check with type check_type and returns result nodes
+            """
+            self.addon.update_xml_files()
+            checks = {"variable": self.check_variables,
+                      "include": self.check_includes,
+                      "font": self.check_fonts,
+                      "label": self.check_labels,
+                      "id": self.check_ids,
+                      "general": self.check_values}
+            return checks[check_type]()
 
     def check_xml_files(self):
         """

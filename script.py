@@ -25,45 +25,6 @@ def check_tags(check_type):
         logging.info("%s: line %s\n" % (path, e["line"]))
 
 
-def check_dependencies(skinpath):
-    """
-    validate the addon dependencies
-    """
-    RELEASES = [{"version": '5.0.1',
-                 "name": "gotham"},
-                {"version": '5.3.0',
-                 "name": "helix"},
-                {"version": '5.9.0',
-                 "name": "isengard"},
-                {"version": '5.10.0',
-                 "name": "jarvis"},
-                {"version": '5.12.0',
-                 "name": "krypton"},
-                {"version": '5.13.0',
-                 "name": "leia"}]
-    imports = {}
-    repo = input('Enter Kodi version (%s): ' % " / ".join([item["name"] for item in RELEASES]))
-    root = utils.get_root_from_file(os.path.join(skinpath, 'addon.xml'))
-    for item in root.iter('import'):
-        imports[item.get('addon')] = item.get('version')
-    for release in RELEASES:
-        if repo == release["name"]:
-            if imports['xbmc.gui'] > release["version"]:
-                logging.info('xbmc.gui version incorrect')
-            addons = utils.get_addons(release["name"])
-            break
-    else:
-        logging.info('You entered an invalid Kodi version')
-        return None
-    del imports['xbmc.gui']
-    for dep, ver in imports.items():
-        if dep in addons:
-            if ver > addons[dep]:
-                logging.info('%s version higher than in Kodi repository' % dep)
-        else:
-            logging.info('%s not available in Kodi repository' % dep)
-
-
 if __name__ == "__main__":
     from libs import utils
     from libs.infoprovider import InfoProvider
@@ -83,6 +44,7 @@ if __name__ == "__main__":
     else:
         project_folder = input("Enter Path to skin: ")
     INFOS.init_addon(project_folder)
+    repo = input('Enter Kodi version (%s): ' % " / ".join([item["name"] for item in INFOS.RELEASES]))
     INFOS.check_xml_files()
     for path in INFOS.addon.get_xml_files():
         if utils.check_bom(path):
@@ -110,7 +72,7 @@ if __name__ == "__main__":
         else:
             logging.info("Windows Line Endings detected in " + item[0])
     logging.info("\n\nADDON DEPENDENCY CHECK\n\n")
-    check_dependencies(project_folder)
+    INFOS.check_dependencies(project_folder, repo)
     logging.info("\n\nINCLUDE CHECK\n\n")
     check_tags("include")
     logging.info("\n\nVARIABLE CHECK\n\n")
