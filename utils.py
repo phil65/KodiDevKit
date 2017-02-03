@@ -290,7 +290,8 @@ class SetKodiFolderCommand(sublime_plugin.WindowCommand):
                                      None,
                                      None)
 
-    def set_kodi_folder(self, path):
+    @staticmethod
+    def set_kodi_folder(path):
         if os.path.exists(path):
             sublime.load_settings(SETTINGS_FILE).set("kodi_path", path)
             sublime.save_settings(SETTINGS_FILE)
