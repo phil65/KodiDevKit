@@ -305,7 +305,8 @@ def get_root_from_file(xml_file):
         logging.warning("Error in %s:\n %s" % (xml_file, e))
         return None
 
-def create_new_po_file(self):
+
+def create_new_po_file():
     """
     creates a new pofile and returns it (doesnt save yet)
     """
