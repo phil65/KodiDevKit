@@ -44,7 +44,7 @@ if __name__ == "__main__":
     else:
         project_folder = input("Enter Path to skin: ")
     INFOS.init_addon(project_folder)
-    repo = input('Enter Kodi version (%s): ' % " / ".join([item["name"] for item in INFOS.RELEASES]))
+    repo = input('Enter Kodi version (%s): ' % " / ".join([item["name"] for item in INFOS.addon.RELEASES]))
     INFOS.check_xml_files()
     for path in INFOS.addon.get_xml_files():
         if utils.check_bom(path):
@@ -72,7 +72,7 @@ if __name__ == "__main__":
         else:
             logging.info("Windows Line Endings detected in " + item[0])
     logging.info("\n\nADDON DEPENDENCY CHECK\n\n")
-    INFOS.check_dependencies(project_folder, repo)
+    INFOS.check_dependencies()
     logging.info("\n\nINCLUDE CHECK\n\n")
     check_tags("include")
     logging.info("\n\nVARIABLE CHECK\n\n")

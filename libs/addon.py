@@ -13,6 +13,26 @@ SETTINGS_FILE = 'kodidevkit.sublime-settings'
 
 
 class Addon(object):
+
+    RELEASES = [{"gui_version": '5.0.1',
+                 "python_version": "2.14.0",
+                 "name": "gotham"},
+                {"gui_version": '5.3.0',
+                 "python_version": "2.19.0",
+                 "name": "helix"},
+                {"gui_version": '5.9.0',
+                 "python_version": "2.20.0",
+                 "name": "isengard"},
+                {"gui_version": '5.10.0',
+                 "python_version": "2.24.0",
+                 "name": "jarvis"},
+                {"gui_version": '5.12.0',
+                 "python_version": "2.25.0",
+                 "name": "krypton"},
+                {"gui_version": '5.13.0',
+                 "python_version": "2.25.0",
+                 "name": "leia"}]
+
     LANG_START_ID = 32000
     LANG_OFFSET = 2
 
@@ -27,12 +47,18 @@ class Addon(object):
         self.include_files = {}
         self.font_file = None
         self.includes = {}
+        self.api_version = None
         self.settings = kwargs.get("settings")
         self.path = kwargs.get("project_path")
         self.xml_file = os.path.join(self.path, "addon.xml")
         self.root = utils.get_root_from_file(self.xml_file)
-        self.python_api_version = self.root.find(".//import[@addon='xbmc.python']")
-        self.gui_api_version = self.root.find(".//import[@addon='xbmc.gui']")
+        api_import = self.root.find(".//import[@addon='xbmc.python']")
+        if api_import is not None:
+            api_version = api_import.attrib.get("version")
+            for item in self.RELEASES:
+                if api_version == item["python_version"]:
+                    self.api_version = item["name"]
+                    break
         self.version = self.root.attrib.get("version")
         for item in self.root.xpath("/addon[@id]"):
             self.name = item.attrib["id"]

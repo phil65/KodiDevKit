@@ -689,6 +689,22 @@ class GoToTagCommand(sublime_plugin.WindowCommand):
             self.window.open_file(position, sublime.ENCODED_POSITION)
 
 
+class ShowDependenciesCommand(sublime_plugin.WindowCommand):
+    """
+    Show all possible dependencies for open addon
+    """
+
+    def is_visible(self):
+        return bool(INFOS.addon)
+
+    def run(self):
+        addons = utils.get_addons(INFOS.addon.api_version)
+        items = [[k, v] for k, v in addons.items()]
+        sublime.active_window().show_quick_panel(items=items,
+                                                 on_select=None,
+                                                 selected_index=0)
+
+
 class SearchForImageCommand(sublime_plugin.TextCommand):
 
     """

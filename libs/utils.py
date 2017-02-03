@@ -16,7 +16,7 @@ import zipfile
 import subprocess
 import re
 import platform
-import urllib
+import requests
 import threading
 from functools import wraps
 import time
@@ -334,9 +334,8 @@ def get_addons(reponame):
     """
     repo_list = 'http://mirrors.kodi.tv/addons/%s/addons.xml'
     logging.info("Downloading %s addon list" % reponame)
-    req = urllib.request.urlopen(repo_list % reponame)
-    data = req.read()
-    req.close()
-    root = ET.fromstring(data)
+    r = requests.get(repo_list % reponame, stream=True)
+    r.raw.decode_content = True
+    root = ET.parse(r.raw)
     addons = {item.get('id'): item.get('version') for item in root.iter('addon')}
     return addons

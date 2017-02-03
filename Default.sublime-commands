@@ -12,6 +12,7 @@
     {"caption": "KodiDevKit: Search for Label", "command": "search_for_label"},
     {"caption": "KodiDevKit: Search for Image", "command": "search_for_image"},
     {"caption": "KodiDevKit: Search for Font", "command": "search_for_font"},
+    {"caption": "KodiDevKit: Search for Dependency", "command": "show_dependencies"},
     {"caption": "KodiDevKit: Search for Builtins", "command": "search_for_builtin"},
     {"caption": "KodiDevKit: Search for Boolean Conditions", "command": "search_for_visible_condition"},
     {"caption": "KodiDevKit: Search for JSON Methods / Types / Notifications", "command": "search_for_json"},

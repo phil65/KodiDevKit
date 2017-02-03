@@ -63,19 +63,6 @@ PARSER = ET.XMLParser(remove_blank_text=True, remove_comments=True)
 
 class InfoProvider(object):
 
-    RELEASES = [{"gui_version": '5.0.1',
-                 "name": "gotham"},
-                {"gui_version": '5.3.0',
-                 "name": "helix"},
-                {"gui_version": '5.9.0',
-                 "name": "isengard"},
-                {"gui_version": '5.10.0',
-                 "name": "jarvis"},
-                {"gui_version": '5.12.0',
-                 "name": "krypton"},
-                {"gui_version": '5.13.0',
-                 "name": "leia"}]
-
     def __init__(self):
         self.addon = None
 
@@ -138,14 +125,14 @@ class InfoProvider(object):
             self.addon = Addon.by_project(path, self.settings)
             # sublime.status_message("KodiDevKit: successfully loaded addon")
 
-    def check_dependencies(self, skinpath, repo):
+    def check_dependencies(self):
         """
         validate the addon dependencies
         """
         imports = {i.get('addon'): i.get('version') for i in self.addon.root.iter('import')}
         addons = []
-        for release in self.RELEASES:
-            if repo == release["name"]:
+        for release in self.addon.RELEASES:
+            if self.addon.api_version == release["name"]:
                 if imports['xbmc.gui'] > release["gui_version"]:
                     logging.info('xbmc.gui version incorrect')
                 addons = utils.get_addons(release["name"])

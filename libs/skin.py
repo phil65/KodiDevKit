@@ -21,8 +21,13 @@ class Skin(addon.Addon):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.kodi_version = self.root.find(".//import[@addon='xbmc.gui']")
         self.type = "skin"
+        api_version = self.root.find(".//import[@addon='xbmc.gui']").attrib.get("version")
+        logging.info(api_version)
+        for item in self.RELEASES:
+            if api_version == item["gui_version"]:
+                self.api_version = item["name"]
+                break
         self.update_include_list()
         self.get_colors()
         self.get_fonts()
