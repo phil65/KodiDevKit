@@ -162,18 +162,18 @@ class InfoProvider(object):
             else:
                 logging.info('%s not available in Kodi repository' % dep)
 
-        def get_check_listitems(self, check_type):
-            """
-            starts check with type check_type and returns result nodes
-            """
-            self.addon.update_xml_files()
-            checks = {"variable": self.check_variables,
-                      "include": self.check_includes,
-                      "font": self.check_fonts,
-                      "label": self.check_labels,
-                      "id": self.check_ids,
-                      "general": self.check_values}
-            return checks[check_type]()
+    def get_check_listitems(self, check_type):
+        """
+        starts check with type check_type and returns result nodes
+        """
+        self.addon.update_xml_files()
+        checks = {"variable": self.check_variables,
+                  "include": self.check_includes,
+                  "font": self.check_fonts,
+                  "label": self.check_labels,
+                  "id": self.check_ids,
+                  "general": self.check_values}
+        return checks[check_type]()
 
     def check_xml_files(self):
         """
