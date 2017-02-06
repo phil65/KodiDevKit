@@ -30,19 +30,28 @@ from . import yattag
 PARSER = ET.XMLParser(remove_blank_text=True, remove_comments=True)
 
 
-def is_kodi_hex(s):
-    return len(s) == 8 and all(c in string.hexdigits for c in s)
+def is_kodi_hex(text):
+    """
+    returns True if text is kodi-style hex value
+    """
+    return len(text) == 8 and all(c in string.hexdigits for c in text)
 
 
-def is_number(s):
+def is_number(text):
+    """
+    returns True if *text is a number
+    """
     try:
-        float(s)
+        float(text)
         return True
     except ValueError:
         return False
 
 
 def save_xml(filename, root):
+    """
+    save xml node *root as file with path *filename
+    """
     tree = ET.ElementTree(root)
     content = ET.tostring(tree, encoding='UTF-8', xml_declaration=True)
     content = yattag.indent(string=content.decode("utf-8"),
@@ -232,12 +241,18 @@ def check_brackets(label):
 
 
 def find_word(view):
+    """
+    return selected text or surrounding text for first selection
+    """
     for region in view.sel():
         word = view.word(region) if region.begin() == region.end() else region
         return view.substr(word) if not word.empty() else ""
 
 
 def get_node_content(view, flags):
+    """
+    return surrounding text for for first selection
+    """
     for region in view.sel():
         try:
             bracket_region = view.expand_by_class(region, flags, '<>"[]')
@@ -247,6 +262,9 @@ def get_node_content(view, flags):
 
 
 def jump_to_label_declaration(view, label_id):
+    """
+    prints properly formatted output for json objects
+    """
     view.run_command("insert", {"characters": label_id})
     view.hide_popup()
 
