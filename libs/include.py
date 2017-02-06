@@ -8,6 +8,9 @@ import os
 
 
 class Include(dict):
+    """
+    Represents an include-like kodi object
+    """
 
     constant_attribs = {"x", "y", "width", "height", "center", "max", "min", "w", "h", "time",
                         "acceleration", "delay", "start", "end", "center", "border", "repeat"}
@@ -50,21 +53,36 @@ class Include(dict):
 
     @property
     def line(self):
+        """
+        returns xml source line
+        """
         return self.node.sourceline
 
     @property
     def tag(self):
+        """
+        returns tag of include node
+        """
         return self.node.tag
 
     @property
     def content(self):
+        """
+        returns include node text
+        """
         return self.node.text
 
     @property
     def name(self):
+        """
+        returns name of include
+        """
         return self.node.attrib.get("name")
 
     @property
     def filename(self):
+        """
+        returns filename of include parent file
+        """
         return os.path.basename(self.file)
 
