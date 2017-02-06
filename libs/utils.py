@@ -224,9 +224,9 @@ def check_brackets(label):
             if not stack:
                 return False
             else:
-                stackTop = stack.pop()
+                stack_top = stack.pop()
                 balancing_bracket = push_chars[pop_chars.index(c)]
-                if stackTop != balancing_bracket:
+                if stack_top != balancing_bracket:
                     return False
     return not stack
 
