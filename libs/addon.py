@@ -169,14 +169,7 @@ class Addon(object):
         """
         if not self.po_files:
             po = utils.create_new_po_file()
-            lang_folder = self.settings.get("language_folders")[0]
-            if self.type == "skin":
-                lang_path = os.path.join(self.path, "language", lang_folder)
-            else:
-                lang_path = os.path.join(self.path, "resources", "language", lang_folder)
-            if not os.path.exists(lang_path):
-                os.makedirs(lang_path)
-            po.save(os.path.join(lang_path, "strings.po"))
+            po.save(os.path.join(self.primary_lang_folder, "strings.po"))
             self.po_files.append(po)
             logging.critical("New language file created")
         else:
