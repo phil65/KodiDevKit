@@ -272,20 +272,20 @@ class SetKodiFolderCommand(sublime_plugin.WindowCommand):
 
     def run(self):
         if sublime.platform() == "linux":
-            KODI_PRESET_PATH = "/usr/share/%s/" % APP_NAME.lower()
+            preset_path = "/usr/share/%s/" % APP_NAME.lower()
         elif sublime.platform() == "windows":
-            KODI_PRESET_PATH = "C:/%s/" % APP_NAME.lower()
+            preset_path = "C:/%s/" % APP_NAME.lower()
         elif platform.system() == "Darwin":
-            KODI_PRESET_PATH = os.path.join(os.path.expanduser("~"),
-                                            "Applications",
-                                            "%s.app" % APP_NAME,
-                                            "Contents",
-                                            "Resources",
-                                            APP_NAME)
+            preset_path = os.path.join(os.path.expanduser("~"),
+                                       "Applications",
+                                       "%s.app" % APP_NAME,
+                                       "Contents",
+                                       "Resources",
+                                       APP_NAME)
         else:
-            KODI_PRESET_PATH = ""
+            preset_path = ""
         self.window.show_input_panel("Set Kodi folder",
-                                     KODI_PRESET_PATH,
+                                     preset_path,
                                      self.set_kodi_folder,
                                      None,
                                      None)
