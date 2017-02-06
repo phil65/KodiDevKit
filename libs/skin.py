@@ -157,21 +157,19 @@ class Skin(addon.Addon):
             return None
         folder = xml_file.split(os.sep)[-2]
         logging.info("found include file: " + xml_file)
-        self.include_files[folder].append(xml_file)
-        nodes = []
         if not os.path.exists(xml_file):
             logging.info("%s does not exist" % xml_file)
             return []
         root = utils.get_root_from_file(xml_file)
         if root is None:
             return []
+        self.include_files[folder].append(xml_file)
         xpath = ".//" + " | .//".join(["include", "variable", "constant", "expression"])
         for node in root.xpath(xpath):
             if "name" in node.attrib:
                 include = Include(node=node,
                                   file=xml_file)
-                nodes.append(include)
-        self.includes[folder] += nodes
+                self.includes[folder].append(include)
         for node in root.findall("include"):
             if "file" in node.attrib and node.attrib["file"] != "script-skinshortcuts-includes.xml":
                 xml_file = os.path.join(self.path, folder, node.attrib["file"])
