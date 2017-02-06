@@ -12,6 +12,9 @@ import logging
 
 
 class SublimeLogHandler(logging.StreamHandler):
+    """
+    SublimeText Stream handler, outputs stream via console/panels/dialogs
+    """
 
     def __init__(self):
         super().__init__()
@@ -45,10 +48,16 @@ class SublimeLogHandler(logging.StreamHandler):
 
     @staticmethod
     def message(record):
+        """
+        shows text in message dialog
+        """
         sublime.message_dialog(record.msg)
 
 
 def config():
+    """
+    attach Sublime StreamHandler to logger
+    """
     logger = logging.getLogger()
     for hdlr in logger.handlers:  # remove all old handlers
         logger.removeHandler(hdlr)
