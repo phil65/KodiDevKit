@@ -268,14 +268,14 @@ class InfoProvider(object):
         for item in colors:
             if item["name"] == color_string:
                 color_hex = "#" + item["content"][2:]
-                cont_color = utils.get_cont_col(color_hex)
+                cont_color = utils.get_contrast_color(color_hex)
                 alpha_percent = round(int(item["content"][:2], 16) / (16 * 16) * 100)
                 color_info += '%s&nbsp;<a href="test" style="background-color:%s;color:%s">%s</a> %d %% alpha<br>' % (os.path.basename(item["file"]), color_hex, cont_color, item["content"], alpha_percent)
         if color_info:
             return color_info
         if all(c in string.hexdigits for c in color_string) and len(color_string) == 8:
             color_hex = "#" + color_string[2:]
-            cont_color = utils.get_cont_col(color_hex)
+            cont_color = utils.get_contrast_color(color_hex)
             alpha_percent = round(int(color_string[:2], 16) / (16 * 16) * 100)
             return '<a href="test" style="background-color:%s;color:%s">%d %% alpha</a>' % (color_hex, cont_color, alpha_percent)
 
@@ -455,16 +455,14 @@ class InfoProvider(object):
                 if "id" in root.attrib:
                     window_ids.append(root.attrib["id"])
                 # get all nodes with ids....
-                xpath = ".//*[@id]"
-                for node in root.xpath(xpath):
+                for node in root.xpath(".//*[@id]"):
                     item = {"name": node.attrib["id"],
                             "type": node.tag,
                             "file": path,
                             "line": node.sourceline}
                     defines.append(item)
                 # get all conditions....
-                xpath = ".//*[@condition]"
-                for node in root.xpath(xpath):
+                for node in root.xpath(".//*[@condition]"):
                     for match in re.finditer(control_regex, node.attrib["condition"], re.IGNORECASE):
                         item = {"name": match.group(1),
                                 # "region": (match.start(1), match.end(1)),
@@ -479,8 +477,7 @@ class InfoProvider(object):
                                 "line": node.sourceline}
                         window_refs.append(item)
                 bracket_tags = ["visible", "enable", "usealttexture", "selected", "onclick", "onback"]
-                xpath = ".//" + " | .//".join(bracket_tags)
-                for node in root.xpath(xpath):
+                for node in root.xpath(".//" + " | .//".join(bracket_tags)):
                     if not node.text:
                         continue
                     for match in re.finditer(control_regex, node.text, re.IGNORECASE):

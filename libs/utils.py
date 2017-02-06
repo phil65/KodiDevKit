@@ -123,8 +123,8 @@ def get_absolute_file_paths(directory):
     Generate absolute file paths for the given directory
     """
     for dirpath, _, filenames in os.walk(directory):
-        for f in filenames:
-            yield os.path.abspath(os.path.join(dirpath, f))
+        for filename in filenames:
+            yield os.path.abspath(os.path.join(dirpath, filename))
 
 
 def make_archive(folderpath, archive):
@@ -157,7 +157,7 @@ def to_hex(r, g, b, a=None):
     return "#%02X%02X%02X%02X" % (r, g, b, a if a else 255)
 
 
-def get_cont_col(col):
+def get_contrast_color(col):
     """
     gets contrast color for *col (used to ensure readability)
     """
@@ -167,8 +167,8 @@ def get_cont_col(col):
     l1 = 1 - l
     if abs(l1 - l) < .15:
         l1 = .15
-    (r, g, b) = colorsys.hls_to_rgb(h, l1, s)
-    return to_hex(int(r * 255), int(g * 255), int(b * 255))  # true complementary
+    (red, green, blue) = colorsys.hls_to_rgb(h, l1, s)
+    return to_hex(int(red * 255), int(green * 255), int(blue * 255))  # true complementary
 
 
 def check_bom(filepath):
@@ -290,10 +290,10 @@ def create_new_po_file():
     """
     creates a new pofile and returns it (doesnt save yet)
     """
-    po = polib.POFile()
+    po_file = polib.POFile()
     mail = ""
     actual_date = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
-    po.metadata = {
+    po_file.metadata = {
         'Project-Id-Version': '1.0',
         'Report-Msgid-Bugs-To': '%s' % mail,
         'POT-Creation-Date': actual_date,
@@ -304,10 +304,13 @@ def create_new_po_file():
         'Content-Type': 'text/plain; charset=utf-8',
         'Content-Transfer-Encoding': '8bit',
     }
-    return po
+    return po_file
 
 
 def convert_xml_to_po(path):
+    """
+    convert language xmls inside *path to .po files
+    """
     po_file = create_new_po_file()
     root = get_root_from_file(path)
     for item in root.find("string"):
