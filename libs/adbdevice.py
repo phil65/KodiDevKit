@@ -24,12 +24,15 @@ class AdbDevice(object):
     def __init__(self):
         self.is_busy = False
         self.connected = False
+        self.remote_ip = None
+        self.userdata_folder = None
+        self.settings = None
         self.setup(DEFAULT_SETTINGS)
 
     def setup(self, settings):
         self.settings = settings
         self.userdata_folder = self.settings.get("remote_userdata_folder")
-        self.ip = self.settings.get("remote_ip")
+        self.remote_ip = self.settings.get("remote_ip")
 
     @staticmethod
     def cmd(program, args):
@@ -52,7 +55,7 @@ class AdbDevice(object):
 
     # @utils.check_busy
     def adb_connect(self, ip):
-        self.ip = ip
+        self.remote_ip = ip
         logging.warning("Connect to remote with ip %s" % ip)
         self.cmd("adb", ["connect", ip])
         self.connected = True
@@ -65,7 +68,7 @@ class AdbDevice(object):
     @utils.check_busy
     def adb_reconnect(self, ip=""):
         if not ip:
-            ip = self.ip
+            ip = self.remote_ip
         self.adb_disconnect()
         self.adb_connect(ip)
 
