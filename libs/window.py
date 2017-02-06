@@ -12,7 +12,7 @@ from . import utils
 
 class Window(object):
 
-    def __init__(self, path, *args, **kwargs):
+    def __init__(self, path, *args):
         self.root = utils.get_root_from_file(path)
 
     def get_controls(self, control_type):

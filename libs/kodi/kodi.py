@@ -21,7 +21,7 @@ class Kodi(object):
     delivers core language files / paths / JSON answers / installed add-ons
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args):
         self.settings = None
         self.po_files = []
         self.colors = []
