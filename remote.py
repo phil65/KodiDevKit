@@ -27,6 +27,10 @@ class RemoteActionsCommand(sublime_plugin.WindowCommand):
     Menu with all options related to ADB
     """
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.settings = None
+
     def run(self):
         """
         Show quick panel with all possible actions
