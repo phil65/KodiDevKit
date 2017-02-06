@@ -47,8 +47,8 @@ def save_xml(filename, root):
     content = ET.tostring(tree, encoding='UTF-8', xml_declaration=True)
     content = yattag.indent(string=content.decode("utf-8"),
                             indentation="\t")
-    with open(filename, 'w', encoding="utf-8") as f:
-        f.write(content)
+    with open(filename, 'w', encoding="utf-8") as xml_file:
+        xml_file.write(content)
 
 
 def retry(ExceptionToCheck, tries=4, delay=3, backoff=2):

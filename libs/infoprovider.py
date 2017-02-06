@@ -107,14 +107,9 @@ class InfoProvider(object):
         self.WINDOW_NAMES = [item[0] for item in WINDOW_MAP]
         self.WINDOW_IDS = [str(item[1]) for item in WINDOW_MAP]
 
-        self.builtins = []
-        self.conditions = []
-        for item in root.find("builtins"):
-            self.builtins.append([item.find("code").text, item.find("help").text])
-        for item in root.find("conditions"):
-            self.conditions.append([item.find("code").text, item.find("help").text])
-        includes = self.template_root.xpath("//include[@name]")
-        for include in includes:
+        self.builtins = [[i.find("code").text, i.find("help").text] for i in root.find("builtins")]
+        self.conditions = [[i.find("code").text, i.find("help").text] for i in root.find("conditions")]
+        for include in self.template_root.xpath("//include[@name]"):
             for node in self.template_root.xpath("//include[not(@*)]"):
                 if node.text == include.attrib.get("name"):
                     for child in include.getchildren():

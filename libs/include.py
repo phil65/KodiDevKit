@@ -9,8 +9,13 @@ import os
 
 class Include(dict):
 
-    constant_attribs = {"x", "y", "width", "height", "center", "max", "min", "w", "h", "time", "acceleration", "delay", "start", "end", "center", "border", "repeat"}
-    constant_nodes = {"posx", "posy", "left", "centerleft", "right", "centerright", "top", "centertop", "bottom", "centerbottom", "width", "height", "offsetx", "offsety", "textoffsetx", "textoffsety", "textwidth", "spinposx", "spinposy", "spinwidth", "spinheight", "radioposx", "radioposy", "radiowidth", "radioheight", "sliderwidth", "sliderheight", "itemgap", "bordersize", "timeperimage", "fadetime", "pauseatend", "depth"}
+    constant_attribs = {"x", "y", "width", "height", "center", "max", "min", "w", "h", "time",
+                        "acceleration", "delay", "start", "end", "center", "border", "repeat"}
+    constant_nodes = {"posx", "posy", "left", "centerleft", "right", "centerright", "top", "centertop",
+                      "bottom", "centerbottom", "width", "height", "offsetx", "offsety", "textoffsetx",
+                      "textoffsety", "textwidth", "spinposx", "spinposy", "spinwidth", "spinheight",
+                      "radioposx", "radioposy", "radiowidth", "radioheight", "sliderwidth", "sliderheight",
+                      "itemgap", "bordersize", "timeperimage", "fadetime", "pauseatend", "depth"}
     exp_nodes = {"visible", "enable", "usealttexture", "selected"}
     exp_attribs = {"condition"}
 

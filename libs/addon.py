@@ -175,14 +175,14 @@ class Addon(object):
         adds a label to the first pofile from settings (or creates new one if non-existing)
         """
         if not self.po_files:
-            po = utils.create_new_po_file()
-            po.save(os.path.join(self.primary_lang_folder, "strings.po"))
-            self.po_files.append(po)
+            po_file = utils.create_new_po_file()
+            po_file.save(os.path.join(self.primary_lang_folder, "strings.po"))
+            self.po_files.append(po_file)
             logging.critical("New language file created")
         else:
-            po = self.po_files[0]
+            po_file = self.po_files[0]
         string_ids = []
-        for entry in po:
+        for entry in po_file:
             try:
                 string_ids.append(int(entry.msgctxt[1:]))
             except Exception:
@@ -195,9 +195,9 @@ class Addon(object):
                               msgstr="",
                               msgctxt="#%s" % label_id,
                               occurrences=[(filepath, None)])
-        po.insert(index=int(label_id) - self.LANG_START_ID + self.LANG_OFFSET,
-                  entry=entry)
-        po.save(self.po_files[0].fpath)
+        po_file.insert(index=int(label_id) - self.LANG_START_ID + self.LANG_OFFSET,
+                       entry=entry)
+        po_file.save(self.po_files[0].fpath)
         self.update_labels()
         return label_id
 
