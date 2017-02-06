@@ -8,6 +8,7 @@ from . import utils
 from . import addon
 import logging
 from lxml import etree as ET
+from .include import Include
 
 
 class Skin(addon.Addon):
@@ -127,6 +128,7 @@ class Skin(addon.Addon):
             for filename in files:
                 img_path = os.path.join(path, filename)
                 img_path = img_path.replace(self.media_path, "").replace("\\", "/")
+                img_path.lstrip()
                 if img_path.startswith("/"):
                     img_path = img_path[1:]
                 yield img_path
@@ -156,12 +158,20 @@ class Skin(addon.Addon):
         folder = xml_file.split(os.sep)[-2]
         logging.info("found include file: " + xml_file)
         self.include_files[folder].append(xml_file)
-        tags = ["include", "variable", "constant", "expression"]
-        self.includes[folder] += utils.get_tags_from_file(path=xml_file,
-                                                          node_tags=tags)
+        nodes = []
+        if not os.path.exists(xml_file):
+            logging.info("%s does not exist" % xml_file)
+            return []
         root = utils.get_root_from_file(xml_file)
         if root is None:
-            return None
+            return []
+        xpath = ".//" + " | .//".join(["include", "variable", "constant", "expression"])
+        for node in root.xpath(xpath):
+            if "name" in node.attrib:
+                include = Include(node=node,
+                                  file=xml_file)
+                nodes.append(include)
+        self.includes[folder] += nodes
         for node in root.findall("include"):
             if "file" in node.attrib and node.attrib["file"] != "script-skinshortcuts-includes.xml":
                 xml_file = os.path.join(self.path, folder, node.attrib["file"])

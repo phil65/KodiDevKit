@@ -24,7 +24,6 @@ import logging
 import string
 from lxml import etree as ET
 
-from .include import Include
 from .polib import polib
 from . import yattag
 
@@ -259,23 +258,11 @@ def prettyprint(string):
     logging.info(json.dumps(string, sort_keys=True, indent=4, separators=(',', ': ')))
 
 
-def get_tags_from_file(path, node_tags):
+def get_tags_from_file(path):
     """
     returns list of dicts from xml file with path *path containing all nodes with tag name *node_tags
     """
     nodes = []
-    if not os.path.exists(path):
-        logging.info("%s does not exist" % path)
-        return []
-    root = get_root_from_file(path)
-    if root is None:
-        return []
-    xpath = ".//" + " | .//".join(node_tags)
-    for node in root.xpath(xpath):
-        if "name" in node.attrib:
-            include = Include(node=node,
-                              file=path)
-            nodes.append(include)
     return nodes
 
 
