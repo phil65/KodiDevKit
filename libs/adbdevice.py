@@ -12,6 +12,8 @@ from . import utils
 import os
 import logging
 
+DEFAULT_SETTINGS = {"remote_ip": "localhost"}
+
 
 class AdbDevice(object):
 
@@ -22,7 +24,7 @@ class AdbDevice(object):
     def __init__(self):
         self.is_busy = False
         self.connected = False
-        self.setup()
+        self.setup(DEFAULT_SETTINGS)
 
     def setup(self, settings):
         self.settings = settings
