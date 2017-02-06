@@ -23,6 +23,9 @@ class Skin(addon.Addon):
     LANG_OFFSET = 0
 
     def __init__(self, *args, **kwargs):
+        """
+        parses includes / colors / fonts, addon.xml
+        """
         super().__init__(*args, **kwargs)
         self.type = "skin"
         api_version = self.root.find(".//import[@addon='xbmc.gui']").attrib.get("version")
@@ -68,6 +71,9 @@ class Skin(addon.Addon):
 
     @property
     def default_xml_folder(self):
+        """
+        returns the fallback xml folder as a string
+        """
         folder = self.root.find(".//res[@default='true']")
         if folder:
             return folder.attrib["folder"]
@@ -225,6 +231,9 @@ class Skin(addon.Addon):
         return [folder for folder in os.listdir(os.path.join(self.path, "themes"))]
 
     def resolve_include(self, ref, folder):
+        """
+        resolves the xml node *ref with includes from *folder
+        """
         if not ref.text:
             return None
         include_names = [item["name"] for item in self.addon.includes[folder]]
@@ -244,4 +253,7 @@ class Skin(addon.Addon):
         return xml_source
 
     def get_constants(self, folder):
+        """
+        returns list with names of all constants defined.
+        """
         return [i["name"] for i in self.includes[folder] if i["type"] == "constant"]

@@ -292,6 +292,9 @@ class SetKodiFolderCommand(sublime_plugin.WindowCommand):
 
     @staticmethod
     def set_kodi_folder(path):
+        """
+        Sets kodi path to *path and saves it if file exists.
+        """
         if os.path.exists(path):
             sublime.load_settings(SETTINGS_FILE).set("kodi_path", path)
             sublime.save_settings(SETTINGS_FILE)
@@ -349,6 +352,9 @@ class GetInfoLabelsPromptCommand(sublime_plugin.WindowCommand):
 
     @utils.run_async
     def show_info_label(self, label_string):
+        """
+        fetch infolabel with name *label_string from kodi via json and display it.
+        """
         self.settings.set("prev_infolabel", label_string)
         words = label_string.split(",")
         logging.warning("send request...")

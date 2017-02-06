@@ -70,6 +70,9 @@ class Addon(object):
 
     @property
     def default_xml_folder(self):
+        """
+        returns the fallback xml folder as a string
+        """
         return self.xml_folders[0]
 
     def load_xml_folders(self):
