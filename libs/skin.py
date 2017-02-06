@@ -4,9 +4,11 @@
 # This program is Free Software see LICENSE file for details
 
 import os
+from distutils.version import StrictVersion
+import logging
+
 from . import utils
 from . import addon
-import logging
 from lxml import etree as ET
 from .include import Include
 
@@ -26,7 +28,7 @@ class Skin(addon.Addon):
         api_version = self.root.find(".//import[@addon='xbmc.gui']").attrib.get("version")
         logging.info(api_version)
         for item in self.RELEASES:
-            if api_version == item["gui_version"]:
+            if StrictVersion(api_version) <= StrictVersion(item["gui_version"]):
                 self.api_version = item["name"]
                 break
         self.update_include_list()
