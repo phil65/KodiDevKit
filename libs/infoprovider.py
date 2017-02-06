@@ -73,6 +73,7 @@ class InfoProvider(object):
         self.conditions = []
         self.template_attribs = {}
         self.template_values = {}
+        self.settings = {}
 
     def load_data(self):
         """
