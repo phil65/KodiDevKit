@@ -14,6 +14,9 @@ SETTINGS_FILE = 'kodidevkit.sublime-settings'
 
 
 class Addon(object):
+    """
+    Represents a kodi addon with path *project_path and *settings
+    """
 
     RELEASES = [{"gui_version": '5.0.1',
                  "python_version": "2.14.0",
@@ -202,6 +205,9 @@ class Addon(object):
         return label_id
 
     def attach_occurrence_to_label(self, label_id, rel_path):
+        """
+        add *rel_path to label with *label id as a file comment
+        """
         if 31000 <= int(label_id[1:]) < 33000:
             entry = self.po_files[0].find(label_id, by="msgctxt")
             entry.occurrences.append((rel_path, None))
@@ -260,4 +266,7 @@ class Addon(object):
             f.write("\n".join(contents))
 
     def get_constants(self, folder):
+        """
+        returns empty list because Kodi python add-ons do not support constants yet
+        """
         return []
