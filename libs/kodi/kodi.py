@@ -25,6 +25,7 @@ class Kodi(object):
         self.settings = None
         self.po_files = []
         self.colors = []
+        self.color_labels = []
         self.json_url = None
         self.kodi_path = None
         self.userdata_folder = None
