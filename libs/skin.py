@@ -67,6 +67,13 @@ class Skin(addon.Addon):
         return lang_path
 
     @property
+    def default_xml_folder(self):
+        folder = self.root.find(".//res[@default='true']")
+        if folder:
+            return folder.attrib["folder"]
+        return None
+
+    @property
     def media_path(self):
         """
         returns the skin media folder path

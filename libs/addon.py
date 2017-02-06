@@ -68,6 +68,10 @@ class Addon(object):
         self.update_xml_files()
         self.update_labels()
 
+    @property
+    def default_xml_folder(self):
+        return self.xml_folders[0]
+
     def load_xml_folders(self):
         """
         find and load skin xml folder if existing
