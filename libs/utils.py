@@ -311,7 +311,7 @@ def convert_xml_to_po(path):
     """
     convert language xmls inside *path to .po files
     """
-    po_file = create_new_po_file()
+    po_file = create_new_po_file(path)
     root = get_root_from_file(path)
     for item in root.find("string"):
         entry = polib.POEntry(msgid=item.text,
