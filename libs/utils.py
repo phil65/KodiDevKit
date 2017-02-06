@@ -258,14 +258,6 @@ def prettyprint(string):
     logging.info(json.dumps(string, sort_keys=True, indent=4, separators=(',', ': ')))
 
 
-def get_tags_from_file(path):
-    """
-    returns list of dicts from xml file with path *path containing all nodes with tag name *node_tags
-    """
-    nodes = []
-    return nodes
-
-
 def get_po_file(po_file_path):
     """
     return pofile object, go-to-failure in case of exception
