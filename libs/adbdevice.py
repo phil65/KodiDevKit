@@ -30,12 +30,18 @@ class AdbDevice(object):
         self.setup(DEFAULT_SETTINGS)
 
     def setup(self, settings):
+        """
+        set up device object with *settings
+        """
         self.settings = settings
         self.userdata_folder = self.settings.get("remote_userdata_folder")
         self.remote_ip = self.settings.get("remote_ip")
 
     @staticmethod
     def cmd(program, args):
+        """
+        call *program from cmd with *args
+        """
         command = [program]
         for arg in args:
             command.append(arg)
@@ -55,6 +61,9 @@ class AdbDevice(object):
 
     # @utils.check_busy
     def adb_connect(self, ip):
+        """
+        connect to *ip via adb
+        """
         self.remote_ip = ip
         logging.warning("Connect to remote with ip %s" % ip)
         self.cmd("adb", ["connect", ip])
@@ -63,10 +72,16 @@ class AdbDevice(object):
     @utils.run_async
     @utils.check_busy
     def adb_connect_async(self, ip):
+        """
+        async connect to device with *ip
+        """
         self.adb_connect(ip)
 
     @utils.check_busy
     def adb_reconnect(self, ip=""):
+        """
+        disconnect and connect device with *ip
+        """
         if not ip:
             ip = self.remote_ip
         self.adb_disconnect()
@@ -74,10 +89,16 @@ class AdbDevice(object):
 
     @utils.run_async
     def adb_reconnect_async(self, ip=""):
+        """
+        disconnect and connect device with *ip, async
+        """
         self.adb_reconnect(ip)
 
     # @utils.check_busy
     def adb_disconnect(self):
+        """
+        disconnect adb devices
+        """
         logging.warning("Disconnect from remote")
         self.cmd("adb", ["disconnect"])
         self.connected = False
@@ -89,6 +110,9 @@ class AdbDevice(object):
 
     @utils.check_busy
     def adb_push(self, source, target):
+        """
+        push local *source to *target folder on device
+        """
         if not target.endswith('/'):
             target += '/'
         self.cmd("adb", ["push", source.replace('\\', '/'), target.replace('\\', '/')])
@@ -100,6 +124,9 @@ class AdbDevice(object):
 
     @utils.check_busy
     def adb_pull(self, path, target):
+        """
+        pull data from device *path to local *target
+        """
         self.cmd("adb", ["pull", path, target])
 
     @utils.run_async
@@ -110,6 +137,9 @@ class AdbDevice(object):
     @utils.run_async
     @utils.check_busy
     def adb_restart_server(self):
+        """
+        restart adb server
+        """
         pass
 
     @utils.run_async
@@ -145,6 +175,9 @@ class AdbDevice(object):
     @utils.run_async
     @utils.check_busy
     def get_screenshot(self, f_open, target):
+        """
+        create screenshot, pull to *target, clean up
+        """
         logging.warning("Pull screenshot from remote")
         self.cmd("adb", ["shell", "screencap", "-p", "/sdcard/screen.png"])
         self.cmd("adb", ["pull", "/sdcard/screen.png", target])
@@ -156,8 +189,14 @@ class AdbDevice(object):
     @utils.run_async
     @utils.check_busy
     def clear_cache(self):
+        """
+        clear temp folder from userdata folder on remote
+        """
         self.cmd("adb", ["shell", "rm", "-rf", os.path.join(self.userdata_folder, "temp")])
 
     @utils.run_async
     def reboot(self):
+        """
+        complete device reboot
+        """
         self.cmd("adb", ["reboot"])
