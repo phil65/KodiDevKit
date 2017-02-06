@@ -5,6 +5,7 @@
 
 import os
 import logging
+from distutils.version import StrictVersion
 
 from . import utils
 from .polib import polib
@@ -56,7 +57,7 @@ class Addon(object):
         if api_import is not None:
             api_version = api_import.attrib.get("version")
             for item in self.RELEASES:
-                if api_version == item["python_version"]:
+                if StrictVersion(api_version) <= StrictVersion(item["python_version"]):
                     self.api_version = item["name"]
                     break
         self.version = self.root.attrib.get("version")
