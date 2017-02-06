@@ -307,6 +307,17 @@ def create_new_po_file():
     return po
 
 
+def convert_xml_to_po(path):
+    po_file = create_new_po_file()
+    root = get_root_from_file(path)
+    for item in root.find("string"):
+        entry = polib.POEntry(msgid=item.text,
+                              msgstr="",
+                              msgctxt="#%s" % item.attrib["id"])
+        po_file.append(entry)
+    po_file.save()
+
+
 def get_addons(reponame):
     """
     get available addons from the kodi addon repository
