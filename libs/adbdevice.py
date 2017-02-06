@@ -21,10 +21,11 @@ class AdbDevice(object):
 
     def __init__(self):
         self.is_busy = False
+        self.connected = False
+        self.setup()
 
     def setup(self, settings):
         self.settings = settings
-        self.connected = False
         self.userdata_folder = self.settings.get("remote_userdata_folder")
         self.ip = self.settings.get("remote_ip")
 
