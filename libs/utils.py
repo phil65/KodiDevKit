@@ -286,11 +286,11 @@ def get_root_from_file(xml_file):
         return None
 
 
-def create_new_po_file():
+def create_new_po_file(path=None):
     """
     creates a new pofile and returns it (doesnt save yet)
     """
-    po_file = polib.POFile()
+    po_file = polib.POFile(fpath=path)
     mail = ""
     actual_date = time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
     po_file.metadata = {
@@ -319,6 +319,7 @@ def convert_xml_to_po(path):
                               msgctxt="#%s" % item.attrib["id"])
         po_file.append(entry)
     po_file.save()
+    return po_file
 
 
 def get_addons(reponame):

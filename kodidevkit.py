@@ -467,8 +467,8 @@ class SearchFileForLabelsCommand(QuickPanelCommand):
         for po_file in INFOS.get_po_files():
             labels += [s.msgid for s in po_file]
             label_ids += [s.msgctxt for s in po_file]
-        with open(path, encoding="utf8") as f:
-            for i, line in enumerate(f.readlines()):
+        with open(path, encoding="utf8") as text_file:
+            for i, line in enumerate(text_file.readlines()):
                 for regex in regexs:
                     for match in re.finditer(regex, line):
                         label_id = "#" + match.group(1)
@@ -766,7 +766,22 @@ class SearchForFontCommand(sublime_plugin.TextCommand):
         sublime.active_window().focus_view(self.view)
 
 
-class MoveToLanguageFile(sublime_plugin.TextCommand):
+class ConvertXmlToPoCommand(sublime_plugin.WindowCommand):
+    """
+    Show all possible dependencies for open addon
+    """
+
+    def is_visible(self):
+        return bool(INFOS.addon)
+
+    def run(self):
+        for item in os.listdir(INFOS.addon.primary_lang_folder):
+            if item.endswith(".xml"):
+                path = os.path.join(INFOS.addon.primary_lang_folder, item)
+                utils.convert_xml_to_po(path)
+
+
+class MoveToLanguageFileCommand(sublime_plugin.TextCommand):
 
     """
     move selected file to default .po file (or create .po file if not existing)

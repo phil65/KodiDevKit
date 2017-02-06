@@ -39,10 +39,7 @@ if __name__ == "__main__":
                                   datefmt='%Y-%m-%d %H:%M:%S')
     filehandler.setFormatter(formatter)
     logger.addHandler(filehandler)
-    if len(sys.argv) == 2:
-        project_folder = sys.argv[1]
-    else:
-        project_folder = input("Enter Path to skin: ")
+    project_folder = sys.argv[1] if len(sys.argv) == 2 else input("Enter Path to skin: ")
     INFOS.init_addon(project_folder)
     repo = input('Enter Kodi version (%s): ' % " / ".join([item["name"] for item in INFOS.addon.RELEASES]))
     INFOS.check_xml_files()

@@ -175,8 +175,8 @@ class Addon(object):
         adds a label to the first pofile from settings (or creates new one if non-existing)
         """
         if not self.po_files:
-            po_file = utils.create_new_po_file()
-            po_file.save(os.path.join(self.primary_lang_folder, "strings.po"))
+            po_file = utils.create_new_po_file(os.path.join(self.primary_lang_folder, "strings.po"))
+            po_file.save()
             self.po_files.append(po_file)
             logging.critical("New language file created")
         else:
@@ -197,7 +197,7 @@ class Addon(object):
                               occurrences=[(filepath, None)])
         po_file.insert(index=int(label_id) - self.LANG_START_ID + self.LANG_OFFSET,
                        entry=entry)
-        po_file.save(self.po_files[0].fpath)
+        po_file.save()
         self.update_labels()
         return label_id
 
@@ -205,7 +205,7 @@ class Addon(object):
         if 31000 <= int(label_id[1:]) < 33000:
             entry = self.po_files[0].find(label_id, by="msgctxt")
             entry.occurrences.append((rel_path, None))
-            self.po_files[0].save(self.po_files[0].fpath)
+            self.po_files[0].save()
 
     def translate_path(self, path):
         """
