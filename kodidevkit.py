@@ -399,8 +399,9 @@ class BuildAddonCommand(sublime_plugin.WindowCommand):
     @utils.run_async
     def run(self, pack_textures=True):
         path = INFOS.addon.media_path
-        utils.texturepacker(media_path=path,
-                            settings=sublime.load_settings(SETTINGS_FILE))
+        if pack_textures:
+            utils.texturepacker(media_path=path,
+                                settings=sublime.load_settings(SETTINGS_FILE))
         utils.make_archive(folderpath=path,
                            archive=os.path.join(path, os.path.basename(path) + ".zip"))
         if sublime.ok_cancel_dialog("Zip file created!\nDo you want to show it with a file browser?"):
@@ -416,7 +417,7 @@ class BuildThemeCommand(sublime_plugin.WindowCommand):
     def is_visible(self):
         return bool(INFOS.addon) and INFOS.addon.type == "skin" and os.path.exists(INFOS.addon.theme_path)
 
-    def run(self, pack_textures=True):
+    def run(self):
         self.themes = INFOS.addon.get_themes()
         self.window.show_quick_panel(items=self.themes,
                                      on_select=self.on_done,
