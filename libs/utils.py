@@ -142,41 +142,41 @@ def make_archive(folderpath, archive):
     """
     file_list = get_absolute_file_paths(folderpath)
     with zipfile.ZipFile(archive, 'w', zipfile.ZIP_DEFLATED) as zip_file:
-        for f in file_list:
-            path_list = re.split(r'[\\/]', f)
-            rel_path = os.path.relpath(f, folderpath)
+        for addon_file in file_list:
+            path_list = re.split(r'[\\/]', addon_file)
+            rel_path = os.path.relpath(addon_file, folderpath)
             if ".git" in path_list:
                 continue
             if rel_path.startswith("media") and not rel_path.endswith(".xbt"):
                 continue
             if rel_path.startswith("themes"):
                 continue
-            if f.endswith(('.pyc', '.pyo', '.zip')):
+            if addon_file.endswith(('.pyc', '.pyo', '.zip')):
                 continue
-            if f.startswith(('.')):
+            if addon_file.startswith(('.')):
                 continue
-            zip_file.write(f, rel_path)
+            zip_file.write(addon_file, rel_path)
             logging.warning("zipped %s" % rel_path)
 
 
-def to_hex(r, g, b, a=None):
+def to_hex(red, green, blue, alpha=None):
     """
     return rgba hex values for ST tooltip
     """
-    return "#%02X%02X%02X%02X" % (r, g, b, a if a else 255)
+    return "#%02X%02X%02X%02X" % (red, green, blue, alpha if alpha else 255)
 
 
 def get_contrast_color(col):
     """
     gets contrast color for *col (used to ensure readability)
     """
-    (h, l, s) = colorsys.rgb_to_hls(int(col[1:3], 16) / 255.0,
-                                    int(col[3:5], 16) / 255.0,
-                                    int(col[5:7], 16) / 255.0)
-    l1 = 1 - l
-    if abs(l1 - l) < .15:
-        l1 = .15
-    (red, green, blue) = colorsys.hls_to_rgb(h, l1, s)
+    (hue, l, saturation) = colorsys.rgb_to_hls(int(col[1:3], 16) / 255.0,
+                                               int(col[3:5], 16) / 255.0,
+                                               int(col[5:7], 16) / 255.0)
+    lightness = 1 - l
+    if abs(lightness - l) < .15:
+        lightness = .15
+    (red, green, blue) = colorsys.hls_to_rgb(hue, lightness, saturation)
     return to_hex(int(red * 255), int(green * 255), int(blue * 255))  # true complementary
 
 
