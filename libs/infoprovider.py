@@ -78,6 +78,7 @@ class InfoProvider(object):
         self.template_attribs = {}
         self.template_values = {}
         self.settings = {}
+        self.kodi_path = None
 
     def load_data(self):
         """
