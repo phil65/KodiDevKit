@@ -65,6 +65,14 @@ class InfoProvider(object):
 
     def __init__(self):
         self.addon = None
+        self.template_root = None
+        self.WINDOW_FILENAMES = []
+        self.WINDOW_NAMES = []
+        self.WINDOW_IDS = []
+        self.builtins = []
+        self.conditions = []
+        self.template_attribs = {}
+        self.template_values = {}
 
     def load_data(self):
         """
