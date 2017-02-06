@@ -70,23 +70,23 @@ def get_image_info(fname):
 def is_progressive(filename):
     with open(filename, "rb") as f:
         while True:
-            blockStart = struct.unpack('B', f.read(1))[0]
-            if blockStart != 0xff:
-                raise ValueError('Invalid char code ' + blockStart + ' - not a JPEG file: ' + filename)
+            block_start = struct.unpack('B', f.read(1))[0]
+            if block_start != 0xff:
+                raise ValueError('Invalid char code ' + block_start + ' - not a JPEG file: ' + filename)
 
-            blockType = struct.unpack('B', f.read(1))[0]
-            if blockType == 0xd8:   # Start Of Image
+            block_type = struct.unpack('B', f.read(1))[0]
+            if block_type == 0xd8:   # Start Of Image
                 continue
-            elif blockType == 0xc0:  # Start of baseline frame
+            elif block_type == 0xc0:  # Start of baseline frame
                 return False
-            elif blockType == 0xc2:  # Start of progressive frame
+            elif block_type == 0xc2:  # Start of progressive frame
                 return True
-            elif blockType >= 0xd0 and blockType <= 0xd7:  # Restart
+            elif block_type >= 0xd0 and block_type <= 0xd7:  # Restart
                 continue
-            elif blockType == 0xd9:  # End Of Image
+            elif block_type == 0xd9:  # End Of Image
                 break
             else:                   # Variable-size block, just skip it
-                blockSize = struct.unpack('2B', f.read(2))
-                blockSize = blockSize[0] * 256 + blockSize[1] - 2
-                f.seek(blockSize, 1)
+                block_size = struct.unpack('2B', f.read(2))
+                block_size = block_size[0] * 256 + block_size[1] - 2
+                f.seek(block_size, 1)
     return False
