@@ -16,12 +16,21 @@ SETTINGS_FILE = 'kodidevkit.sublime-settings'
 
 
 def plugin_loaded():
+    """
+    gets called when plugin is ready
+    """
     REMOTE.setup(sublime.load_settings(SETTINGS_FILE))
 
 
 class RemoteActionsCommand(sublime_plugin.WindowCommand):
+    """
+    Menu with all options related to ADB
+    """
 
     def run(self):
+        """
+        Show quick panel with all possible actions
+        """
         self.settings = sublime.load_settings(SETTINGS_FILE)
         active_device = "Set device: %s" % self.settings.get("remote_ip", "")
         listitems = [active_device, "Reconnect", "Send this add-on",
@@ -31,6 +40,9 @@ class RemoteActionsCommand(sublime_plugin.WindowCommand):
                                      selected_index=0)
 
     def on_done(self, index):
+        """
+        callback for menu items, gets called with *index of selected items
+        """
         if index == -1:
             return None
         elif index == 0:
@@ -58,9 +70,15 @@ class RemoteActionsCommand(sublime_plugin.WindowCommand):
             REMOTE.reboot()
 
     def open_file(self, path):
+        """
+        used as callback, opens file with *path
+        """
         self.window.open_file(path)
 
     def set_ip(self, ip):
+        """
+        set and save ip of adb device, return to actions menu when finished
+        """
         self.settings.set("remote_ip", ip)
         sublime.save_settings(SETTINGS_FILE)
         self.window.run_command("remote_actions")
