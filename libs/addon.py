@@ -262,8 +262,8 @@ class Addon(object):
         with open(self.changelog_path, "r") as f:
             contents = f.readlines()
         contents = [version, "", "-", "-", "", ""] + contents
-        with open(self.changelog_path, "w") as f:
-            f.write("\n".join(contents))
+        with open(self.changelog_path, "w") as changelog_file:
+            changelog_file.write("\n".join(contents))
 
     def get_constants(self, folder):
         """
