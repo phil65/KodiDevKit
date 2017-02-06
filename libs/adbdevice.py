@@ -60,39 +60,39 @@ class AdbDevice(object):
         # stdout_value = proc.communicate()[0]
 
     # @utils.check_busy
-    def adb_connect(self, ip):
+    def adb_connect(self, server_ip):
         """
-        connect to *ip via adb
+        connect to *server_ip via adb
         """
-        self.remote_ip = ip
-        logging.warning("Connect to remote with ip %s" % ip)
-        self.cmd("adb", ["connect", ip])
+        self.remote_ip = server_ip
+        logging.warning("Connect to remote with server_ip %s" % server_ip)
+        self.cmd("adb", ["connect", server_ip])
         self.connected = True
 
     @utils.run_async
     @utils.check_busy
-    def adb_connect_async(self, ip):
+    def adb_connect_async(self, server_ip):
         """
-        async connect to device with *ip
+        async connect to device with *server_ip
         """
-        self.adb_connect(ip)
+        self.adb_connect(server_ip)
 
     @utils.check_busy
-    def adb_reconnect(self, ip=""):
+    def adb_reconnect(self, server_ip=""):
         """
-        disconnect and connect device with *ip
+        disconnect and connect device with *server_ip
         """
-        if not ip:
-            ip = self.remote_ip
+        if not server_ip:
+            server_ip = self.remote_ip
         self.adb_disconnect()
-        self.adb_connect(ip)
+        self.adb_connect(server_ip)
 
     @utils.run_async
-    def adb_reconnect_async(self, ip=""):
+    def adb_reconnect_async(self, server_ip=""):
         """
-        disconnect and connect device with *ip, async
+        disconnect and connect device with *server_ip, async
         """
-        self.adb_reconnect(ip)
+        self.adb_reconnect(server_ip)
 
     # @utils.check_busy
     def adb_disconnect(self):
