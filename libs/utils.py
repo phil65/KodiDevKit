@@ -131,9 +131,9 @@ def make_archive(folderpath, archive):
     """
     Create zip with path *archive from folder with path *folderpath
     """
-    fileList = get_absolute_file_paths(folderpath)
-    with zipfile.ZipFile(archive, 'w', zipfile.ZIP_DEFLATED) as a:
-        for f in fileList:
+    file_list = get_absolute_file_paths(folderpath)
+    with zipfile.ZipFile(archive, 'w', zipfile.ZIP_DEFLATED) as zip_file:
+        for f in file_list:
             path_list = re.split(r'[\\/]', f)
             rel_path = os.path.relpath(f, folderpath)
             if ".git" in path_list:
@@ -146,7 +146,7 @@ def make_archive(folderpath, archive):
                 continue
             if f.startswith(('.')):
                 continue
-            a.write(f, rel_path)
+            zip_file.write(f, rel_path)
             logging.warning("zipped %s" % rel_path)
 
 

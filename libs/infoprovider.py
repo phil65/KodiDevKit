@@ -27,7 +27,9 @@ ns['lower-case'] = lambda context, s: str.lower(s)
 TAG_CHECKS = [[".//content/*", {"item", "include"}],
               [".//itemlayout/* | .//focusedlayout/*", {"control", "include"}],
               ["/includes/*", {"include", "default", "constant", "variable", "expression"}],
-              ["/window/*", {"include", "defaultcontrol", "depth", "menucontrol", "onload", "onunload", "controls", "allowoverlay", "views", "coordinates", "animation", "visible", "zorder", "fontset", "backgroundcolor"}],
+              ["/window/*", {"include", "defaultcontrol", "depth", "menucontrol", "onload", "onunload",
+                             "controls", "allowoverlay", "views", "coordinates", "animation", "visible",
+                             "zorder", "fontset", "backgroundcolor"}],
               ["/fonts/*", {"fontset"}],
               [".//variable/*", {"value"}]]
 # allowed attributes for some specific nodes
@@ -40,10 +42,12 @@ NOOP_TAGS = {"onclick", "onfocus", "onunfocus", "onup", "onleft", "onright", "on
 POS_TAGS = {"posx", "posy", "left", "right", "top", "bottom", "centerleft", "centerright", "centertop", "centerbottom"}
 # check that some nodes only exist once on each level
 # TODO: special cases: label for fadelabel
-DOUBLE_TAGS = {"camera", "posx", "posy", "top", "bottom", "left", "right", "centertop", "centerbottom", "centerleft", "centerright", "width", "height",
-               "colordiffuse", "texturefocus", "texturenofocus", "font", "selected", "textcolor", "disabledcolor", "selectedcolor", "usecontrolcoords",
-               "shadowcolor", "align", "aligny", "textoffsetx", "textoffsety", "pulseonselect", "textwidth", "focusedcolor", "invalidcolor", "angle", "hitrect", "orientation",
-               "offsetx", "offsety"}
+DOUBLE_TAGS = {"camera", "posx", "posy", "top", "bottom", "left", "right", "centertop", "centerbottom",
+               "centerleft", "centerright", "width", "height", "colordiffuse", "texturefocus",
+               "texturenofocus", "font", "selected", "textcolor", "disabledcolor", "selectedcolor",
+               "usecontrolcoords", "shadowcolor", "align", "aligny", "textoffsetx", "textoffsety",
+               "pulseonselect", "textwidth", "focusedcolor", "invalidcolor", "angle", "hitrect",
+               "orientation", "offsetx", "offsety"}
 # check that some nodes only contain specific text
 # check that some attributes may only contain specific values
 ALLOWED_VALUES = {"align": {"left", "center", "right", "justify"},
@@ -514,9 +518,9 @@ class InfoProvider(object):
     def check_labels(self):
         listitems = []
         refs = []
-        REGEXS = [r"\$LOCALIZE\[([0-9].*?)\]", r"^(\d+)$"]
+        localize_regex = [r"\$LOCALIZE\[([0-9].*?)\]", r"^(\d+)$"]
         # labels = [s.msgid for s in self.po_files]
-        CHECKS = [[".//viewtype[(@label)]", "label"],
+        checks = [[".//viewtype[(@label)]", "label"],
                   [".//fontset[(@idloc)]", "idloc"],
                   [".//label[(@fallback)] | .//label2[(@fallback)]", "fallback"]]
         for folder in self.addon.xml_folders:
@@ -529,7 +533,7 @@ class InfoProvider(object):
                 for element in root.xpath(".//label | .//altlabel | .//label2 | .//hinttext"):
                     if not element.text:
                         continue
-                    for match in re.finditer(REGEXS[0], element.text):
+                    for match in re.finditer(localize_regex[0], element.text):
                         item = {"name": match.group(1),
                                 "type": element.tag,
                                 "file": path,
@@ -551,10 +555,10 @@ class InfoProvider(object):
                                 "line": element.sourceline}
                         listitems.append(item)
                 # find some more references (in attribute values this time)....
-                for check in CHECKS:
+                for check in checks:
                     for element in root.xpath(check[0]):
                         attr = element.attrib[check[1]]
-                        for regex in REGEXS:
+                        for regex in localize_regex:
                             for match in re.finditer(regex, attr):
                                 item = {"name": match.group(1),
                                         "type": element.tag,
