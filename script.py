@@ -9,7 +9,7 @@ settings = {"kodi_path": "C:/Kodi",
             "portable_mode": True,
             "language_folders": ["resource.language.en_gb", "English"]}
 
-logger = logging.getLogger()
+LOGGER = logging.getLogger()
 logging.basicConfig(level=logging.INFO,
                     format="")
 
@@ -38,7 +38,7 @@ if __name__ == "__main__":
     formatter = logging.Formatter('%(asctime)s - %(message)s',
                                   datefmt='%Y-%m-%d %H:%M:%S')
     filehandler.setFormatter(formatter)
-    logger.addHandler(filehandler)
+    LOGGER.addHandler(filehandler)
     project_folder = sys.argv[1] if len(sys.argv) == 2 else input("Enter Path to skin: ")
     INFOS.init_addon(project_folder)
     repo = input('Enter Kodi version (%s): ' % " / ".join([item["name"] for item in INFOS.addon.RELEASES]))
@@ -68,17 +68,17 @@ if __name__ == "__main__":
             logging.info("MAC Line Endings detected in " + item[0])
         else:
             logging.info("Windows Line Endings detected in " + item[0])
-    logging.info("\n\nADDON DEPENDENCY CHECK\n\n")
+    logging.info("ADDON DEPENDENCY CHECK")
     INFOS.check_dependencies()
-    logging.info("\n\nINCLUDE CHECK\n\n")
+    logging.info("INCLUDE CHECK")
     check_tags("include")
-    logging.info("\n\nVARIABLE CHECK\n\n")
+    logging.info("VARIABLE CHECK")
     check_tags("variable")
-    logging.info("\n\nFONT CHECK\n\n")
+    logging.info("FONT CHECK")
     check_tags("font")
-    logging.info("\n\nLABEL CHECK\n\n")
+    logging.info("LABEL CHECK")
     check_tags("label")
-    logging.info("\n\nID CHECK\n\n")
+    logging.info("ID CHECK")
     check_tags("id")
-    logging.info("\n\nCHECK FOR COMMON MISTAKES\n\n")
+    logging.info("CHECK FOR COMMON MISTAKES")
     check_tags("general")
