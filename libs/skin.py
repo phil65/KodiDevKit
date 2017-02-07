@@ -3,6 +3,10 @@
 # Copyright (C) 2015 - Philipp Temminghoff <phil65@kodi.tv>
 # This program is Free Software see LICENSE file for details
 
+"""
+KodiDevKit is a tool to assist with Kodi skinning / scripting using Sublime Text 3
+"""
+
 import os
 from distutils.version import StrictVersion
 import logging

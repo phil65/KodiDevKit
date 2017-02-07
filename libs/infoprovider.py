@@ -264,8 +264,7 @@ class InfoProvider(object):
         return formatted info for *color_string, taken from color xmls (default + themes + core).
         """
         color_info = ""
-        colors = self.get_colors()
-        for item in colors:
+        for item in self.get_colors():
             if item["name"] == color_string:
                 color_hex = "#" + item["content"][2:]
                 cont_color = utils.get_contrast_color(color_hex)
