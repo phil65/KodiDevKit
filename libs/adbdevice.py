@@ -106,6 +106,9 @@ class AdbDevice(object):
     @utils.run_async
     @utils.check_busy
     def adb_disconnect_async(self):
+        """
+        disconnect adb devices, async
+        """
         self.adb_disconnect()
 
     @utils.check_busy
@@ -120,6 +123,9 @@ class AdbDevice(object):
     @utils.run_async
     @utils.check_busy
     def adb_push_async(self, source, target):
+        """
+        push local *source to *target folder on device, async
+        """
         self.adb_push(source, target)
 
     @utils.check_busy
@@ -132,6 +138,9 @@ class AdbDevice(object):
     @utils.run_async
     @utils.check_busy
     def adb_pull_async(self, path, target):
+        """
+        pull data from device *path to local *target, async
+        """
         self.adb_pull(path, target)
 
     @utils.run_async
@@ -145,6 +154,9 @@ class AdbDevice(object):
     @utils.run_async
     @utils.check_busy
     def push_to_box(self, addon, all_file=False):
+        """
+        push addon with path *addon to remote. set all_file to True to also push textures
+        """
         logging.warning("push %s to remote" % addon)
         for root, _, files in os.walk(addon):
             # ignore git files
@@ -166,6 +178,9 @@ class AdbDevice(object):
 
     @utils.run_async
     def get_log(self, open_function, target):
+        """
+        download log to *target and open with *open_function
+        """
         logging.warning("Pull logs from remote")
         self.adb_pull("%s/temp/xbmc.log" % self.userdata_folder, target)
         # self.adb_pull("%stemp/xbmc.old.log" % self.userdata_folder)
