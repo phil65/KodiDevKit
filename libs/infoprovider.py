@@ -406,6 +406,9 @@ class InfoProvider(object):
         return "<br>".join(text)
 
     def check_fonts(self):
+        """
+        check for undefined and unused fonts and return a list of message dicts
+        """
         listitems = []
         font_refs = self.addon.get_font_refs()
         # get estuary fonts..
@@ -438,6 +441,9 @@ class InfoProvider(object):
         return listitems
 
     def check_ids(self):
+        """
+        check for undefined and invalid control / message ids and return a list of message dicts
+        """
         window_regex = r"(?:Dialog.Close|Window.IsActive|Window.IsVisible|Window)\(([0-9]+)\)"
         control_regex = r"^(?!.*IsActive)(?!.*Window.IsVisible)(?!.*Dialog.Close)(?!.*Window)(?!.*Row)(?!.*Column).*\(([0-9]*?)\)"
         listitems = []
@@ -511,6 +517,9 @@ class InfoProvider(object):
         return listitems
 
     def check_labels(self):
+        """
+        check for untranslated / undefined labels and return a list of message dicts
+        """
         listitems = []
         refs = []
         localize_regex = [r"\$LOCALIZE\[([0-9].*?)\]", r"^(\d+)$"]
@@ -580,6 +589,9 @@ class InfoProvider(object):
         return listitems
 
     def check_values(self):
+        """
+        apply check_file to all our xmls, return resulting list of message dicts
+        """
         listitems = []
         for path in self.addon.get_xml_files():
             new_items = self.check_file(path)
@@ -587,6 +599,9 @@ class InfoProvider(object):
         return listitems
 
     def check_file(self, path):
+        """
+        check xml file with *path for common errors and return a list of message dicts
+        """
         # tags allowed for all controls
         root = utils.get_root_from_file(path)
         if root is None:
@@ -696,6 +711,9 @@ class InfoProvider(object):
         return listitems
 
     def file_control_checks(self, root):
+        """
+        compare controls with our templates
+        """
         for c_type, subnodes in self.template_attribs.items():
             for node in root.xpath(".//control[lower-case(string(@type))='%s']" % c_type):
                 for subnode in node.iterchildren():
