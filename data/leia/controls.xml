@@ -126,6 +126,7 @@
         <onback condition="condition">builtin</onback>
         <onfocus condition="condition">builtin</onfocus>
         <onunfocus condition="condition">builtin</onunfocus>
+        <oninfo condition="condition">builtin</oninfo>
     </control>
     <control type="image" id="int">
         <width min="int" max="int">int</width>
@@ -161,6 +162,7 @@
         <include>common</include>
         <include>nav_common</include>
         <include>button_common</include>
+        <label2>label</label2>
         <textureradioonfocus colordiffuse="color" border="coords">path</textureradioonfocus>
         <textureradioonnofocus colordiffuse="color" border="coords">path</textureradioonnofocus>
         <textureradioondisabled colordiffuse="color" border="coords">path</textureradioondisabled>
@@ -174,6 +176,7 @@
         <onback condition="condition">builtin</onback>
         <onfocus condition="condition">builtin</onfocus>
         <onunfocus condition="condition">builtin</onunfocus>
+        <oninfo condition="condition">builtin</oninfo>
         <radioposx>int</radioposx>
         <radioposy>int</radioposy>
         <radiowidth>int</radiowidth>
@@ -195,6 +198,7 @@
         <onback condition="condition">builtin</onback>
         <onfocus condition="condition">builtin</onfocus>
         <onunfocus condition="condition">builtin</onunfocus>
+        <oninfo condition="condition">builtin</oninfo>
     </control>
     <control type="spincontrol" id="int">
         <width>int</width>
