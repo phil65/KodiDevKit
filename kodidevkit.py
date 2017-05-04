@@ -92,6 +92,7 @@ class KodiDevKit(sublime_plugin.EventListener):
                 for filename in files:
                     rel_dir = os.path.relpath(dir_, INFOS.addon.media_path)
                     rel_file = os.path.join(rel_dir, filename).lstrip("./").lstrip("\\")
+                    rel_file = rel_file.replace("\\", "/")
                     completions.append([rel_file, rel_file])
             colors = []
             for node in INFOS.get_colors():
