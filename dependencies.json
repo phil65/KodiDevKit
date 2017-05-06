@@ -2,6 +2,7 @@
    "*": {
       "*": [
          "lxml",
+         "requests",
          "pygments",
          "python-markdown",
          "mdpopups",
