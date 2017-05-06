@@ -1,7 +1,7 @@
 [
     {"caption": "KodiDevKit: Set Kodi Folder", "command": "set_kodi_folder"},
     {"caption": "KodiDevKit: Build Skin", "command": "build_addon", "args": { "pack_textures": true}},
-    {"caption": "KodiDevKit: Build Theme", "command": "build_theme", "args": { "pack_textures": true}},
+    {"caption": "KodiDevKit: Build Theme", "command": "build_theme"},
     {"caption": "KodiDevKit: Remote Actions", "command": "remote_actions"},
     {"caption": "KodiDevKit: Open Log", "command": "open_kodi_log"},
     {"caption": "KodiDevKit: Open Userdata Log", "command": "open_alt_kodi_log"},
