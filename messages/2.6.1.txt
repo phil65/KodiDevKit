@@ -1,0 +1,7 @@
+  Changes in 2.6.1
+  =================
+
+ - add missing dependency
+ - improved / fixed control sanity checks
+ - added dependency search
+ - autocompletion improvements
