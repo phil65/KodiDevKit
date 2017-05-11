@@ -78,6 +78,7 @@
 ["pvrguidesearch", 607, "DialogPVRGuideSearch.xml"],
 ["pvrosdchannels", 610, "DialogPVRChannelsOSD.xml"],
 ["pvrchannelguide", 611, "DialogPVRChannelGuide.xml"],
+["games", 822, "MyGames.xml"],
 ["selectdialog", 2000, "DialogSelect.xml"],
 ["musicinformation", 2001, "DialogAlbumInfo.xml"],
 ["okdialog", 2002, "DialogConfirm.xml"],

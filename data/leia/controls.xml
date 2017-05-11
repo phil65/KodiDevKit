@@ -369,10 +369,12 @@
         <scrolltime tween="tween" easing="easing">int</scrolltime>
         <timeblocks>int</timeblocks>
         <rulerunit>int</rulerunit>
+        <orientation>orientation</orientation>
         <onback condition="condition">builtin</onback>
         <viewtype label="label">viewtype</viewtype>
         <progresstexture colordiffuse="color" border="coords">path</progresstexture>
         <rulerlayout height="int" width="int" condition="condition"></rulerlayout>
+        <rulerdatelayout height="int" width="int" condition="condition"></rulerlayout>
         <channellayout height="int" width="int" condition="condition"></channellayout>
         <focusedchannellayout height="int" width="int" condition="condition"></focusedchannellayout>
         <itemlayout height="int" width="int" condition="condition"></itemlayout>
