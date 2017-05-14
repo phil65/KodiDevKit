@@ -146,7 +146,8 @@ class Addon(object):
         get list with pofile objects
         """
         po_files = []
-        for item in self.settings.get("language_folders"):
+        folders = self.settings.get("language_folders", ["resource.language.en_gb", "English"])
+        for item in folders:
             path = utils.check_paths([os.path.join(lang_folder_root, item, "strings.po"),
                                       os.path.join(lang_folder_root, item, "resources", "strings.po")])
             if path:

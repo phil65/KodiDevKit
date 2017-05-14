@@ -159,9 +159,7 @@ class Kodi(object):
         get list with pofile objects
         """
         po_files = []
-        folders = self.settings.get("language_folders")
-        if not folders:
-            return None
+        folders = self.settings.get("language_folders", ["resource.language.en_gb", "English"])
         for item in folders:
             path = utils.check_paths([os.path.join(folder, item, "strings.po"),
                                       os.path.join(folder, item, "resources", "strings.po")])
