@@ -1,0 +1,5 @@
+  Changes in 2.6.2
+  =================
+
+ - fix building of themes
+ - leia adjustments
