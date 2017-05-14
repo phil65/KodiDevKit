@@ -159,7 +159,10 @@ class Kodi(object):
         get list with pofile objects
         """
         po_files = []
-        for item in self.settings.get("language_folders"):
+        folders = self.settings.get("language_folders")
+        if not folders:
+            return None
+        for item in folders:
             path = utils.check_paths([os.path.join(folder, item, "strings.po"),
                                       os.path.join(folder, item, "resources", "strings.po")])
             if path:
