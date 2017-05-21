@@ -323,7 +323,7 @@
         <titlecolor>color</titlecolor>
         <title>xxx</title>
         <shadowcolor>color</shadowcolor>
-        <urlset>xxx</urlset>
+        <urlset>int</urlset>
         <hitrect x="int" y="int" w="int" h="int" bottom="int" right="int"></hitrect>
         <hitrectcolor>color</hitrectcolor>
     </control>
