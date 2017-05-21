@@ -165,6 +165,7 @@ class Kodi(object):
                                       os.path.join(folder, item, "resources", "strings.po")])
             if path:
                 po_file = utils.get_po_file(path)
-                po_file.language = item
-                po_files.append(po_file)
+                if po_file:
+                    po_file.language = item
+                    po_files.append(po_file)
         return po_files
