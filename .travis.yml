@@ -3,9 +3,9 @@ python:
   - "3.3"
 before_install:
   - wget https://github.com/phil65/skin.estuary/archive/master.zip
-  - unzip master.zip -d destination_folder
+  - unzip master.zip
   - sudo apt-get update -qq
 install:
   - sudo apt-get install -y python3-lxml
   - pip install -r requirements.txt
-script: ./kodidevkit/script.py ..
+script: tests.py
