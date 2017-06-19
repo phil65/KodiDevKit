@@ -131,3 +131,4 @@ ___
 
 **Note:** *Sublime Text 2 is not supported.  Also, KodiDevKit takes advantage of certain features of ST3 that have bugs in earlier ST3 releases or were implemented during betas.  For the best experience, use the latest ST3 dev build. Minimum required version is build 3084.*
 
+Available on PackageControl: https://packagecontrol.io/packages/KodiDevKit
