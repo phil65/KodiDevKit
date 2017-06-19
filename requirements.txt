@@ -1,0 +1,3 @@
+lxml==3.7.2
+requests==2.13.0
+sublime==0.1.0
