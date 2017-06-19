@@ -96,7 +96,7 @@ class InfoProvider(object):
             data = sublime.load_resource("Packages/KodiDevKit/data/%s/data.xml" % kodi_version)
             root = ET.fromstring(data.encode("utf-8"), PARSER)
             WINDOW_MAP = json.loads(sublime.load_resource("Packages/KodiDevKit/data/%s/windows.json" % kodi_version))
-        except Exception:
+        except ImportError:
             # fallback to old method so that class still can get used without sublime import
             path = os.path.normpath(os.path.abspath(__file__))
             folder = os.path.split(path)[0]
