@@ -14,10 +14,6 @@ settings = {"kodi_path": "C:/Kodi",
             "portable_mode": True,
             "language_folders": ["resource.language.en_gb", "English"]}
 
-LOGGER = logging.getLogger()
-logging.basicConfig(level=logging.INFO,
-                    format="")
-
 
 def check_tags(check_type):
     """
@@ -43,10 +39,14 @@ if __name__ == "__main__":
     formatter = logging.Formatter('%(asctime)s - %(message)s',
                                   datefmt='%Y-%m-%d %H:%M:%S')
     filehandler.setFormatter(formatter)
-    LOGGER.addHandler(filehandler)
-    project_folder = sys.argv[1] if len(sys.argv) == 2 else input("Enter Path to skin: ")
+    logger = logging.getLogger()
+    logger.addHandler(filehandler)
+    project_folder = sys.argv[1] if len(sys.argv) >= 2 else input("Enter Path to skin: ")
     INFOS.init_addon(project_folder)
-    repo = input('Enter Kodi version (%s): ' % " / ".join([item["name"] for item in INFOS.addon.RELEASES]))
+    if len(sys.argv) < 3:
+        repo = input('Enter Kodi version (%s): ' % " / ".join([item["name"] for item in INFOS.addon.RELEASES]))
+    else:
+        repo = sys.argv[2]
     INFOS.check_xml_files()
     for path in INFOS.addon.get_xml_files():
         if utils.check_bom(path):
