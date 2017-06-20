@@ -25,7 +25,7 @@ def check_tags(check_type):
         path = "/".join(e["file"].split(os.sep)[-2:])
         logging.info("%s: line %s\n" % (path, e["line"]))
 
-
+print("test")
 if __name__ == "__main__":
     from libs import utils
     from libs.infoprovider import InfoProvider
