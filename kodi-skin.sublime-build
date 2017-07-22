@@ -1,0 +1,4 @@
+{
+    "shell_cmd": "TexturePacker -dupecheck -input $folder/media -output $folder/testus.xbt",
+    "selector": "text.xml"
+}
