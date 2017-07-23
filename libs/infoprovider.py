@@ -42,15 +42,11 @@ NOOP_TAGS = {"onclick", "onfocus", "onunfocus", "onup", "onleft", "onright", "on
 POS_TAGS = {"posx", "posy", "left", "right", "top", "bottom", "centerleft", "centerright", "centertop", "centerbottom"}
 # check that some nodes only exist once on each level
 # TODO: special cases: label for fadelabel
-DOUBLE_TAGS = {"camera", "posx", "posy", "top", "bottom", "left", "right", "centertop", "centerbottom",
-               "centerleft", "centerright", "width", "height", "colordiffuse", "texturefocus",
-               "texturenofocus", "font", "selected", "textcolor", "disabledcolor", "selectedcolor",
-               "usecontrolcoords", "shadowcolor", "align", "aligny", "textoffsetx", "textoffsety",
-               "pulseonselect", "textwidth", "focusedcolor", "invalidcolor", "angle", "hitrect",
-               "orientation", "offsetx", "offsety"}
+DOUBLE_TAGS = {"visible", "label", "include", "onleft", "onup", "onright", "ondown", "onclick", "animation"}
 # check that some nodes only contain specific text
 # check that some attributes may only contain specific values
 ALLOWED_VALUES = {"align": {"left", "center", "right", "justify"},
+                  "grouplistalign": {"left", "center", "right", "justify", "top", "bottom"},
                   "aligny": {"top", "center", "bottom"},
                   "bool": {"true", "false"},
                   "orientation": {"horizontal", "vertical"},
@@ -80,13 +76,12 @@ class InfoProvider(object):
         self.settings = {}
         self.kodi_path = None
 
-    def load_data(self):
+    def load_data(self, kodi_version="krypton"):
         """
         loads the xml with control nodes for sanity checking (controls.xml)
         as well as builtins including their help string (data.xml)
         """
         # TODO: clean this up
-        kodi_version = "krypton"
         try:
             # since we get packaged we need to use load_resource() to load external files
             import sublime
@@ -96,7 +91,7 @@ class InfoProvider(object):
             data = sublime.load_resource("Packages/KodiDevKit/data/%s/data.xml" % kodi_version)
             root = ET.fromstring(data.encode("utf-8"), PARSER)
             WINDOW_MAP = json.loads(sublime.load_resource("Packages/KodiDevKit/data/%s/windows.json" % kodi_version))
-        except ImportError:
+        except (ImportError, OSError):
             # fallback to old method so that class still can get used without sublime import
             path = os.path.normpath(os.path.abspath(__file__))
             folder = os.path.split(path)[0]
@@ -656,7 +651,7 @@ class InfoProvider(object):
                             "identifier": condition,
                             "message": "Brackets do not match: %s" % (condition)}
                     listitems.append(item)
-            if subnode.tag in DOUBLE_TAGS and not subnode.getchildren():
+            if subnode.tag not in DOUBLE_TAGS and not subnode.getchildren():
                 xpath = tree.getpath(subnode)
                 if xpath.endswith("]") and not xpath.endswith("[1]"):
                     item = {"line": subnode.sourceline,
