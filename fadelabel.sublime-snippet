@@ -1,8 +1,8 @@
 <snippet>
 	<content><![CDATA[
 <control type="fadelabel">
-	<posx>${1:0}</posx>
-	<posy>${2:0}</posy>
+	<left>${1:0}</left>
+	<top>${2:0}</top>
 	<align>${3:left}</align>
 	<label>${4}</label>
 	<textcolor>${5:white}</textcolor>

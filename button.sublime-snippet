@@ -1,8 +1,8 @@
 <snippet>
 	<content><![CDATA[
 <control type="button">
-	<posx>${1:0}</posx>
-	<posy>${2:0}</posy>
+	<left>${1:0}</left>
+	<top>${2:0}</top>
 	<width>${3:0}</width>
 	<height>${4:0}</height>
 	<visible>${5}</visible>

@@ -1,4 +1,19 @@
 {
     "shell_cmd": "TexturePacker -dupecheck -input $folder/media -output $folder/testus.xbt",
-    "selector": "text.xml"
+    "selector": "text.xml",
+    "variants": [
+
+        { "name": "List Python Files",
+          "cmd": ["ls -l *.py"],
+          "shell": true
+        },
+
+        { "name": "Word Count (current file)",
+          "cmd": ["wc", "$file"]
+        },
+
+        { "name": "Run",
+          "cmd": ["python", "-u", "$file"]
+        }
+    ]
 }

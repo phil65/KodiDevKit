@@ -1,8 +1,8 @@
 <snippet>
 	<content><![CDATA[
 <control type="textbox">
-	<posx>${1:0}</posx>
-	<posy>${2:0}</posy>
+	<top>${1:0}</top>
+	<left>${2:0}</left>
 	<align>${3:left}</align>
 	<label>${4}</label>
 	<textcolor>${5:white}</textcolor>

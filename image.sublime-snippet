@@ -1,8 +1,8 @@
 <snippet>
 	<content><![CDATA[
 <control type="image">
-	<posx>${1:0}</posx>
-	<posy>${2:0}</posy>
+	<left>${1:0}</left>
+	<top>${2:0}</top>
 	<aspectratio>${3:stretch}</aspectratio>
 	<texture>${4}</texture>
 	<visible>${5}</visible>
