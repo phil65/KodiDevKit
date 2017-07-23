@@ -672,7 +672,9 @@ class InfoProvider(object):
                 elif "$PARAM[" in v or "$VAR[" in v:
                     continue
                 value_type = subnodes[subnode.tag][k]
-                if value_type == "int":
+                if value_type in ["int", "position"]:
+                    if value_type == "position":
+                        v = v.rstrip("%%r")
                     if not utils.is_number(v) and v not in self.addon.get_constants(folder):
                         item = {"line": subnode.sourceline,
                                 "type": subnode.tag,
