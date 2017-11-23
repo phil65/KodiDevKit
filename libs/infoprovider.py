@@ -608,7 +608,7 @@ class InfoProvider(object):
         xpath = ".//control[not({}) and @type[string()]]".format(xpath)
         for node in root.xpath(xpath):
             if node.attrib.get("type").startswith("$PARAM["):
-                pass
+                break
             item = {"line": node.sourceline,
                     "type": node.tag,
                     "identifier": node.attrib.get("type"),
