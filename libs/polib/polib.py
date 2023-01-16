@@ -21,20 +21,11 @@ import re
 import struct
 import sys
 import textwrap
-
-try:
-    import io
-except ImportError:
-    # replacement of io.open() for python < 2.6
-    # we use codecs instead
-    class io(object):
-        @staticmethod
-        def open(fpath, mode='r', encoding=None):
-            return codecs.open(fpath, mode, encoding)
+import io
 
 
 __author__ = 'David Jean Louis <izimobil@gmail.com>'
-__version__ = '1.1.0'
+__version__ = '1.1.1'
 __all__ = ['pofile', 'POFile', 'POEntry', 'mofile', 'MOFile', 'MOEntry',
            'default_encoding', 'escape', 'unescape', 'detect_encoding', ]
 
@@ -47,7 +38,7 @@ WRAP_WIDTH = 9999
 # python 2/3 compatibility helpers {{{
 
 
-if sys.version_info[:2] < (3, 0):
+if sys.version_info < (3,):
     PY3 = False
     text_type = unicode
 
@@ -106,8 +97,8 @@ def _is_file(filename_or_contents):
         In the latter case, this function will always return False.
     """
     try:
-        return os.path.exists(filename_or_contents)
-    except (ValueError, UnicodeEncodeError):
+        return os.path.isfile(filename_or_contents)
+    except (TypeError, ValueError, UnicodeEncodeError):
         return False
 # }}}
 # function pofile() {{{
@@ -125,7 +116,7 @@ def pofile(pofile, **kwargs):
 
     ``wrapwidth``
         integer, the wrap width, only useful when the ``-w`` option was passed
-        to xgettext (optional, default: ``120``).
+        to xgettext (optional, default: ``78``).
 
     ``encoding``
         string, the encoding to use (e.g. "utf-8") (default: ``None``, the
@@ -153,12 +144,13 @@ def mofile(mofile, **kwargs):
     Arguments:
 
     ``mofile``
-        string, full or relative path to the mo file or its content (data).
+        string, full or relative path to the mo file or its content (string
+        or bytes).
 
     ``wrapwidth``
         integer, the wrap width, only useful when the ``-w`` option was passed
         to xgettext to generate the po file that was used to format the mo file
-        (optional, default: ``120``).
+        (optional, default: ``78``).
 
     ``encoding``
         string, the encoding to use (e.g. "utf-8") (default: ``None``, the
@@ -206,9 +198,14 @@ def detect_encoding(file, binary_mode=False):
         return True
 
     if not _is_file(file):
-        match = rxt.search(file)
+        try:
+            match = rxt.search(file)
+        except TypeError:
+            match = rxb.search(file)
         if match:
             enc = match.group(1).strip()
+            if not isinstance(enc, text_type):
+                enc = enc.decode('utf-8')
             if charset_exists(enc):
                 return enc
     else:
@@ -220,8 +217,8 @@ def detect_encoding(file, binary_mode=False):
             mode = 'r'
             rx = rxt
         f = open(file, mode)
-        for l in f.readlines():
-            match = rx.search(l)
+        for line in f.readlines():
+            match = rx.search(line)
             if match:
                 f.close()
                 enc = match.group(1).strip()
@@ -302,7 +299,7 @@ class _BaseFile(list):
 
         ``wrapwidth``
             integer, the wrap width, only useful when the ``-w`` option was
-            passed to xgettext (optional, default: ``120``).
+            passed to xgettext (optional, default: ``78``).
 
         ``encoding``
             string, the encoding to use, defaults to ``default_encoding``
@@ -425,7 +422,7 @@ class _BaseFile(list):
             e.flags.append('fuzzy')
         return e
 
-    def save(self, fpath=None, repr_method='__unicode__'):
+    def save(self, fpath=None, repr_method='__unicode__', newline=None):
         """
         Saves the po file to ``fpath``.
         If it is an existing file and no ``fpath`` is provided, then the
@@ -438,6 +435,9 @@ class _BaseFile(list):
 
         ``repr_method``
             string, the method to use for output.
+
+        ``newline``
+            string, controls how universal newlines works
         """
         if self.fpath is None and fpath is None:
             raise IOError('You must provide a file path to save() method')
@@ -447,7 +447,12 @@ class _BaseFile(list):
         if repr_method == 'to_binary':
             fhandle = open(fpath, 'wb')
         else:
-            fhandle = io.open(fpath, 'w', encoding=self.encoding)
+            fhandle = io.open(
+                fpath,
+                'w',
+                encoding=self.encoding,
+                newline=newline
+            )
             if not isinstance(contents, text_type):
                 contents = contents.decode(self.encoding)
         fhandle.write(contents)
@@ -688,14 +693,14 @@ class POFile(_BaseFile):
         """
         Convenience method that returns the list of untranslated entries.
         """
-        return [e for e in self if not e.translated() and
-                not e.obsolete and not e.fuzzy]
+        return [e for e in self if not e.translated() and not e.obsolete
+                and not e.fuzzy]
 
     def fuzzy_entries(self):
         """
         Convenience method that returns the list of fuzzy entries.
         """
-        return [e for e in self if e.fuzzy]
+        return [e for e in self if e.fuzzy and not e.obsolete]
 
     def obsolete_entries(self):
         """
@@ -832,7 +837,7 @@ class _BaseEntry(object):
             string, the entry msgid_plural.
 
         ``msgstr_plural``
-            list, the entry msgstr_plural lines.
+            dict, the entry msgstr_plural lines.
 
         ``msgctxt``
             string, the entry context (msgctxt).
@@ -852,7 +857,7 @@ class _BaseEntry(object):
         self.obsolete = kwargs.get('obsolete', False)
         self.encoding = kwargs.get('encoding', default_encoding)
 
-    def __unicode__(self, wrapwidth=WRAP_WIDTH):
+    def __unicode__(self, wrapwidth=WRAP_WIDTH)):
         """
         Returns the unicode representation of the entry.
         """
@@ -920,7 +925,7 @@ class _BaseEntry(object):
             real_wrapwidth = wrapwidth - flength + specialchars_count
             if wrapwidth > 0 and len(field) > real_wrapwidth:
                 # Wrap the line but take field name into account
-                lines = [''] + [unescape(item) for item in wrap(
+                lines = [''] + [unescape(item) for item in textwrap.wrap(
                     escaped_field,
                     wrapwidth - 2,  # 2 for quotes ""
                     drop_whitespace=False,
@@ -937,6 +942,12 @@ class _BaseEntry(object):
         for line in lines:
             ret.append('%s"%s"' % (delflag, escape(line)))
         return ret
+
+    @property
+    def msgid_with_context(self):
+        if self.msgctxt:
+            return '%s%s%s' % (self.msgctxt, "\x04", self.msgid)
+        return self.msgid
 # }}}
 # class POEntry {{{
 
@@ -993,13 +1004,13 @@ class POEntry(_BaseEntry):
         if self.obsolete:
             comments = [('tcomment', '# ')]
         else:
-            comments = [('comment', '#. '), ('tcomment', '# ')]
+            comments = [('tcomment', '# '), ('comment', '#. ')]
         for c in comments:
             val = getattr(self, c[0])
             if val:
                 for comment in val.split('\n'):
                     if wrapwidth > 0 and len(comment) + len(c[1]) > wrapwidth:
-                        ret += wrap(
+                        ret += textwrap.wrap(
                             comment,
                             wrapwidth,
                             initial_indent=c[1],
@@ -1023,7 +1034,7 @@ class POEntry(_BaseEntry):
                 # what we want for filenames, so the dirty hack is to
                 # temporally replace hyphens with a char that a file cannot
                 # contain, like "*"
-                ret += [l.replace('*', '-') for l in wrap(
+                ret += [line.replace('*', '-') for line in textwrap.wrap(
                     filestr.replace('-', '*'),
                     wrapwidth,
                     initial_indent='#: ',
@@ -1046,7 +1057,7 @@ class POEntry(_BaseEntry):
             prefix = "#| "
         for f in fields:
             val = getattr(self, f)
-            if val:
+            if val is not None:
                 ret += self._str_field(f, prefix, "", val, wrapwidth)
 
         ret.append(_BaseEntry.__unicode__(self, wrapwidth))
@@ -1066,47 +1077,42 @@ class POEntry(_BaseEntry):
         # Work on a copy to protect original
         occ1 = sorted(self.occurrences[:])
         occ2 = sorted(other.occurrences[:])
-        pos = 0
         if occ1 > occ2:
             return 1
         if occ1 < occ2:
             return -1
         # Compare context
-        msgctxt = self.msgctxt or ''
-        othermsgctxt = other.msgctxt or ''
+        msgctxt = self.msgctxt or '0'
+        othermsgctxt = other.msgctxt or '0'
         if msgctxt > othermsgctxt:
             return 1
         elif msgctxt < othermsgctxt:
             return -1
         # Compare msgid_plural
-        msgid_plural = self.msgid_plural or ''
-        othermsgid_plural = other.msgid_plural or ''
+        msgid_plural = self.msgid_plural or '0'
+        othermsgid_plural = other.msgid_plural or '0'
         if msgid_plural > othermsgid_plural:
             return 1
         elif msgid_plural < othermsgid_plural:
             return -1
         # Compare msgstr_plural
-        # Because dict order comparison works different in Python <2.7 and 2.7,
-        # and does not work at all in Python 3.x, this approach is being used
-        # instead. It simulates order comparison of dicts in Python <2.7 to the
-        # required degree.
-        msgstr_plural = self.msgstr_plural or {}
-        othermsgstr_plural = other.msgstr_plural or {}
-        if len(msgstr_plural) > len(othermsgstr_plural):
+        if self.msgstr_plural and isinstance(self.msgstr_plural, dict):
+            msgstr_plural = list(self.msgstr_plural.values())
+        else:
+            msgstr_plural = []
+        if other.msgstr_plural and isinstance(other.msgstr_plural, dict):
+            othermsgstr_plural = list(other.msgstr_plural.values())
+        else:
+            othermsgstr_plural = []
+        if msgstr_plural > othermsgstr_plural:
             return 1
-        elif len(msgstr_plural) < len(othermsgstr_plural):
+        elif msgstr_plural < othermsgstr_plural:
             return -1
-        for idx in msgstr_plural:
-            if msgstr_plural[idx] > othermsgstr_plural[idx]:
-                return 1
-            elif msgstr_plural[idx] < othermsgstr_plural[idx]:
-                return -1
         # Compare msgid
         if self.msgid > other.msgid:
             return 1
         elif self.msgid < other.msgid:
             return -1
-        return 0
         # Compare msgstr
         if self.msgstr > other.msgstr:
             return 1
@@ -1176,12 +1182,6 @@ class POEntry(_BaseEntry):
     @property
     def fuzzy(self):
         return 'fuzzy' in self.flags
-
-    @property
-    def msgid_with_context(self):
-        if self.msgctxt:
-            return '%s%s%s' % (self.msgctxt, "\x04", self.msgid)
-        return self.msgid
 
     def __hash__(self):
         return hash((self.msgid, self.msgstr))
@@ -1334,6 +1334,10 @@ class _POFileParser(object):
         fpath = '%s ' % self.instance.fpath if self.instance.fpath else ''
         for line in self.fhandle:
             self.current_line += 1
+            if self.current_line == 1:
+                BOM = codecs.BOM_UTF8.decode('utf-8')
+                if line.startswith(BOM):
+                    line = line[len(BOM):]
             line = line.strip()
             if line == '':
                 continue
@@ -1437,7 +1441,7 @@ class _POFileParser(object):
                 self.process(prev_keywords[tokens[1]])
             # Patch to fix parsing of Kodi po files
             elif tokens[0].startswith("#"):
-                continue
+                continue    
 
             else:
                 raise IOError('Syntax error in po file %s(line %s)' %
@@ -1507,8 +1511,11 @@ class _POFileParser(object):
             if action():
                 self.current_state = state
         except Exception:
-            raise IOError('Syntax error in po file (line %s)' %
-                          self.current_line)
+            fpath = '%s ' % self.instance.fpath if self.instance.fpath else ''
+            if hasattr(self.fhandle, 'close'):
+                self.fhandle.close()
+            raise IOError('Syntax error in po file %s(line %s)' %
+                          (fpath, self.current_line))
 
     # state handlers
 
@@ -1678,7 +1685,10 @@ class _MOFileParser(object):
             whether to check for duplicate entries when adding entries to the
             file (optional, default: ``False``).
         """
-        self.fhandle = open(mofile, 'rb')
+        if _is_file(mofile):
+            self.fhandle = open(mofile, 'rb')
+        else:
+            self.fhandle = io.BytesIO(mofile)
 
         klass = kwargs.get('klass')
         if klass is None:
@@ -1694,7 +1704,7 @@ class _MOFileParser(object):
         Make sure the file is closed, this prevents warnings on unclosed file
         when running tests with python >= 3.2.
         """
-        if self.fhandle:
+        if self.fhandle and hasattr(self.fhandle, 'close'):
             self.fhandle.close()
 
     def parse(self):
@@ -1798,99 +1808,4 @@ class _MOFileParser(object):
         if len(tup) == 1:
             return tup[0]
         return tup
-# }}}
-# class TextWrapper {{{
-
-
-class TextWrapper(textwrap.TextWrapper):
-    """
-    Subclass of textwrap.TextWrapper that backport the
-    drop_whitespace option.
-    """
-    def __init__(self, *args, **kwargs):
-        drop_whitespace = kwargs.pop('drop_whitespace', True)
-        textwrap.TextWrapper.__init__(self, *args, **kwargs)
-        self.drop_whitespace = drop_whitespace
-
-    def _wrap_chunks(self, chunks):
-        """_wrap_chunks(chunks : [string]) -> [string]
-
-        Wrap a sequence of text chunks and return a list of lines of
-        length 'self.width' or less.  (If 'break_long_words' is false,
-        some lines may be longer than this.)  Chunks correspond roughly
-        to words and the whitespace between them: each chunk is
-        indivisible (modulo 'break_long_words'), but a line break can
-        come between any two chunks.  Chunks should not have internal
-        whitespace; ie. a chunk is either all whitespace or a "word".
-        Whitespace chunks will be removed from the beginning and end of
-        lines, but apart from that whitespace is preserved.
-        """
-        lines = []
-        if self.width <= 0:
-            raise ValueError("invalid width %r (must be > 0)" % self.width)
-
-        # Arrange in reverse order so items can be efficiently popped
-        # from a stack of chucks.
-        chunks.reverse()
-
-        while chunks:
-
-            # Start the list of chunks that will make up the current line.
-            # cur_len is just the length of all the chunks in cur_line.
-            cur_line = []
-            cur_len = 0
-
-            # Figure out which static string will prefix this line.
-            if lines:
-                indent = self.subsequent_indent
-            else:
-                indent = self.initial_indent
-
-            # Maximum width for this line.
-            width = self.width - len(indent)
-
-            # First chunk on line is whitespace -- drop it, unless this
-            # is the very beginning of the text (ie. no lines started yet).
-            if self.drop_whitespace and chunks[-1].strip() == '' and lines:
-                del chunks[-1]
-
-            while chunks:
-                length = len(chunks[-1])
-
-                # Can at least squeeze this chunk onto the current line.
-                if cur_len + length <= width:
-                    cur_line.append(chunks.pop())
-                    cur_len += length
-
-                # Nope, this line is full.
-                else:
-                    break
-
-            # The current line is full, and the next chunk is too big to
-            # fit on *any* line (not just this one).
-            if chunks and len(chunks[-1]) > width:
-                self._handle_long_word(chunks, cur_line, cur_len, width)
-
-            # If the last chunk on this line is all whitespace, drop it.
-            if self.drop_whitespace and cur_line and not cur_line[-1].strip():
-                del cur_line[-1]
-
-            # Convert current line back to a string and store it in list
-            # of all lines (return value).
-            if cur_line:
-                lines.append(indent + ''.join(cur_line))
-
-        return lines
-# }}}
-# function wrap() {{{
-
-
-def wrap(text, width=70, **kwargs):
-    """
-    Wrap a single paragraph of text, returning a list of wrapped lines.
-    """
-    if sys.version_info < (2, 6):
-        return TextWrapper(width=width, **kwargs).wrap(text)
-    return textwrap.wrap(text, width=width, **kwargs)
-
 # }}}
